@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Vivify</string>
+    <string name="title_activity_alarms">AlarmsActivity</string>
+    <string name="repeat">Repeat</string>
+    <string name="time">Time</string>
+    <string name="standard_time">Standard Time</string>
+    <string name="isSet">On/Off</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="search">Search</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="delete_alarm">Delete</string>
+    <string name="save_alarm">Save</string>
+    <string name="name">Alarm name</string>
+    <string name="title_activity_alert">AlertActivity</string>
+    <string name="dismiss">dismiss</string>
+    <string name="snooze">Snooze</string>
+    <string name="pending_alarm">No alarm set</string>
+    <string name="login">Login</string>
+</resources>

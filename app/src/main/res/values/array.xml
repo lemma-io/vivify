@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="snoozeIntervals">
+        <item>"5 Minutes"</item>
+        <item>"10 Minutes"</item>
+        <item>"15 Minutes"</item>
+    </string-array>
+
+    <integer-array name="snoozeValues">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+    </integer-array>
+
+</resources>

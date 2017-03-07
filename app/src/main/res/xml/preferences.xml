@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RingtonePreference
+        android:key="default_ringtone_key"
+        android:title="Default Ringtone"
+        android:ringtoneType="all"/>
+
+    <ListPreference
+        android:key="snooze_key"
+        android:title="Snooze"
+        android:entries="@array/snoozeIntervals"
+        android:entryValues="@array/snoozeValues"/>
+
+    <CheckBoxPreference
+        android:key="wifi_only_key"
+        android:title="Wifi Only"
+        android:defaultValue="false"/>
+
+    <com.rva.mrb.vivify.View.Settings.SeekBarPreference
+        android:summary="Maximum Alarm Volume"
+        android:key="max_volume_key"
+        android:title="Maximum Alarm Volume"
+        android:defaultValue="100"/>
+
+</PreferenceScreen>

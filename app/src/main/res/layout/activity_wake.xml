@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/wakeRL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/trackImageView"/>
+
+    <SeekBar
+        android:id="@+id/myseek"
+        android:layout_width="fill_parent"
+        android:layout_height="85dp"
+        android:clickable="false"
+        android:max="100"
+        android:progressDrawable="@android:color/transparent"
+        android:progress="50"
+        android:thumb="@drawable/drag_clock"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Snooze"
+        android:id="@+id/snooze_tv"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/myseek"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dismiss"
+        android:id="@+id/dismiss_tv"
+        android:layout_alignBottom="@+id/snooze_tv"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="20dp"/>
+
+</RelativeLayout>

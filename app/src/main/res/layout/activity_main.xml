@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".View.Alarm.AlarmActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleTextColor="@android:color/white"
+            android:background="?attr/colorPrimary">
+
+            <TextView
+                android:id="@+id/toolbar_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pending_alarm"
+                android:textColor="@android:color/white"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                />
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        app:rrvIsRefreshable="false"
+        app:rrvEmptyLayoutId="@layout/empyt_view"
+        app:rrvLayoutType="LinearLayout"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/new_alarm_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="10dp"
+        android:src="@android:drawable/ic_input_add" />
+
+</android.support.design.widget.CoordinatorLayout>
