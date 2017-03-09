@@ -76,9 +76,9 @@ public class Alarm extends RealmObject {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if (isEnabled()) {
-            updateTime();
-        }
+//        if (isEnabled()) {
+//            updateTime();
+//        }
     }
 
     private void clearTime() {
