@@ -296,20 +296,25 @@ public class RealmService {
             @Override
             public void execute(Realm realm) {
                 Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
-                if (alarm.getDecDaysOfWeek() != 0){
-                    alarm.setEnabled(true);
-                }
-                else {
-                    Log.d(TAG, "Alarm is: " + alarm.isEnabled());
+
+                if(alarm.getDecDaysOfWeek() == 0){
                     alarm.setEnabled(false);
                 }
+//                if (alarm.getDecDaysOfWeek() != 0){
+//                    alarm.setEnabled(true);
+//                }
+//                else {
+//                    Log.d(TAG, "Alarm is: " + alarm.isEnabled());
+//                    alarm.setEnabled(false);
+//                }
 
-                updateAlarms();
+
 //                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
 //                "\nalarm time is" + alarm.getTime() +
 //                "\nalarm wake time is" + alarm.getmWakeTime());
             }
         });
+        updateAlarms();
     }
     public String getMessage(){
         return "From realmService!!";
