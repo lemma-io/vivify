@@ -219,9 +219,9 @@ public class Alarm extends RealmObject {
         if (getCal().before(Calendar.getInstance())) {
             // holds new date
             Calendar update = Calendar.getInstance();
-            update.set(Calendar.HOUR, getCal().get(Calendar.HOUR_OF_DAY));
+            update.set(Calendar.HOUR_OF_DAY, getCal().get(Calendar.HOUR_OF_DAY));
             update.set(Calendar.MINUTE, getCal().get(Calendar.MINUTE));
-            update.set(Calendar.AM_PM, getCal().get(Calendar.AM_PM));
+            //update.set(Calendar.AM_PM, getCal().get(Calendar.AM_PM));
             update.set(Calendar.SECOND, 0);
 
             // checks to find the next available day
