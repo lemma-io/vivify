@@ -8,10 +8,11 @@ import java.nio.channels.AlreadyConnectedException;
 @Parcel
 public class MediaType {
 
-    public static final int TRACK_TYPE = 0;
-    public static final int ARTIST_TYPE = 1;
-    public static final int PLAYLIST_TYPE = 2;
-    public static final int ALBUM_TYPE = 3;
+    public static final int DEFAULT_TYPE = 0;
+    public static final int TRACK_TYPE = 1;
+    public static final int ARTIST_TYPE = 2;
+    public static final int PLAYLIST_TYPE = 3;
+    public static final int ALBUM_TYPE = 4;
 
     public Track track;
     public Album album;
@@ -19,7 +20,9 @@ public class MediaType {
     public Artist artist;
     public int type;
 
-    public MediaType() { }
+    public MediaType() {
+        this.type = DEFAULT_TYPE;
+    }
 
     public MediaType(Track track) {
         this.track = track;

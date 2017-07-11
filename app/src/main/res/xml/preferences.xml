@@ -4,7 +4,7 @@
     <RingtonePreference
         android:key="default_ringtone_key"
         android:title="Default Ringtone"
-        android:ringtoneType="all"/>
+        android:ringtoneType="alarm"/>
 
     <ListPreference
         android:key="snooze_key"

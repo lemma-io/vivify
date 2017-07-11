@@ -4,7 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -35,6 +41,7 @@ import retrofit2.Response;
 
 public class WakeActivity extends BaseActivity implements ConnectionStateCallback, SpotifyPlayer.NotificationCallback {
 
+    private static final String TAG = WakeActivity.class.getSimpleName();
     @BindView(R.id.dismiss_tv) TextView dismissTv;
     @BindView(R.id.snooze_tv) TextView snoozeTv;
     @BindView(R.id.myseek) SeekBar seekBar;
@@ -56,6 +63,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private String alarmId;
     private Alarm alarm;
     private String playlistID;
+    private Ringtone r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,9 +153,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 if (seekBar.getProgress() > 85) {
                     dismissTv.setTextSize(30);
                     dismissTv.setTypeface(null, Typeface.BOLD);
+                    if (r.isPlaying())
+                        r.stop();
                 } else if (seekBar.getProgress() < 15) {
                     snoozeTv.setTextSize(30);
                     snoozeTv.setTypeface(null, Typeface.BOLD);
+                    if (r.isPlaying())
+                        r.stop();
                 } else {
                     dismissTv.setTextSize(20);
                     snoozeTv.setTextSize(20);
@@ -207,6 +219,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 mPlayer = spotifyPlayer;
                 mPlayer.addConnectionStateCallback(WakeActivity.this);
                 mPlayer.addNotificationCallback(WakeActivity.this);
+//                mPlayer.setRepeat(true);
                 Log.d("spotifyPlayer", "initialized player");
             }
 
@@ -224,19 +237,34 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     public void onLoggedIn() {
         Log.d("PlayAlbum", "Alarm Type: " + alarm.getMediaType());
         switch (alarm.getMediaType()) {
+            case MediaType.DEFAULT_TYPE:SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(getApplicationContext());
+                String ringtonePref = preferences.getString("default_ringtone_key",
+                        "DEFAULT_RINGTONE_URI");
+                Uri notification = Uri.parse(ringtonePref);
+                r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    AudioAttributes audio = new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build();
+                    r.setAudioAttributes(audio);
+                } else
+                    r.setStreamType(AudioManager.STREAM_ALARM);
+                Log.d(TAG, "Ringtone title: " + r.getTitle(getApplicationContext()));
+                r.play();
+                Log.d(TAG, "Is playing?: " + r.isPlaying());
+                break;
             case MediaType.TRACK_TYPE:
                 mPlayer.playUri("spotify:track:" + trackId, 0, 0);
-                mPlayer.setRepeat(true);
                 break;
             case MediaType.ALBUM_TYPE:
                 Log.d("PlayAlbum", "spotify:album:" + trackId);
                 mPlayer.playUri("spotify:album:" + trackId, 0, 0);
-                mPlayer.setRepeat(true);
                 break;
             case MediaType.PLAYLIST_TYPE:
                 Log.d("PlayAlbum", "spotify:user:" + playlistID +":playlist:"+ trackId);
                 mPlayer.playUri("spotify:user:"+playlistID+":playlist:"+trackId, 0, 0);
-                mPlayer.setRepeat(true);
                 break;
         }
 
