@@ -155,14 +155,11 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 if (seekBar.getProgress() > 85) {
                     dismissTv.setTextSize(30);
                     dismissTv.setTypeface(null, Typeface.BOLD);
-                    // TODO r ringtone gets a null pointer when not used
-                    if (r.isPlaying())
-                        r.stop();
+                    dismissRingtone();
                 } else if (seekBar.getProgress() < 15) {
                     snoozeTv.setTextSize(30);
                     snoozeTv.setTypeface(null, Typeface.BOLD);
-                    if (r.isPlaying())
-                        r.stop();
+                    dismissRingtone();
                 } else {
                     dismissTv.setTextSize(20);
                     snoozeTv.setTextSize(20);
@@ -185,6 +182,11 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 }
             }
         });
+    }
+
+    private void dismissRingtone() {
+        if (r != null && r.isPlaying())
+            r.stop();
     }
 
     /**
