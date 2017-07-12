@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -153,6 +155,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 if (seekBar.getProgress() > 85) {
                     dismissTv.setTextSize(30);
                     dismissTv.setTypeface(null, Typeface.BOLD);
+                    // TODO r ringtone gets a null pointer when not used
                     if (r.isPlaying())
                         r.stop();
                 } else if (seekBar.getProgress() < 15) {
@@ -196,7 +199,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                 AccessToken results = response.body();
                 applicationModule.setAccessToken(results.getAccessToken());
-                initSpotifyPlayer();
+//                initSpotifyPlayer();
+                initCustomPlayer();
             }
 
             @Override
@@ -204,6 +208,76 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 Log.d("Node", "error: " + t.getMessage());
             }
         });
+    }
+
+    public void initCustomPlayer() {
+        Log.d("Player", "Init custom player");
+        playerConfig = new Config(this, applicationModule.getAccessToken(), CLIENT_ID);
+        SpotifyPlayer builder = new SpotifyPlayer.Builder(playerConfig)
+                .setAudioController(new AudioController() {
+                    AudioTrack mTrack = null;
+                    @Override
+                    public void start() {
+
+                    }
+
+                    @Override
+                    public void stop() {
+
+                    }
+
+                    @Override
+                    public int onAudioDataDelivered(short[] frames, int numFrames, int sampleRate, int channels) {
+                        if (mTrack == null ) {
+                            int intSize = android.media.AudioTrack.getMinBufferSize(
+                                    sampleRate,
+                                    AudioFormat.CHANNEL_OUT_STEREO,
+                                    AudioFormat.ENCODING_PCM_16BIT);
+//                            Log.d(PLAYER_TAG, "AUDIO DELIVERED CREATING TRACK " + intSize);
+                            mTrack = new AudioTrack(
+                                    AudioManager.STREAM_ALARM,
+                                    sampleRate,
+                                    AudioFormat.CHANNEL_IN_STEREO,
+                                    AudioFormat.ENCODING_PCM_16BIT,
+                                    intSize,
+                                    AudioTrack.MODE_STREAM);
+                            mTrack.play();
+                        }
+                        int written = mTrack.write(frames, 0, numFrames);
+//                        Log.d(PLAYER_TAG, "numFrames " + numFrames + " frames length " + frames.length + " written " + written + " sampleRate " + sampleRate + " channels " + channels);
+                        return written;
+                    }
+
+                    @Override
+                    public void onAudioFlush() {
+                        if(mTrack!= null)
+                            mTrack.flush();
+                    }
+
+                    @Override
+                    public void onAudioPaused() {
+
+                    }
+
+                    @Override
+                    public void onAudioResumed() {
+
+                    }
+                }).build(new SpotifyPlayer.InitializationObserver() {
+                    @Override
+                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                        mPlayer = spotifyPlayer;
+                        mPlayer.addConnectionStateCallback(WakeActivity.this);
+                        mPlayer.addNotificationCallback(WakeActivity.this);
+//                mPlayer.setRepeat(true);
+                        Log.d("spotifyPlayer", "initialized  custom player");
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+                    }
+                });
     }
 
     /**
@@ -223,7 +297,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+                Log.e("MainActivity", "Could not initialize custom player: " + throwable.getMessage());
             }
         });
     }
