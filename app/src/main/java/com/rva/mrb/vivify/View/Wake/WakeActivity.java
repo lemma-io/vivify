@@ -196,9 +196,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                 AccessToken results = response.body();
                 applicationModule.setAccessToken(results.getAccessToken());
-
                 initSpotifyPlayer();
-
             }
 
             @Override
@@ -237,23 +235,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     public void onLoggedIn() {
         Log.d("PlayAlbum", "Alarm Type: " + alarm.getMediaType());
         switch (alarm.getMediaType()) {
-            case MediaType.DEFAULT_TYPE:SharedPreferences preferences = PreferenceManager
-                    .getDefaultSharedPreferences(getApplicationContext());
-                String ringtonePref = preferences.getString("default_ringtone_key",
-                        "DEFAULT_RINGTONE_URI");
-                Uri notification = Uri.parse(ringtonePref);
-                r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    AudioAttributes audio = new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_ALARM)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build();
-                    r.setAudioAttributes(audio);
-                } else
-                    r.setStreamType(AudioManager.STREAM_ALARM);
-                Log.d(TAG, "Ringtone title: " + r.getTitle(getApplicationContext()));
-                r.play();
-                Log.d(TAG, "Is playing?: " + r.isPlaying());
+            case MediaType.DEFAULT_TYPE:
+                playDefaultRingtone();
                 break;
             case MediaType.TRACK_TYPE:
                 mPlayer.playUri("spotify:track:" + trackId, 0, 0);
@@ -268,6 +251,24 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 break;
         }
 
+    }
+
+    public void playDefaultRingtone() {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        String ringtonePref = preferences.getString("default_ringtone_key",
+                "DEFAULT_RINGTONE_URI");
+        Uri notification = Uri.parse(ringtonePref);
+        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes audio = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+            r.setAudioAttributes(audio);
+        } else
+            r.setStreamType(AudioManager.STREAM_ALARM);
+        r.play();
     }
 
     @Override
