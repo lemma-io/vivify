@@ -1,9 +1,12 @@
 package com.rva.mrb.vivify.View.Settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.rva.mrb.vivify.R;
 
@@ -16,6 +19,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         {
             super.onCreate(savedInstanceState);
             getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
+
+            SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(getApplicationContext());
+            String ringtonePref = preferences.getString("default_ringtone_key",
+                    "DEFAULT_RINGTONE_URI");
+            Log.d("Settings", "Ringtone:" + ringtonePref);
         }
 
     @Override
