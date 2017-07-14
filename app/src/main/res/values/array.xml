@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="snoozeIntervals">
+        <item>"1 Minute"</item>
+        <item>"2 Minutes"</item>
+        <item>"3 Minutes"</item>
+        <item>"4 Minutes"</item>
         <item>"5 Minutes"</item>
+        <item>"6 Minutes"</item>
+        <item>"7 Minutes"</item>
+        <item>"8 Minutes"</item>
+        <item>"9 Minutes"</item>
         <item>"10 Minutes"</item>
+        <item>"11 Minutes"</item>
+        <item>"12 Minutes"</item>
+        <item>"13 Minutes"</item>
+        <item>"14 Minutes"</item>
         <item>"15 Minutes"</item>
     </string-array>
 
-    <integer-array name="snoozeValues">
+    <string-array name="snoozeValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
         <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
         <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
         <item>15</item>
-    </integer-array>
+    </string-array>
 
 </resources>
