@@ -6,9 +6,11 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.RealmService;
@@ -59,6 +61,13 @@ public class AlarmAdapter extends
         viewHolder.timeTv.setText(alarm.getmWakeTime());
         viewHolder.nameTv.setText(alarm.getAlarmLabel());
         viewHolder.isSet.setChecked(alarm.isEnabled());
+        viewHolder.mediaInfoTv.setText(alarm.getTrackName()+": "+alarm.getArtistName());
+        viewHolder.mediaInfoTv.setSelected(true);
+        Glide.with(viewHolder.itemView.getContext())
+                .load(alarm.getTrackImage())
+                .centerCrop()
+                .into(viewHolder.alarmBg);
+        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
         viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,6 +98,8 @@ public class AlarmAdapter extends
         @BindView(R.id.card_alarms) CardView cardView;
         @BindView(R.id.alarm_nametv) TextView nameTv;
         @BindView(R.id.alarm_is_set) Switch isSet;
+        @BindView(R.id.alarm_media_info) TextView mediaInfoTv;
+        @BindView(R.id.alarm_bg) ImageView alarmBg;
 
         public ViewHolder(View itemView) {
             super(itemView);

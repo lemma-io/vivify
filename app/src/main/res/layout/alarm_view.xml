@@ -2,26 +2,35 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_alarms"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:layout_height="185dip"
     android:clickable="true">
+
+    <ImageView
+        android:id="@+id/alarm_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="20dp">
+
+
+
     <LinearLayout
         android:id="@+id/inner_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
 
         <TextView
             android:id="@+id/alarm_nametv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="Early"/>
+            android:text="Early"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/alarm_tv"
@@ -29,7 +38,34 @@
             android:layout_height="wrap_content"
             android:textSize="42sp"
             android:textStyle="bold"
-            android:text="6:45" />
+            android:paddingBottom="5dip"
+            android:text="6:30am" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/alarm_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6hrs27min"/>
+
+            <TextView
+                android:id="@+id/alarm_media_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxEms="12"
+                android:maxLines="1"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"
+                android:clickable="true"
+                android:text="Generation Wh.."/>
+        </RelativeLayout>
     </LinearLayout>
 
     <Switch

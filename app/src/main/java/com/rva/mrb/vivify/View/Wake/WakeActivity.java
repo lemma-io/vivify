@@ -97,6 +97,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             //Use Glide to load image URL
             Glide.with(this)
                     .load(trackImage)
+                    .centerCrop()
                     .into(trackIV);
             trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
             Log.d("trackImage", "Traack Image Url: " + trackImage);
@@ -271,7 +272,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                         mPlayer = spotifyPlayer;
                         mPlayer.addConnectionStateCallback(WakeActivity.this);
                         mPlayer.addNotificationCallback(WakeActivity.this);
-//                mPlayer.setRepeat(true);
                         Log.d("spotifyPlayer", "initialized  custom player");
                     }
 
