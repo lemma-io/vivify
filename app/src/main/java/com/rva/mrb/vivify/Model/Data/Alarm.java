@@ -22,6 +22,7 @@ public class Alarm extends RealmObject {
     public static final String TAG = Alarm.class.getSimpleName();
 
     public static final int FLAG_NEXT_ALARM = 24;
+    public static final int FLAG_SNOOZED_ALARM = 42;
 
     // used to set when to repeat an alarm
     // flipping bits to set days
@@ -50,6 +51,7 @@ public class Alarm extends RealmObject {
     private String trackId;
     private String trackImage;
     private int mediaType;
+    private boolean snoozed;
 
     public Alarm() {
     }
@@ -415,4 +417,8 @@ public class Alarm extends RealmObject {
     public void setMediaType(int mediaType) {
         this.mediaType = mediaType;
     }
+
+    public void setSnoozed(boolean isSnoozed) { this.snoozed = isSnoozed; }
+
+    public boolean isSnoozed() { return snoozed; }
 }

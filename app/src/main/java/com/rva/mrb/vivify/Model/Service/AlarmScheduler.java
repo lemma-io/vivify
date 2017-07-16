@@ -68,6 +68,8 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
             intent.putExtra("alarmId", alarm.getId());
             intent.putExtra("trackId", alarm.getTrackId());
             intent.putExtra("trackImage", alarm.getTrackImage());
+            intent.putExtra("snoozed", alarm.isSnoozed());
+            Log.d("snoozed", "snoozed: " + alarm.isSnoozed());
             PendingIntent pendingIntent =
                     PendingIntent.getBroadcast(context, Alarm.FLAG_NEXT_ALARM,
                             intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -98,7 +100,8 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 
     }
 
-    public static void snoozeNextAlarm(Context context, String trackId, String trackImage) {
+    public static void snoozeNextAlarm(Context context, String trackId, String trackImage,
+                                       String alarmId, boolean snoozed, int snoozeTime) {
         cancelNextAlarm(context);
         Log.d(TAG, "Snoozing Alarm");
         AlarmManager alarmManager = (AlarmManager)
@@ -106,11 +109,23 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
         Intent intent = new Intent(context, WakeReceiver.class);
         intent.putExtra("trackId", trackId);
         intent.putExtra("trackImage", trackImage);
+        intent.putExtra("alarmId", alarmId);
+        intent.putExtra("snoozed", snoozed);
         PendingIntent snoozedIntent = PendingIntent.getBroadcast(context,
-                Alarm.FLAG_NEXT_ALARM , intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                Alarm.FLAG_SNOOZED_ALARM , intent, PendingIntent.FLAG_UPDATE_CURRENT);
         // update
         alarmManager.set(AlarmManager.RTC_WAKEUP,
-                SystemClock.elapsedRealtime() + 1000*60*2, snoozedIntent);
+                System.currentTimeMillis() + snoozeTime, snoozedIntent);
+        setNextAlarm(context);
+    }
+
+    public static void cancelSnoozedAlarm(Context context) {
+        AlarmManager alarmManager = (AlarmManager)
+                context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, WakeReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Alarm.FLAG_SNOOZED_ALARM,
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
     public static void cancelNextAlarm(Context context) {
@@ -124,15 +139,24 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 //        RealmService.updateAlarms();
     }
 
+    public static void setSnoozedById(Context context, String id){
+        RealmService.snoozeAlarmById(id);
+    }
+
     public static void enableAlarmById(Context context, String id) {
 
 //        Log.d(TAG, "Toggle alarm id: " + id);
 //        AlarmManager alarmManager = (AlarmManager)
 //                context.getSystemService(Context.ALARM_SERVICE);
 
+
+        Alarm alarm = RealmService.getAlarmById(id);
+        Log.d("Enable alarm", "snoozed: " + alarm.isSnoozed());
+        if(alarm.isSnoozed()){
+            cancelSnoozedAlarm(context);
+        }
         // toggle alarm in database
         RealmService.enableAlarm(id);
-
         // check alarm date and update as needed
 //        RealmService.updateAlarms();
 

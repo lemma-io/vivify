@@ -44,4 +44,14 @@
         android:layout_alignParentEnd="true"
         android:textSize="20dp"/>
 
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/fastforward"
+        android:id="@+id/next_song"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/dismiss_tv"
+        android:layout_toStartOf="@+id/dismiss_tv"
+        android:layout_marginBottom="85dp" />
 </RelativeLayout>

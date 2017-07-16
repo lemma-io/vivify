@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.FractionRes;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -78,6 +79,9 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
                         .build();
         alarmComponent.inject(this);
         ButterKnife.bind(this);
+
+        //init default preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // set our own toolbar and disable the default app name title
         setSupportActionBar(toolbar);

@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +50,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     @BindView(R.id.snooze_tv) TextView snoozeTv;
     @BindView(R.id.myseek) SeekBar seekBar;
     @BindView(R.id.trackImageView) ImageView trackIV;
+    @BindView(R.id.next_song) ImageButton fastForward;
     @Inject
     WakePresenter wakePresenter;
     @Inject
@@ -63,6 +66,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private String trackId;
     private String trackImage;
     private String alarmId;
+    private boolean snoozed;
     private Alarm alarm;
     private String playlistID;
     private Ringtone r;
@@ -90,6 +94,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             trackId = (String) extras.get("trackId");
             trackImage = (String) extras.get("trackImage");
             alarmId = (String) extras.get("alarmId");
+            snoozed = Boolean.parseBoolean(extras.getString("snoozed", "false"));
+            Log.d("WakeActivity", "snoozed: "+snoozed);
             Log.d("PlayAlbum", "Alarm created");
             alarm = RealmService.getAlarmById(alarmId);
             playlistID = alarm.getArtistName();
@@ -127,7 +133,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     player.
      */
     public void onDismiss() {
-        AlarmScheduler.cancelNextAlarm(getApplicationContext());
+        if(snoozed){
+            AlarmScheduler.cancelSnoozedAlarm(getApplicationContext());
+        }
+        else {
+            AlarmScheduler.cancelNextAlarm(getApplicationContext());
+        }
+
         mPlayer.pause();
         if (alarmId != null) {
             Log.d("Dismiss", "alarm ID: " + alarmId);
@@ -142,7 +154,17 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
      */
     public void onSnooze() {
         mPlayer.pause();
-        AlarmScheduler.snoozeNextAlarm(getApplicationContext(), trackId, trackImage);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int snoozeMins = Integer.parseInt(sharedPref.getString("snooze_key", "5"));
+        int snoozeTime = snoozeMins * 60000;
+        Log.d("snooze", "Snooze time in mins: "+ snoozeMins);
+        Log.d("snooze", "Snooze time in millis: "+ snoozeTime);
+        if (alarmId != null) {
+            Log.d("Snooze", "alarm ID: " + alarmId);
+            AlarmScheduler.setSnoozedById(getApplicationContext(), alarmId);
+        }
+        snoozed = true;
+        AlarmScheduler.snoozeNextAlarm(getApplicationContext(), trackId, trackImage, alarmId, snoozed, snoozeTime);
         finish();
     }
 
@@ -302,6 +324,11 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 Log.e("MainActivity", "Could not initialize custom player: " + throwable.getMessage());
             }
         });
+    }
+
+    @OnClick(R.id.next_song)
+    public void onNextSongClick(){
+        mPlayer.skipToNext();
     }
 
     /**
