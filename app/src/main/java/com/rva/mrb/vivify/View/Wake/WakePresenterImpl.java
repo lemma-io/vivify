@@ -1,5 +1,6 @@
 package com.rva.mrb.vivify.View.Wake;
 
+import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Service.RealmService;
 
 /**
@@ -26,5 +27,10 @@ public class WakePresenterImpl implements WakePresenter {
     @Override
     public void closeRealm() {
         mRealmService.closeRealm();
+    }
+
+    @Override
+    public Alarm getAlarmById(String alarmId) {
+        return mRealmService.getAlarm(alarmId);
     }
 }

@@ -165,6 +165,7 @@ public class RealmService {
                 editAlarm.setTrackId(updatedAlarm.getTrackId());
                 editAlarm.setTrackImage(updatedAlarm.getTrackImage());
                 editAlarm.setMediaType(updatedAlarm.getMediaType());
+                editAlarm.setShuffle(updatedAlarm.isShuffle());
                 editAlarm.setSnoozed(false);
             }
         });
@@ -275,6 +276,7 @@ public class RealmService {
                 alarm.setTrackId(newalarm.getTrackId());
                 alarm.setTrackImage(newalarm.getTrackImage());
                 alarm.setMediaType(newalarm.getMediaType());
+                alarm.setShuffle(newalarm.isShuffle());
                 alarm.setSnoozed(false);
 //                id = alarm.getId();
             }

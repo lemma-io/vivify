@@ -52,6 +52,7 @@ public class Alarm extends RealmObject {
     private String trackImage;
     private int mediaType;
     private boolean snoozed;
+    private boolean shuffle;
 
     public Alarm() {
     }
@@ -421,4 +422,8 @@ public class Alarm extends RealmObject {
     public void setSnoozed(boolean isSnoozed) { this.snoozed = isSnoozed; }
 
     public boolean isSnoozed() { return snoozed; }
+
+    public void setShuffle(boolean shuffle) { this.shuffle = shuffle; }
+
+    public boolean isShuffle() { return shuffle; }
 }
