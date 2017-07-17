@@ -1,19 +1,12 @@
 package com.rva.mrb.vivify.View.Alarm;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.FractionRes;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,31 +18,18 @@ import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
 import com.rva.mrb.vivify.Model.Data.Alarm;
-import com.rva.mrb.vivify.Model.Service.RealmService;
-import com.rva.mrb.vivify.Model.Service.WakeReceiver;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.View.Adapter.AlarmAdapter;
 import com.rva.mrb.vivify.View.Detail.DetailActivity;
 import com.rva.mrb.vivify.View.Login.LoginActivity;
-import com.rva.mrb.vivify.View.Search.SearchActivity;
 import com.rva.mrb.vivify.View.Settings.SettingsActivity;
 
-import org.w3c.dom.Text;
-
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Observable;
-import java.util.UUID;
-import java.util.logging.Handler;
 
 import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.subjects.BehaviorSubject;
 
 public class AlarmActivity extends BaseActivity implements AlarmsView {
 
@@ -97,6 +77,8 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
             }
         };
 
+//        Log.d(TAG, "All Alarms:" + alarmPresenter.getAllAlarms().first().toString());
+
         // create a new container to list all alarms
         // and set to auto update from realm results
         mAdapter = new AlarmAdapter(getApplicationContext(),
@@ -104,16 +86,6 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         mRecyclerView.setAdapter(mAdapter);
 
         updateAlarmNotification();
-
-
-//        Log.d(TAG, "Sunday: " + Calendar.SUNDAY);
-//        Log.d(TAG, "Monday: " + Calendar.MONDAY);
-//        Log.d(TAG, "Tuesday: " + Calendar.TUESDAY);
-//        Log.d(TAG, "Wednesday: " + Calendar.WEDNESDAY);
-//        Log.d(TAG, "Thursday: " + Calendar.THURSDAY);
-//        Log.d(TAG, "Friday: " + Calendar.FRIDAY);
-//        Log.d(TAG, "Saturday: " + Calendar.SATURDAY);
-//        Log.d(TAG, "Today: " + Calendar.DAY_OF_WEEK);
     }
 
     @Override

@@ -1,15 +1,13 @@
 package com.rva.mrb.vivify.View.Detail;
 
-import android.app.AlarmManager;
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.RealmService;
-import com.spotify.sdk.android.player.ConnectionStateCallback;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +40,6 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
     @Override
     public void onSaveAlarm(Context context,String alarmid, String name, String time, boolean isSet, boolean isStandardTime, String repeat, String trackName, String artist, String trackId, String trackImage) {
         mRealmService.saveAlarm(alarmid, name, time, isSet, isStandardTime, repeat, trackName, artist, trackId, trackImage);
-//        AlarmScheduler.enableAlarmById(context, alarmid);
     }
 
     @Override
@@ -51,7 +48,6 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
         alarm.setTime(d);
         Log.d("DetailPresenter", "date: " + alarm.getTime());
         mRealmService.saveAlarm(alarm);
-        //mRealmService.updateAlarms();
         AlarmScheduler.setNextAlarm(applicationContext);
     }
 
@@ -213,6 +209,22 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
     @Override
     public String getNewestAlarm() {
         return mRealmService.getNewestAlarmId();
+    }
+
+    @Override
+    public Date getTimeOfDay(Date date) {
+        Calendar timeOfDay = Calendar.getInstance();
+        timeOfDay.setTime(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String s = sdf.format(timeOfDay.getTime());
+        try {
+            Date d = sdf.parse(s);
+            return d;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override

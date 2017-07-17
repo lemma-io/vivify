@@ -4,15 +4,12 @@ import android.util.Log;
 
 import org.parceler.Parcel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import io.realm.AlarmRealmProxy;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.internal.Keep;
 
 @Parcel (implementations = {AlarmRealmProxy.class},
     value = Parcel.Serialization.BEAN,
@@ -38,14 +35,11 @@ public class Alarm extends RealmObject {
     private String id;
     private String alarmLabel;
     private boolean enabled;
-    //    private int hour;
-//    private int minute;
-//    private int am_pm;
     private boolean is24hr;
     private String mWakeTime;
     private String daysOfWeek;
     private Date time;
-    private Date createdAt;
+    private Date timeOfDay;
     private String trackName;
     private String artist;
     private String trackId;
@@ -137,14 +131,15 @@ public class Alarm extends RealmObject {
 
     public void setTime(Date time) {
         this.time = time;
+        setTimeOfDay(time);
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getTimeOfDay() {
+        return timeOfDay;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setTimeOfDay(Date timeOfDay) {
+        this.timeOfDay = timeOfDay;
     }
 
 
