@@ -4,13 +4,15 @@
     <RingtonePreference
         android:key="default_ringtone_key"
         android:title="Default Ringtone"
-        android:ringtoneType="alarm"/>
+        android:ringtoneType="alarm"
+        android:defaultValue="content://settings/system/awaken"/>
 
     <ListPreference
         android:key="snooze_key"
         android:title="Snooze"
         android:entries="@array/snoozeIntervals"
-        android:entryValues="@array/snoozeValues"/>
+        android:entryValues="@array/snoozeValues"
+        android:defaultValue="5"/>
 
     <CheckBoxPreference
         android:key="wifi_only_key"

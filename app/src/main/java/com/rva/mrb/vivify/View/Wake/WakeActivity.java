@@ -351,23 +351,19 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 break;
             case MediaType.TRACK_TYPE:
                 mPlayer.playUri(operationCallback,"spotify:track:" + trackId, 0, 0);
-                mPlayer.setShuffle(operationCallback, shuffle);
-                mPlayer.setRepeat(operationCallback, true);
                 break;
             case MediaType.ALBUM_TYPE:
                 Log.d("PlayAlbum", "spotify:album:" + trackId);
                 mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
                 Log.d("WakeActivity", "setting shuffle: " + shuffle);
-                mPlayer.setShuffle(operationCallback, shuffle);
-                mPlayer.setRepeat(operationCallback, true);
                 break;
             case MediaType.PLAYLIST_TYPE:
                 Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
                 mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
-                mPlayer.setShuffle(operationCallback, shuffle);
-                mPlayer.setRepeat(operationCallback, true);
                 break;
         }
+        mPlayer.setShuffle(operationCallback, shuffle);
+        mPlayer.setRepeat(operationCallback, true);
 
     }
 
