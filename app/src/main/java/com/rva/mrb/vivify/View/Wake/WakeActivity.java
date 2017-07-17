@@ -366,8 +366,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 mPlayer.setRepeat(operationCallback, true);
                 break;
         }
-        mPlayer.setShuffle(operationCallback, shuffle);
-        mPlayer.setRepeat(operationCallback, true);
 
     }
 
@@ -418,7 +416,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     @Override
     public void onPlaybackEvent(PlayerEvent event) {
-        
+
     }
 
 
