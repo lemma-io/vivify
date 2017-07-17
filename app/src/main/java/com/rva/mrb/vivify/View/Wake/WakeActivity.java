@@ -418,7 +418,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     @Override
     public void onPlaybackEvent(PlayerEvent event) {
-        Log.d("wakeactivity", "playerevent: " + event);
+        
     }
 
 
