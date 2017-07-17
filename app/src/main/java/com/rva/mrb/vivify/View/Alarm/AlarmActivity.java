@@ -85,6 +85,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
                 alarmPresenter.getAllAlarms(), listener, true, true);
         mRecyclerView.setAdapter(mAdapter);
 
+
         updateAlarmNotification();
     }
 

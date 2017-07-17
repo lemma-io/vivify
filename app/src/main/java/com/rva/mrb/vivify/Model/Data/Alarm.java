@@ -72,9 +72,6 @@ public class Alarm extends RealmObject {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-//        if (isEnabled()) {
-//            updateTime();
-//        }
     }
 
     private void clearTime() {
@@ -104,30 +101,6 @@ public class Alarm extends RealmObject {
     public void setDaysOfWeek(String daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
     }
-
-//    public int getHour() {
-//        return hour;
-//    }
-//
-//    public void setHour(int hour) {
-//        this.hour = hour;
-//    }
-//
-//    public int getMinute() {
-//        return minute;
-//    }
-//
-//    public void setMinute(int minute) {
-//        this.minute = minute;
-//    }
-//
-//    public int isAm_pm() {
-//        return am_pm;
-//    }
-//
-//    public void setAm_pm(int am_pm) {
-//        this.am_pm = am_pm;
-//    }
 
     public void setTime(Date time) {
         this.time = time;
@@ -165,10 +138,6 @@ public class Alarm extends RealmObject {
         cal.setTime(time);
         return cal;
     }
-
-//    public String getTimeAsString() {
-//
-//    }
 
 //    public void setTime(String wakeTime) {
 //        Calendar timeHolder = Calendar.getInstance();
