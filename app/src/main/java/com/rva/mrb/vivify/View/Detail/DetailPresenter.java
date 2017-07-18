@@ -26,5 +26,7 @@ public interface DetailPresenter extends BasePresenter<DetailView>{
 
     String getNewestAlarm();
 
+    Date getTimeOfDay(Date date);
+
 //    int getAMPM(int hour);
 }

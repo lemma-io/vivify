@@ -232,7 +232,7 @@ public class RealmService {
                 alarm.setEnabled(isSet);
 //                alarm.set24hr(isStandardTime);
                 alarm.setDaysOfWeek(repeat);
-                alarm.setCreatedAt(Calendar.getInstance().getTime());
+                alarm.setTimeOfDay(Calendar.getInstance().getTime());
                 alarm.setTrackName(trackName);
                 alarm.setArtist(artist);
                 alarm.setTrackId(trackId);
@@ -269,7 +269,7 @@ public class RealmService {
                 alarm.setEnabled(newalarm.isEnabled());
                 alarm.set24hr(newalarm.is24hr());
                 alarm.setDaysOfWeek(newalarm.getDaysOfWeek());
-//                alarm.setCreatedAt(Calendar.getInstance().getTime());
+//                alarm.setTimeOfDay(Calendar.getInstance().getTime());
                 alarm.setTrackName(newalarm.getTrackName());
                 alarm.setArtist(newalarm.getArtistName());
                 alarm.setTrackId(newalarm.getTrackId());

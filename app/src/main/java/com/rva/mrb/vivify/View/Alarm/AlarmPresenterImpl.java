@@ -22,10 +22,7 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
 
     @Override
     public RealmResults<Alarm> getAllAlarms() {
-//        RealmList<Alarm> alarms = new RealmList<Alarm>();
-//        for (Alarm alarm : mRealmService.getAllAlarms())
-//            alarms.add(alarm);
-        return mRealmService.getAllAlarms();
+        return mRealmService.getAllAlarms().sort("timeOfDay");
     }
 
 
@@ -40,11 +37,6 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
     public String getMessage(){
         return "SUCESSFULL!!!";
     }
-
-//    @Override
-//    public void onAlarmClick(int id) {
-//
-//    }
 
     @Override
     public void onAddNewAlarm() {
