@@ -94,6 +94,11 @@ public class AlarmAdapter extends
             public void onClick(View v) {
                 Log.d(TAG, "Toggle alarm id: " + alarm.getId());
                 AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
+                if (alarm.isEnabled()) {
+                    viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
+                } else {
+                    viewHolder.alarmTimer.setText("");
+                }
                 alarmToggleListener.onAlarmToggle();
             }
         });
