@@ -47,6 +47,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.track_tv) TextView mTrackTv;
     @BindView(R.id.isSet) CheckBox mIsSet;
     @BindView(R.id.standard_time) CheckBox mStandardTime;
+    @BindView(R.id.shuffle) CheckBox mShuffle;
     @BindView(R.id.button_add) Button addbt;
     @BindView(R.id.button_delete) Button deletebt;
     @BindView(R.id.button_save) Button savebt;
@@ -104,6 +105,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
                 mStandardTime.setChecked(alarm.is24hr());
+                mShuffle.setChecked(alarm.isShuffle());
                 setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
 //                mEditRepeat.setText(alarm.getmcRepeat());
                 trackName = alarm.getTrackName();
@@ -265,6 +267,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
         alarm.setAlarmLabel(editname.getText().toString());
         alarm.setEnabled(mIsSet.isChecked());
         alarm.setmWakeTime(mEditTime.getText().toString());
+        alarm.setShuffle(mShuffle.isChecked());
         Log.d("Set", "Time: " + alarm.getTime());
         alarm.setDaysOfWeek(Integer.toBinaryString(repeatDays));
         alarm.setTrackId(trackId);

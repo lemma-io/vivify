@@ -17,6 +17,8 @@ import com.rva.mrb.vivify.Model.Data.Alarm;
 //import com.rva.mrb.vivify.Model.RealmHelper.RealmHelperComponent;
 //import com.rva.mrb.vivify.Model.RealmHelper.RealmHelperModule;
 
+import org.parceler.Parcels;
+
 import javax.inject.Inject;
 
 import io.realm.Realm;
@@ -65,10 +67,12 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
         if (alarm != null) {
 
             Intent intent = new Intent(context, WakeReceiver.class);
+//            intent.putExtra("Alarm", Parcels.wrap(alarm));
             intent.putExtra("alarmId", alarm.getId());
-            intent.putExtra("trackId", alarm.getTrackId());
-            intent.putExtra("trackImage", alarm.getTrackImage());
-            intent.putExtra("snoozed", alarm.isSnoozed());
+//            intent.putExtra("trackId", alarm.getTrackId());
+//            intent.putExtra("trackImage", alarm.getTrackImage());
+//            intent.putExtra("snoozed", alarm.isSnoozed());
+            Log.d("AlarmScheduler", "Shuffle: " + intent.hasExtra("shuf"));
             Log.d("snoozed", "snoozed: " + alarm.isSnoozed());
             PendingIntent pendingIntent =
                     PendingIntent.getBroadcast(context, Alarm.FLAG_NEXT_ALARM,
@@ -100,17 +104,13 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 
     }
 
-    public static void snoozeNextAlarm(Context context, String trackId, String trackImage,
-                                       String alarmId, boolean snoozed, int snoozeTime) {
+    public static void snoozeNextAlarm(Context context, String alarmId, int snoozeTime) {
         cancelNextAlarm(context);
         Log.d(TAG, "Snoozing Alarm");
         AlarmManager alarmManager = (AlarmManager)
                 context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, WakeReceiver.class);
-        intent.putExtra("trackId", trackId);
-        intent.putExtra("trackImage", trackImage);
         intent.putExtra("alarmId", alarmId);
-        intent.putExtra("snoozed", snoozed);
         PendingIntent snoozedIntent = PendingIntent.getBroadcast(context,
                 Alarm.FLAG_SNOOZED_ALARM , intent, PendingIntent.FLAG_UPDATE_CURRENT);
         // update

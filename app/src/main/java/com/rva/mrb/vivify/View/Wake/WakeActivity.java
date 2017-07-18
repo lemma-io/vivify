@@ -1,13 +1,10 @@
 package com.rva.mrb.vivify.View.Wake;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
-import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -32,6 +29,9 @@ import com.rva.mrb.vivify.Model.Service.RealmService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.spotify.sdk.android.player.*;
+import com.spotify.sdk.android.player.Error;
+
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 
@@ -67,9 +67,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private String trackImage;
     private String alarmId;
     private boolean snoozed;
+    private boolean shuffle;
     private Alarm alarm;
     private String playlistID;
     private Ringtone r;
+    private AudioManager am;
+    private Context mContext;
+    private AudioManager.OnAudioFocusChangeListener amFocusListener;
+    private AudioTrackController audioTrackController;
+    private Player.OperationCallback operationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,19 +91,41 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         wakeComponent.inject(this);
         ButterKnife.bind(this);
 
+        operationCallback = new Player.OperationCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError(Error error) {
+                Log.d("WakeActivity", "OperationCallback error: " + error);
+            }
+        };
+
         //Retrieve access token from spotify
         refreshToken();
+        mContext = getApplicationContext();
+        am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
+        audioTrackController = new AudioTrackController();
         //Get trackId and image URL from Bundle
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            trackId = (String) extras.get("trackId");
-            trackImage = (String) extras.get("trackImage");
             alarmId = (String) extras.get("alarmId");
-            snoozed = Boolean.parseBoolean(extras.getString("snoozed", "false"));
+            alarm = wakePresenter.getAlarmById(alarmId);
+            shuffle = alarm.isShuffle();
+            trackId = alarm.getTrackId();
+            trackImage = alarm.getTrackImage();
+            snoozed = alarm.isSnoozed();
+            //Log.d("WakeActivity", "shuffleString: "+shuffleString);
+            //shuffle = Boolean.parseBoolean(shuffleString);
+            Log.d("WakeActivity", "trackId: "+trackId);
+            Log.d("WakeActivity", "shuffle: "+shuffle);
             Log.d("WakeActivity", "snoozed: "+snoozed);
             Log.d("PlayAlbum", "Alarm created");
-            alarm = RealmService.getAlarmById(alarmId);
+//            alarm = RealmService.getAlarmById(alarmId);
             playlistID = alarm.getArtistName();
 
             //Use Glide to load image URL
@@ -140,12 +168,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             AlarmScheduler.cancelNextAlarm(getApplicationContext());
         }
 
-        mPlayer.pause();
+        mPlayer.pause(operationCallback);
         if (alarmId != null) {
             Log.d("Dismiss", "alarm ID: " + alarmId);
             AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
         }
         finish();
+
     }
 
     /*
@@ -153,19 +182,20 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     alarm.
      */
     public void onSnooze() {
-        mPlayer.pause();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        mPlayer.pause(operationCallback);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         int snoozeMins = Integer.parseInt(sharedPref.getString("snooze_key", "5"));
         int snoozeTime = snoozeMins * 60000;
-        Log.d("snooze", "Snooze time in mins: "+ snoozeMins);
-        Log.d("snooze", "Snooze time in millis: "+ snoozeTime);
+        Log.d("snooze", "Snooze time in mins: " + snoozeMins);
+        Log.d("snooze", "Snooze time in millis: " + snoozeTime);
         if (alarmId != null) {
             Log.d("Snooze", "alarm ID: " + alarmId);
             AlarmScheduler.setSnoozedById(getApplicationContext(), alarmId);
         }
         snoozed = true;
-        AlarmScheduler.snoozeNextAlarm(getApplicationContext(), trackId, trackImage, alarmId, snoozed, snoozeTime);
+        AlarmScheduler.snoozeNextAlarm(getApplicationContext(), alarmId, snoozeTime);
         finish();
+
     }
 
     /*
@@ -237,71 +267,49 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     public void initCustomPlayer() {
         Log.d("Player", "Init custom player");
-        playerConfig = new Config(this, applicationModule.getAccessToken(), CLIENT_ID);
-        SpotifyPlayer builder = new SpotifyPlayer.Builder(playerConfig)
-                .setAudioController(new AudioController() {
-                    AudioTrack mTrack = null;
-                    @Override
-                    public void start() {
+        playerConfig = new Config(mContext, applicationModule.getAccessToken(), CLIENT_ID);
+        SpotifyPlayer.Builder builder = new SpotifyPlayer.Builder(playerConfig)
+                .setAudioController(audioTrackController);
+//        builder.build(new SpotifyPlayer.InitializationObserver() {
+//                    @Override
+//                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+//                        int result = am.requestAudioFocus(amFocusListener,
+//                                AudioManager.STREAM_ALARM, AudioManager.AUDIOFOCUS_GAIN);
+//                        if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+//                            mPlayer = spotifyPlayer;
+//                            mPlayer.addConnectionStateCallback(WakeActivity.this);
+//                            mPlayer.addNotificationCallback(WakeActivity.this);
+//                            //Log.d("spotifyPlayer", AudioManager.getActivePlaybackConfigurations());
+//                            mPlayer.setRepeat(true);
+//                            Log.d("spotifyPlayer", "initialized  custom player");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+//                    }
+//                });
+        Spotify.getPlayer(builder, this, new SpotifyPlayer.InitializationObserver() {
+            @Override
+            public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                int result = am.requestAudioFocus(amFocusListener,
+                        AudioManager.STREAM_ALARM, AudioManager.AUDIOFOCUS_GAIN);
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mPlayer = spotifyPlayer;
+                    mPlayer.addConnectionStateCallback(WakeActivity.this);
+                    mPlayer.addNotificationCallback(WakeActivity.this);
+                    //Log.d("spotifyPlayer", AudioManager.getActivePlaybackConfigurations());
 
-                    }
+                    Log.d("spotifyPlayer", "initialized  custom player");
+                }
+            }
 
-                    @Override
-                    public void stop() {
-
-                    }
-
-                    @Override
-                    public int onAudioDataDelivered(short[] frames, int numFrames, int sampleRate, int channels) {
-                        if (mTrack == null ) {
-                            int intSize = android.media.AudioTrack.getMinBufferSize(
-                                    sampleRate,
-                                    AudioFormat.CHANNEL_OUT_STEREO,
-                                    AudioFormat.ENCODING_PCM_16BIT);
-//                            Log.d(PLAYER_TAG, "AUDIO DELIVERED CREATING TRACK " + intSize);
-                            mTrack = new AudioTrack(
-                                    AudioManager.STREAM_ALARM,
-                                    sampleRate,
-                                    AudioFormat.CHANNEL_IN_STEREO,
-                                    AudioFormat.ENCODING_PCM_16BIT,
-                                    intSize,
-                                    AudioTrack.MODE_STREAM);
-                            mTrack.play();
-                        }
-                        int written = mTrack.write(frames, 0, numFrames);
-//                        Log.d(PLAYER_TAG, "numFrames " + numFrames + " frames length " + frames.length + " written " + written + " sampleRate " + sampleRate + " channels " + channels);
-                        return written;
-                    }
-
-                    @Override
-                    public void onAudioFlush() {
-                        if(mTrack!= null)
-                            mTrack.flush();
-                    }
-
-                    @Override
-                    public void onAudioPaused() {
-
-                    }
-
-                    @Override
-                    public void onAudioResumed() {
-
-                    }
-                }).build(new SpotifyPlayer.InitializationObserver() {
-                    @Override
-                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
-                        mPlayer = spotifyPlayer;
-                        mPlayer.addConnectionStateCallback(WakeActivity.this);
-                        mPlayer.addNotificationCallback(WakeActivity.this);
-                        Log.d("spotifyPlayer", "initialized  custom player");
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-                    }
-                });
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("MainActivity", "Could not initialize custom player: " + throwable.getMessage());
+            }
+        });
     }
 
     /**
@@ -315,7 +323,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 mPlayer = spotifyPlayer;
                 mPlayer.addConnectionStateCallback(WakeActivity.this);
                 mPlayer.addNotificationCallback(WakeActivity.this);
-//                mPlayer.setRepeat(true);
+
                 Log.d("spotifyPlayer", "initialized player");
             }
 
@@ -328,7 +336,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     @OnClick(R.id.next_song)
     public void onNextSongClick(){
-        mPlayer.skipToNext();
+        mPlayer.skipToNext(operationCallback);
     }
 
     /**
@@ -342,17 +350,20 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 playDefaultRingtone();
                 break;
             case MediaType.TRACK_TYPE:
-                mPlayer.playUri("spotify:track:" + trackId, 0, 0);
+                mPlayer.playUri(operationCallback,"spotify:track:" + trackId, 0, 0);
                 break;
             case MediaType.ALBUM_TYPE:
                 Log.d("PlayAlbum", "spotify:album:" + trackId);
-                mPlayer.playUri("spotify:album:" + trackId, 0, 0);
+                mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
+                Log.d("WakeActivity", "setting shuffle: " + shuffle);
                 break;
             case MediaType.PLAYLIST_TYPE:
-                Log.d("PlayAlbum", "spotify:user:" + playlistID +":playlist:"+ trackId);
-                mPlayer.playUri("spotify:user:"+playlistID+":playlist:"+trackId, 0, 0);
+                Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
+                mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
                 break;
         }
+        mPlayer.setShuffle(operationCallback, shuffle);
+        mPlayer.setRepeat(operationCallback, true);
 
     }
 
@@ -380,7 +391,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     }
 
     @Override
-    public void onLoginFailed(int i) {
+    public void onLoginFailed(Error error) {
 
     }
 
