@@ -25,13 +25,11 @@ import com.rva.mrb.vivify.Model.Data.AccessToken;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Data.MediaType;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
-import com.rva.mrb.vivify.Model.Service.RealmService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
-
-import org.parceler.Parcels;
+import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
 import javax.inject.Inject;
 
