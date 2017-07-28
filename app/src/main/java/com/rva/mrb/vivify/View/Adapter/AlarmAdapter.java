@@ -107,8 +107,12 @@ public class AlarmAdapter extends
             disposable = Flowable.interval(1000L, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(along -> {
-                        if (alarm.isEnabled())
-                            viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
+                        if (alarm.isValid()) {
+                            if (alarm.isEnabled())
+                                viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
+                            else
+                                viewHolder.alarmTimer.setText("");
+                        }
                     });
         }
     }
