@@ -123,20 +123,7 @@ public class Alarm extends RealmObject {
 
 
     public Date getTime() {
-//        Calendar cal = Calendar.getInstance();
-//        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-//        try {
-//            Log.d(TAG, "Alarm wake time: " + mWakeTime);
-//            cal.setTime(sdf.parse(mWakeTime));
-//            Log.d(TAG, "Parsed time: " + cal.getTime());
-//            Log.d(TAG, "Time set by setTime(): " + time);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
         return time;
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(time);
-//        return cal;
     }
 
     public Calendar getCal() {
@@ -145,49 +132,7 @@ public class Alarm extends RealmObject {
         return cal;
     }
 
-//    public void setTime(String wakeTime) {
-//        Calendar timeHolder = Calendar.getInstance();
-//        Calendar timeUpdate = Calendar.getInstance();
-////        Log.d(TAG, "Current Time:" + cal.getTime());
-//        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-//        try {
-//            time = sdf.parse(wakeTime);
-//            timeHolder.setTime(time);
-////            Log.d("SetTime", "Hour: " + timeHolder.get(Calendar.HOUR));
-////            Log.d("SetTime", "Minute: " + cal.get(Calendar.MINUTE));
-////            Log.d("SetTime", "AMPM: " + cal.get(Calendar.AM_PM));
-////            Log.d("SetTime", "Set time to " + cal.getTime());
-//
-//            // update the time from the parsed time string
-//            timeUpdate.set(Calendar.HOUR, timeHolder.get(Calendar.HOUR));
-//            timeUpdate.set(Calendar.MINUTE, timeHolder.get(Calendar.MINUTE));
-//            timeUpdate.set(Calendar.AM_PM, timeHolder.get(Calendar.AM_PM));
-//            timeUpdate.set(Calendar.SECOND, 0);
-//
-//            // while were at it save the values
-//            setHour(timeHolder.get(Calendar.HOUR));
-//            setMinute(timeHolder.get(Calendar.MINUTE));
-//            setAm_pm(timeHolder.get(Calendar.AM_PM));
-//
-//            Log.d(TAG, "New time " + timeUpdate.getTime());
-//            time = timeUpdate.getTime();
-//            // update the time if necessary
-//
-//////            Calendar currentTime = Calendar.getInstance();
-////            if (timeUpdate.before(Calendar.getInstance()))
-////                timeUpdate.add(Calendar.DAY_OF_YEAR, 1);
-//
-//
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public Date updateTime() {
-        // update alarm time if necessary
-//        if(getDaysOfWeek().equals("0")) {
-//            setEnabled(false);
-//        }
         if (getCal().before(Calendar.getInstance())) {
             // holds new date
             Calendar update = Calendar.getInstance();
