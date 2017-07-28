@@ -212,9 +212,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 Date date = detailPresenter.getDate(alarm, hour, minute);
                 alarm.setTime(date);
                 alarm.setTimeOfDay(detailPresenter.getTimeOfDay(date));
-
-
-
             }
                     // Set Alarm time as default if it exists
         }, detailPresenter.getHour(alarm), detailPresenter.getMinute(alarm), false);

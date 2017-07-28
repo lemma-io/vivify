@@ -113,7 +113,12 @@ public class Alarm extends RealmObject {
     }
 
     public void setTimeOfDay(Date timeOfDay) {
-        this.timeOfDay = timeOfDay;
+        Calendar newTime = Calendar.getInstance();
+        newTime.setTime(timeOfDay);
+        newTime.set(Calendar.YEAR, 2000);
+        newTime.set(Calendar.MONTH, Calendar.JANUARY);
+        newTime.set(Calendar.DAY_OF_MONTH, 1);
+        this.timeOfDay = newTime.getTime();
     }
 
 
