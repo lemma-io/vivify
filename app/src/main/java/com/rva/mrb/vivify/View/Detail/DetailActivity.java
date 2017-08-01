@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.bumptech.glide.Glide;
 import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
@@ -58,6 +62,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.thursday_check) CheckBox thursdayCb;
     @BindView(R.id.friday_check) CheckBox fridayCb;
     @BindView(R.id.saturday_check) CheckBox saturdayCb;
+    @BindView(R.id.alarm_detail_bg) ImageView alarmDetailBg;
     private String trackName;
     private String artistName;
     private String trackId;
@@ -72,11 +77,19 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @Inject DetailPresenter detailPresenter;
     private AlarmAdapter.OnAlarmToggleListener alarmToggleListener;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);
 
         //inject dagger and butterknife dependencies
         DetailComponent detailComponent = DaggerDetailComponent.builder()
@@ -86,6 +99,15 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 .build();
         detailComponent.inject(this);
         ButterKnife.bind(this);
+//        actionBar = (Toolbar) findViewById(R.id.detail_toolbar);
+//        setSupportActionBar(actionBar);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//        if (getActionBar() == null) {
+//            Log.d(TAG, "ToolBar is null");
+//        }
+//        else
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         Log.d("test", "ID: " + alarm.getId());
         //check if this is a new alarm
@@ -113,6 +135,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
+                Glide.with(getApplicationContext())
+                        .load(alarm.getTrackImage())
+                        .centerCrop()
+                        .into(alarmDetailBg);
                 Log.d("trackImageDA", "track image url: " + trackImage);
                 setTrackTv();
             }
