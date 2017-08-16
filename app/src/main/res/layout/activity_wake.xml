@@ -7,13 +7,29 @@
     android:gravity="center_horizontal">
 
     <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/trackImageView"/>
 
+    <TextClock
+        android:id="@+id/wake_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="68dip"
+        android:paddingTop="75dip"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/wake_media_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zhu: GENERATION WHY"
+        android:textSize="20dip"
+        android:layout_below="@+id/wake_time"
+        android:layout_centerHorizontal="true"/>
     <SeekBar
         android:id="@+id/myseek"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         android:clickable="false"
         android:max="100"
@@ -48,7 +64,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/fastforward"
+        android:src="@android:drawable/ic_media_next"
         android:id="@+id/next_song"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/dismiss_tv"
