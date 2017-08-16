@@ -163,21 +163,21 @@
             android:layout_marginTop="16dp"
             android:text="@string/add_alarm"/>
 
-        <Button
-            android:id="@+id/button_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/save_alarm"
-            android:visibility="gone"/>
+        <!--<Button-->
+            <!--android:id="@+id/button_save"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:text="@string/save_alarm"-->
+            <!--android:visibility="gone"/>-->
 
-        <Button
-            android:id="@+id/button_delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/delete_alarm"
-            android:visibility="gone"/>
+        <!--<Button-->
+            <!--android:id="@+id/button_delete"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:text="@string/delete_alarm"-->
+            <!--android:visibility="gone"/>-->
 
     </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

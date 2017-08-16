@@ -70,13 +70,6 @@ public class SearchActivity extends BaseActivity implements SearchView,
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private SearchAdapter searchAdapter;
-//    private Playlist playlist;
-
-    // Spotify
-//    private static final int REQUEST_CODE = 5123;
-//    private static final String REDIRECT_URI = "vivify://callback";
-//    private Player mPlayer;
-//    private Config playerConfig;
     private SearchModule searchModule = new SearchModule(this);
     private ApplicationModule applicationModule = new ApplicationModule((AlarmApplication) getApplication());
 
@@ -115,7 +108,7 @@ public class SearchActivity extends BaseActivity implements SearchView,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        getMenuInflater().inflate(R.menu.search_menu, menu);
         return true;
     }
 
@@ -126,7 +119,7 @@ public class SearchActivity extends BaseActivity implements SearchView,
         switch (item.getItemId())
         {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                super.onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -219,140 +212,6 @@ public class SearchActivity extends BaseActivity implements SearchView,
                 Log.d("SpotifyService", "Call failed.");
             }
         });
-//          LATEST
-//        Log.d("MyApp", "Fab Click");
-//        String searchQuery = searchEditText.getText().toString();
-//        spotifyService.getSearchResults(searchQuery).enqueue(new Callback<Search>() {
-//            @Override
-//            public void onResponse(Call<Search> call, Response<Search> response) {
-//                Log.d("Error Message", response.message());
-//                Search results = response.body();
-//                Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                Log.d("Track Name", results.getTracks().getItems().get(0).getName());
-////                Log.d("Artist name", results.getTracks().getItems().get(0).getArtists().get(0).getName());
-//                Log.d("Track Name", results.getTracks().getItems().get(0).getName());
-//                Log.d("Artist name", results.getTracks().getItems().get(0).getArtists().get(0).getName());
-//                searchAdapter = new SearchAdapter(results);
-//                setInterface();
-//
-//                recyclerview.setAdapter(searchAdapter);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Search> call, Throwable t) {
-//                Log.d("SpotifyService", "Call failed.");
-//            }
-//        });
-//            spotifyService.getFeaturedPlaylists().enqueue(new Callback<Playlist>() {
-//                @Override
-//                public void onResponse(Call<Playlist> call, Response<Playlist> response) {
-//                    if (response.isSuccessful()) {
-//                        Playlist featured = response.body();
-//                        Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                        Log.d("SpotifyService", "Code:" + response.code());
-//                        Log.d("SpotifyService", "Message:" + response.message());
-//                        Log.d("SpotifyService", "Body:" + response.body());
-//                        Log.d("SpotifyService", "Featured Message:" + featured.getMessage());
-//                        Log.d("SpotifyService", "Playlists #: " + featured.getPlaylists().getTotal());
-//                        Log.d("SpotifyService", "First Playlist Name: " + featured.getPlaylists().getItems().get(1).getTracks().getTotal());
-//                        searchAdapter = new SearchAdapter(featured);
-//                        recyclerview.setAdapter(searchAdapter);
-//                    }
-//                    else {
-//                        Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                        Log.d("SpotifyService", "Code:" + response.code());
-//                        Log.d("SpotifyService", "Message:" + response.message());
-//                        Log.d("SpotifyService", "Body:" + response.body());
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<Playlist> call, Throwable t) {
-//                }
-//            });
-
-
-//        spotifyService.getSearchResults(searchQuery).enqueue(new Callback<Playlist.Tracks>() {
-//            @Override
-//            public void onResponse(Call<Playlist.Tracks> call, Response<Playlist.Tracks> response) {
-//                Playlist.Tracks results = response.body();
-//                Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                searchAdapter = new SearchAdapter(results);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Playlist.Tracks> call, Throwable t) {
-//
-//            }
-//        });
-//        spotifyService.getFeaturedPlaylists().enqueue(new Callback<Playlist>() {
-//            @Override
-//            public void onResponse(Call<Playlist> call, Response<Playlist> response) {
-//                if (response.isSuccessful()) {
-//                    Playlist featured = response.body();
-//                    Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                    Log.d("SpotifyService", "Code:" + response.code());
-//                    Log.d("SpotifyService", "Message:" + response.message());
-//                    Log.d("SpotifyService", "Body:" + response.body());
-//                    Log.d("SpotifyService", "Featured Message:" + featured.getMessage());
-//                    Log.d("SpotifyService", "Playlists #: " + featured.getPlaylists().getTotal());
-//                    Log.d("SpotifyService", "First Playlist Name: " + featured.getPlaylists().getItems().get(1).getTracks().getTotal());
-//                    searchAdapter = new SearchAdapter(featured);
-//                    recyclerview.setAdapter(searchAdapter);
-//                }
-//                else {
-//                    Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                    Log.d("SpotifyService", "Code:" + response.code());
-//                    Log.d("SpotifyService", "Message:" + response.message());
-//                    Log.d("SpotifyService", "Body:" + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Playlist> call, Throwable t) {
-//            }
-//        });
-
-//        spotifyService.getUser("rmoran92").enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (response.isSuccessful()) {
-//                    User user = response.body();
-//                    Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                    Log.d("SpotifyService", "Code:" + response.code());
-//                    Log.d("SpotifyService", "Message:" + response.message());
-//                    Log.d("SpotifyService", "Body:" + response.body());
-//                    Log.d("SpotifyService", "Username:" + user.getDisplayName());
-//                    Log.d("SpotifyService", "UserId:" + user.getId());
-//                }
-//                else {
-//                    Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                    Log.d("SpotifyService", "Code:" + response.code());
-//                    Log.d("SpotifyService", "Message:" + response.message());
-//                    Log.d("SpotifyService", "Body:" + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//
-//            }
-//        });
-
-//        alarmPresenter.onSearch();
-//        mPlayer = Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
-//            @Override
-//            public void onInitialized(Player player) {
-//                mPlayer.addConnectionStateCallback(SearchActivity.this);
-//                mPlayer.addPlayerNotificationCallback(SearchActivity.this);
-//                mPlayer.play("spotify:track:53XV0VrMvBcMBUWv5xSERU");
-//            }
-//
-//            @Override
-//            public void onError(Throwable throwable) {
-//                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-//            }
-//        });
     }
 
     @Override
@@ -371,51 +230,6 @@ public class SearchActivity extends BaseActivity implements SearchView,
     public void onBackPressed() {
         this.finish();
     }
-    // Spotify methods
-//    @Override
-//    public void onLoggedIn() {
-//        Log.d("Spotify", "User logged in");
-//    }
-//
-//    @Override
-//    public void onLoggedOut() {
-//        Log.d("Spotify", "User logged out");
-//
-//    }
-//
-//    @Override
-//    public void onLoginFailed(int i) {
-//        Log.d("Spotify", "LoginActivity failed");
-//
-//    }
-//
-//    @Override
-//    public void onTemporaryError() {
-//        Log.d("Spotify", "Temporary error occurred");
-//
-//    }
-//
-//    @Override
-//    public void onConnectionMessage(String s) {
-//        Log.d("Spotify", "Received connection message");
-//
-//    }
-
-//    /**
-//     * This method is called when a track has been selected and returns the track.
-//     * @param track The track that is selected
-//     */
-//    @Override
-//    public void onTrackSelected(Track track) {
-//        Log.d("Search Activity", "At onTrackSelected");
-//
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelable("track", Parcel.);
-//        Intent intent = new Intent();
-//        intent.putExtra("track", Parcels.wrap(track));
-//        setResult(Activity.RESULT_OK, intent);
-//        finish();
-//    }
 
     @Override
     public void onMediaSelected(MediaType mediaType) {

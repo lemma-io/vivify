@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,6 +29,7 @@ import com.rva.mrb.vivify.Model.Data.Track;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.View.Adapter.AlarmAdapter;
 import com.rva.mrb.vivify.View.Search.SearchActivity;
+import com.rva.mrb.vivify.View.Settings.SettingsActivity;
 
 
 import org.parceler.Parcels;
@@ -53,8 +55,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.standard_time) CheckBox mStandardTime;
     @BindView(R.id.shuffle) CheckBox mShuffle;
     @BindView(R.id.button_add) Button addbt;
-    @BindView(R.id.button_delete) Button deletebt;
-    @BindView(R.id.button_save) Button savebt;
+//    @BindView(R.id.button_delete) Button deletebt;
+//    @BindView(R.id.button_save) Button savebt;
     @BindView(R.id.sunday_check) CheckBox sundayCb;
     @BindView(R.id.monday_check) CheckBox mondayCb;
     @BindView(R.id.tuesday_check) CheckBox tuesdayCb;
@@ -85,6 +87,20 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.exit_alarm:
+                onDeleteAlarm();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
@@ -99,18 +115,9 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 .build();
         detailComponent.inject(this);
         ButterKnife.bind(this);
-//        actionBar = (Toolbar) findViewById(R.id.detail_toolbar);
-//        setSupportActionBar(actionBar);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        if (getActionBar() == null) {
-//            Log.d(TAG, "ToolBar is null");
-//        }
-//        else
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        Log.d("test", "ID: " + alarm.getId());
-        //check if this is a new alarm
         isNewAlarm();
     }
 
@@ -123,13 +130,11 @@ public class DetailActivity extends BaseActivity implements DetailView {
             setVisibility();
             if (bundle.getBoolean("NewAlarm", true) == false) {
                 alarm = Parcels.unwrap(getIntent().getParcelableExtra("Alarm"));
-//                Log.d("EditAlarm", alarm.getmWakeTime());
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
                 mStandardTime.setChecked(alarm.is24hr());
                 mShuffle.setChecked(alarm.isShuffle());
                 setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
-//                mEditRepeat.setText(alarm.getmcRepeat());
                 trackName = alarm.getTrackName();
                 artistName = bundle.getString("AlarmArtist");
                 trackId = alarm.getTrackId();
@@ -152,8 +157,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     private void setVisibility() {
         addbt.setVisibility(View.GONE);
-        savebt.setVisibility(View.VISIBLE);
-        deletebt.setVisibility(View.VISIBLE);
+//        savebt.setVisibility(View.VISIBLE);
+//        deletebt.setVisibility(View.VISIBLE);
     }
 
     private void setRepeatCheckBoxes(int daysOfWeek) {
@@ -210,7 +215,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be deleted
      */
-    @OnClick(R.id.button_delete)
+//    @OnClick(R.id.button_delete)
     public void onDeleteAlarm() {
         detailPresenter.onDeleteAlarm(alarm);
         finish();
@@ -219,11 +224,18 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be saved to realm
      */
-    @OnClick(R.id.button_save)
+//    @OnClick(R.id.button_save)
     public void onSaveAlarm() {
         setAlarm();
         detailPresenter.onSaveAlarm(alarm, getApplicationContext());
         finish();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        onSaveAlarm();
+        super.onBackPressed();  // optional depending on your needs
     }
 
     @OnClick(R.id.edit_time)
@@ -299,20 +311,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
         alarm.setArtist(artistName);
         alarm.setMediaType(mediaType);
     }
-
-    // Not being used
-//    public void updateAlarm(Alarm updateAlarm) {
-//        updateAlarm.setAlarmLabel(editname.getText().toString());
-//        updateAlarm.setEnabled(mIsSet.isChecked());
-//        updateAlarm.setmWakeTime(mEditTime.getText().toString());
-//        Log.d("Set", "Time: " + mEditTime.getText().toString());
-//        updateAlarm.setTime(time.getTime());
-//        updateAlarm.setDaysOfWeek(Integer.toBinaryString(repeatDays));
-//        updateAlarm.setTrackId(trackId);
-//        updateAlarm.setTrackImage(trackImage);
-//        updateAlarm.setTrackName(trackName);
-//        updateAlarm.setArtist(artistName);
-//    }
 
     /**
      * This method called when the user selects a song in SearchActivity. This method sets music info

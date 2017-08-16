@@ -77,8 +77,6 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
             }
         };
 
-//        Log.d(TAG, "All Alarms:" + alarmPresenter.getAllAlarms().first().toString());
-
         // create a new container to list all alarms
         // and set to auto update from realm results
         mAdapter = new AlarmAdapter(getApplicationContext(),
@@ -92,8 +90,9 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main, menu);
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }
