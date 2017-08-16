@@ -12,8 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.rva.mrb.vivify.AlarmApplication;
@@ -57,18 +59,12 @@ import retrofit2.Response;
 public class SearchActivity extends BaseActivity implements SearchView,
         SearchInterface {
 
-    @Inject
-    SearchPresenter searchPresenter;
-    @Inject
-    NodeService nodeService;
-    @Inject
-    SpotifyService spotifyService;
-    @BindView(R.id.search_recyclerview)
-    RecyclerView recyclerview;
-    @BindView(R.id.search_edittext)
-    TextView searchEditText;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    @Inject SearchPresenter searchPresenter;
+    @Inject NodeService nodeService;
+    @Inject SpotifyService spotifyService;
+    @BindView(R.id.search_recyclerview) RecyclerView recyclerview;
+    @BindView(R.id.search_edittext) TextView searchEditText;
+    @BindView(R.id.toolbar) Toolbar toolbar;
     private SearchAdapter searchAdapter;
     private SearchModule searchModule = new SearchModule(this);
     private ApplicationModule applicationModule = new ApplicationModule((AlarmApplication) getApplication());
@@ -93,13 +89,21 @@ public class SearchActivity extends BaseActivity implements SearchView,
         //Inititialize view and retrieve a fresh access token
         initView();
         refreshToken();
+
+        searchEditText.setOnEditorActionListener((textView, i, keyEvent) -> {
+            boolean handled = false;
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
+                onSearchClick();
+                handled = true;
+            }
+            return handled;
+        });
     }
 
     /**
      * This method initializes the view
      */
     private void initView() {
-//        recyclerview.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerview.setLayoutManager(layoutManager);
         recyclerview.setHasFixedSize(true);
@@ -171,29 +175,18 @@ public class SearchActivity extends BaseActivity implements SearchView,
                 Log.d("Error Message", response.message());
                 Search results = response.body();
                 Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                Log.d("Artist name", results.getTracks().getItems().get(0).getArtists().get(0).getName());
-//                Log.d("Track Name", results.getTracks().getItems().get(0).getName());
-//                Log.d("Artist name", results.getTracks().getItems().get(0).getArtists().get(0).getName());
-                List<MediaType> mediaTypeList = new ArrayList<MediaType>();
-                for (Track t : results.getTracks().getItems())
-                    mediaTypeList.add(new MediaType(t));
-                for (Album a : results.getAlbums().getItems())
-                    mediaTypeList.add(new MediaType(a));
-                for (Playlist a : results.getPlaylists().getItems())
-                    mediaTypeList.add(new MediaType(a));
-                for (Artist a : results.getArtists().getItems())
-                    mediaTypeList.add(new MediaType(a));
+                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
 
                 searchAdapter = new SearchAdapter(mediaTypeList);
                 List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                        new ArrayList<SimpleSectionedRecyclerViewAdapter.Section>();
+                        new ArrayList<>();
 
                 sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
                 sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
                 sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
                         results.getTracks().getItems().size(),"Playlists"));
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
+//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
+//                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
                 setInterface();
 
                 //Add your adapter to the sectionAdapter

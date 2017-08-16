@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -34,7 +33,7 @@ import io.realm.RealmResults;
 public class AlarmActivity extends BaseActivity implements AlarmsView {
 
     public static final String TAG = AlarmActivity.class.getSimpleName();
-    public static final int DetailRequest = 45;
+    public static final int DETAIL_ACTIVITY_REQUEST = 45;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.toolbar_notification) TextView alarmNotification;
@@ -67,7 +66,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         // find the next scheduled alarm
-        updateAlarmNotification();
+//        updateAlarmNotification();
 
         // custom listener listening alarm toggles
         listener = new AlarmAdapter.OnAlarmToggleListener() {
@@ -84,31 +83,26 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         mRecyclerView.setAdapter(mAdapter);
 
 
-        updateAlarmNotification();
+//        updateAlarmNotification();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.main, menu);
         getMenuInflater().inflate(R.menu.main, menu);
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.alarm_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     /**
@@ -116,7 +110,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
      * AlarmActivity
      */
     public void checkLoginStatus(){
-        Log.d("Login", "Checking login status");
+        Log.d(TAG, "Checking login status");
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         if(!sharedPreferences.getBoolean("isLoggedIn", false)) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -143,7 +137,6 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     @Override
     public void onResume() {
         super.onResume();
-//        Log.d(TAG, "Next wake time is " + alarmPresenter.getNextAlarmTime());
         mAdapter.notifyDataSetChanged();
         updateAlarmNotification();
     }
@@ -153,8 +146,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
 
     @Override
     public void showAddNewAlarmView() {
-//        startActivity(new Intent(this, DetailActivity.class));
-        startActivityForResult(new Intent(this, DetailActivity.class), DetailRequest);
+        startActivityForResult(new Intent(this, DetailActivity.class), DETAIL_ACTIVITY_REQUEST);
     }
 
     /**
@@ -181,7 +173,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == DetailRequest) {
+        if (requestCode == DETAIL_ACTIVITY_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "Result Successful");

@@ -29,7 +29,6 @@ import com.rva.mrb.vivify.Model.Data.Track;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.View.Adapter.AlarmAdapter;
 import com.rva.mrb.vivify.View.Search.SearchActivity;
-import com.rva.mrb.vivify.View.Settings.SettingsActivity;
 
 
 import org.parceler.Parcels;
@@ -49,7 +48,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @BindView(R.id.edit_name) EditText editname;
     @BindView(R.id.edit_time) EditText mEditTime;
-//    @BindView(R.id.edit_repeat) EditText mEditRepeat;
     @BindView(R.id.track_tv) TextView mTrackTv;
     @BindView(R.id.isSet) CheckBox mIsSet;
     @BindView(R.id.standard_time) CheckBox mStandardTime;
@@ -80,27 +78,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
     private AlarmAdapter.OnAlarmToggleListener alarmToggleListener;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.exit_alarm:
-                onDeleteAlarm();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
@@ -121,6 +98,24 @@ public class DetailActivity extends BaseActivity implements DetailView {
         isNewAlarm();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case R.id.exit_alarm:
+                onDeleteAlarm();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * This method programmatically shows add, save, and delete buttons
      */
@@ -130,22 +125,18 @@ public class DetailActivity extends BaseActivity implements DetailView {
             setVisibility();
             if (bundle.getBoolean("NewAlarm", true) == false) {
                 alarm = Parcels.unwrap(getIntent().getParcelableExtra("Alarm"));
+                setMediaBackgroundImage(alarm.getTrackImage());
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
                 mStandardTime.setChecked(alarm.is24hr());
                 mShuffle.setChecked(alarm.isShuffle());
-                setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
                 trackName = alarm.getTrackName();
-                artistName = bundle.getString("AlarmArtist");
+                artistName = alarm.getArtistName();
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
-                Glide.with(getApplicationContext())
-                        .load(alarm.getTrackImage())
-                        .centerCrop()
-                        .into(alarmDetailBg);
-                Log.d("trackImageDA", "track image url: " + trackImage);
                 setTrackTv();
+                setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
             }
         } else {
             // TODO fill with default settings for new alarm
@@ -155,12 +146,20 @@ public class DetailActivity extends BaseActivity implements DetailView {
         }
     }
 
+    private void setMediaBackgroundImage(String trackImage) {
+        Glide.with(getApplicationContext())
+                .load(trackImage)
+                .centerCrop()
+                .into(alarmDetailBg);
+    }
+
     private void setVisibility() {
         addbt.setVisibility(View.GONE);
 //        savebt.setVisibility(View.VISIBLE);
 //        deletebt.setVisibility(View.VISIBLE);
     }
 
+    // TODO handle by presenter
     private void setRepeatCheckBoxes(int daysOfWeek) {
         if ((daysOfWeek & Alarm.SUNDAY) == Alarm.SUNDAY)
             sundayCb.setChecked(true);
@@ -201,7 +200,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
      */
     @OnClick(R.id.button_add)
     public void onAddClick() {
-        Log.d("label",editname.getText().toString());
         setAlarm();
         detailPresenter.onAddClick(alarm, getApplicationContext());
 
@@ -325,6 +323,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
             if(resultCode == RESULT_OK){
                 MediaType type = Parcels.unwrap(data.getParcelableExtra("track"));
                 mediaType = type.getMediaType();
+                // todo handle by presenter
                 switch (type.getMediaType()) {
                     case MediaType.TRACK_TYPE:
                         Track track = type.getTrack();
@@ -356,12 +355,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                         trackImage = playlist.getImages().get(0).getUrl();
                         break;
                 }
-//                Track track = Parcels.unwrap(data.getParcelableExtra("track"));
-//                Log.d("onActivityResult", track.getName());
-//                trackName = track.getName();
-//                artistName = track.getArtists().get(0).getName();
-//                trackId = track.getId();
-//                trackImage = track.getAlbum().getImages().get(1).getUrl();
+                setMediaBackgroundImage(trackImage);
                 setTrackTv();
             }
         }

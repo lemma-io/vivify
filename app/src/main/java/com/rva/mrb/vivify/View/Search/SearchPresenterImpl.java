@@ -1,6 +1,15 @@
 package com.rva.mrb.vivify.View.Search;
 
+import com.rva.mrb.vivify.Model.Data.Album;
+import com.rva.mrb.vivify.Model.Data.Artist;
+import com.rva.mrb.vivify.Model.Data.MediaType;
+import com.rva.mrb.vivify.Model.Data.Playlist;
+import com.rva.mrb.vivify.Model.Data.Search;
+import com.rva.mrb.vivify.Model.Data.Track;
 import com.rva.mrb.vivify.Model.Service.RealmService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchPresenterImpl implements SearchPresenter{
 
@@ -23,5 +32,19 @@ public class SearchPresenterImpl implements SearchPresenter{
     @Override
     public void closeRealm() {
         mRealmService.closeRealm();
+    }
+
+    @Override
+    public List<MediaType> setupMediaList(Search results) {
+        List<MediaType> mediaTypeList = new ArrayList<>();
+        for (Track t : results.getTracks().getItems())
+            mediaTypeList.add(new MediaType(t));
+        for (Album a : results.getAlbums().getItems())
+            mediaTypeList.add(new MediaType(a));
+        for (Playlist a : results.getPlaylists().getItems())
+            mediaTypeList.add(new MediaType(a));
+//        for (Artist a : results.getArtists().getItems())
+//            mediaTypeList.add(new MediaType(a));
+        return mediaTypeList;
     }
 }

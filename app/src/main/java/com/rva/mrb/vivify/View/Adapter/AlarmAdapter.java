@@ -74,33 +74,26 @@ public class AlarmAdapter extends
                 .centerCrop()
                 .into(viewHolder.alarmBg);
         viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
-        viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Log.d(TAG, "Success!");
-                Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
-                Intent intent = new Intent(view.getContext(), DetailActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("NewAlarm", false);
-                intent.putExtra("AlarmArtist", alarm.getArtistName());
-                intent.putExtra("Alarm", Parcels.wrap(alarm));
-                view.getContext().startActivity(intent);
-                disposable.dispose();
-                Log.d(TAG, "disposable is " + disposable.isDisposed());
-            }
+        viewHolder.cardView.setOnClickListener(view -> {
+            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
+            Intent intent = new Intent(view.getContext(), DetailActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("NewAlarm", false);
+//            intent.putExtra("AlarmArtist", alarm.getArtistName());
+            intent.putExtra("Alarm", Parcels.wrap(alarm));
+            view.getContext().startActivity(intent);
+            disposable.dispose();
+            Log.d(TAG, "disposable is " + disposable.isDisposed());
         });
-        viewHolder.isSet.setOnClickListener(new Switch.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Toggle alarm id: " + alarm.getId());
-                AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
-                if (alarm.isEnabled()) {
-                    viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
-                } else {
-                    viewHolder.alarmTimer.setText("");
-                }
-                alarmToggleListener.onAlarmToggle();
+        viewHolder.isSet.setOnClickListener(v -> {
+            Log.d(TAG, "Toggle alarm id: " + alarm.getId());
+            AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
+            if (alarm.isEnabled()) {
+                viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
+            } else {
+                viewHolder.alarmTimer.setText("");
             }
+            alarmToggleListener.onAlarmToggle();
         });
 
         if (alarm.isValid()) {
@@ -119,10 +112,9 @@ public class AlarmAdapter extends
 
     private String getTimeUntil(Date time) {
         long millis = time.getTime() - System.currentTimeMillis();
-        String timeStr = TimeUnit.MILLISECONDS.toHours(millis) + "hrs " +
+        return TimeUnit.MILLISECONDS.toHours(millis) + "hrs " +
                 (TimeUnit.MILLISECONDS.toMinutes(millis) -
                         TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))) +"mins";
-        return timeStr;
     }
 
     public class ViewHolder extends RealmViewHolder {
