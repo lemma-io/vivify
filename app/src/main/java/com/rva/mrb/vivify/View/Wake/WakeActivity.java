@@ -31,11 +31,16 @@ import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,9 +78,11 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private Ringtone r;
     private AudioManager am;
     private Context mContext;
+    private SharedPreferences sharedPref;
     private AudioManager.OnAudioFocusChangeListener amFocusListener;
     private AudioTrackController audioTrackController;
     private Player.OperationCallback operationCallback;
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +115,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         mContext = getApplicationContext();
         am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_ALARM);
-
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        handleRingVolume();
         audioTrackController = new AudioTrackController();
         //Get trackId and image URL from Bundle
         Bundle extras = getIntent().getExtras();
@@ -157,6 +165,29 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     }
 
+    public void handleRingVolume() {
+        int fadein = Integer.parseInt(sharedPref.getString("fadein_key", "30"));
+        Log.d("wake max volume: ", Integer.toString(am.getStreamMaxVolume(AudioManager.STREAM_ALARM)));
+        double remainder = (fadein % am.getStreamMaxVolume(AudioManager.STREAM_ALARM))/7.0;
+        int remain = ((int) (remainder*1000));
+        Log.d("remain: ", Integer.toString(remain));
+        if(fadein != 0) {
+            am.setStreamVolume(AudioManager.STREAM_ALARM, 0, 0);
+            disposable = Flowable.interval((fadein / am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) * 1000 + (remain), TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(along -> {
+                        am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
+                        Log.d("current volume ", Integer.toString(am.getStreamVolume(AudioManager.STREAM_ALARM)));
+                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) == am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) {
+                            disposable.dispose();
+                        }
+                    });
+        }
+        else {
+            am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
+        }
+
+    }
     /*
     This method is called when the user dismisses the alarm. It cancels the alarm and pauses the
     player.
@@ -184,7 +215,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
      */
     public void onSnooze() {
         mPlayer.pause(operationCallback);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         int snoozeMins = Integer.parseInt(sharedPref.getString("snooze_key", "5"));
         int snoozeTime = snoozeMins * 60000;
         Log.d("snooze", "Snooze time in mins: " + snoozeMins);

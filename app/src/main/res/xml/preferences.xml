@@ -14,6 +14,14 @@
         android:entryValues="@array/snoozeValues"
         android:defaultValue="5"/>
 
+    <ListPreference
+        android:key="fadein_key"
+        android:title="Fade in Duration"
+        android:entries="@array/fadeinIntervals"
+        android:entryValues="@array/fadeinValues"
+        android:defaultValue="30"/>
+
+
     <CheckBoxPreference
         android:key="wifi_only_key"
         android:title="Wifi Only"
