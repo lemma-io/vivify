@@ -4,6 +4,7 @@ import com.rva.mrb.vivify.Model.Data.Album;
 import com.rva.mrb.vivify.Model.Data.Artist;
 import com.rva.mrb.vivify.Model.Data.MediaType;
 import com.rva.mrb.vivify.Model.Data.Playlist;
+import com.rva.mrb.vivify.Model.Data.PlaylistPager;
 import com.rva.mrb.vivify.Model.Data.Search;
 import com.rva.mrb.vivify.Model.Data.Track;
 import com.rva.mrb.vivify.Model.Service.RealmService;
@@ -45,6 +46,15 @@ public class SearchPresenterImpl implements SearchPresenter{
             mediaTypeList.add(new MediaType(a));
 //        for (Artist a : results.getArtists().getItems())
 //            mediaTypeList.add(new MediaType(a));
+        return mediaTypeList;
+    }
+
+    @Override
+    public List<MediaType> setupMediaList(PlaylistPager results){
+        List<MediaType> mediaTypeList = new ArrayList<>();
+        for (Playlist p : results.getItems()){
+            mediaTypeList.add(new MediaType(p));
+        }
         return mediaTypeList;
     }
 }

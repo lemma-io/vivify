@@ -26,9 +26,11 @@ import com.rva.mrb.vivify.Model.Data.Album;
 import com.rva.mrb.vivify.Model.Data.Artist;
 import com.rva.mrb.vivify.Model.Data.MediaType;
 import com.rva.mrb.vivify.Model.Data.Playlist;
+import com.rva.mrb.vivify.Model.Data.PlaylistPager;
 import com.rva.mrb.vivify.Model.Data.Search;
 import com.rva.mrb.vivify.Model.Data.SimpleTrack;
 import com.rva.mrb.vivify.Model.Data.Track;
+import com.rva.mrb.vivify.Model.Data.User;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.rva.mrb.vivify.Spotify.SpotifyService;
 import com.rva.mrb.vivify.R;
@@ -98,6 +100,7 @@ public class SearchActivity extends BaseActivity implements SearchView,
             }
             return handled;
         });
+
     }
 
     /**
@@ -109,13 +112,39 @@ public class SearchActivity extends BaseActivity implements SearchView,
         recyclerview.setHasFixedSize(true);
     }
 
+    public void setUserPlaylists() {
+        spotifyService.getMyPlaylists().enqueue(new Callback<PlaylistPager>() {
+            @Override
+            public void onResponse(Call<PlaylistPager> call, Response<PlaylistPager> response) {
+                Log.d("response", response.message());
+                PlaylistPager myPlaylists = response.body();
+
+                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(myPlaylists);
+                searchAdapter = new SearchAdapter(mediaTypeList);
+                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+                        new ArrayList<>();
+                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"My Playlists"));
+                setInterface();
+                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
+                mSectionedAdapter.setSections(sections.toArray(dummy));
+                recyclerview.setAdapter(mSectionedAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<PlaylistPager> call, Throwable t) {
+
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_menu, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -152,6 +181,7 @@ public class SearchActivity extends BaseActivity implements SearchView,
             public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                 AccessToken results = response.body();
                 applicationModule.setAccessToken(results.getAccessToken());
+                setUserPlaylists();
             }
 
             @Override
