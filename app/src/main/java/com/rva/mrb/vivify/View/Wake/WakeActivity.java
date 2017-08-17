@@ -49,6 +49,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     @BindView(R.id.myseek) SeekBar seekBar;
     @BindView(R.id.trackImageView) ImageView trackIV;
     @BindView(R.id.next_song) ImageButton fastForward;
+    @BindView(R.id.wake_media_info) TextView mediaInfo;
+    @BindView(R.id.wake_time) TextView clock;
     @Inject
     WakePresenter wakePresenter;
     @Inject
@@ -125,6 +127,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             Log.d("PlayAlbum", "Alarm created");
 //            alarm = RealmService.getAlarmById(alarmId);
             playlistID = alarm.getArtistName();
+            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
 
             //Use Glide to load image URL
             Glide.with(this)
