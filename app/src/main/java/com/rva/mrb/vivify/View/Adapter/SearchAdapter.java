@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.rva.mrb.vivify.Model.Data.Album;
 import com.rva.mrb.vivify.Model.Data.Artist;
 import com.rva.mrb.vivify.Model.Data.MediaType;
@@ -95,14 +97,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     final Track t = type.getTrack();
                     Log.d("BindTrack", "Holder viewtype: " + type.getMediaType());
                     TrackViewHolder viewTrackHolder = (TrackViewHolder) holder;
+                    Glide.with(viewTrackHolder.itemView.getContext())
+                            .load(t.getAlbum().getImages().get(0).getUrl())
+                            .fitCenter()
+                            .into(viewTrackHolder.trackArt);
                     viewTrackHolder.trackName.setText(t.getName()
                             + "\n" + t.getArtists().get(0).getName());
-                    viewTrackHolder.cardView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.d("Search cardView", "Successful track click");
-                            searchInterface.onMediaSelected(new MediaType(t));
-                        }
+                    viewTrackHolder.cardView.setOnClickListener(view -> {
+                        Log.d("Search cardView", "Successful track click");
+                        searchInterface.onMediaSelected(new MediaType(t));
                     });
                     break;
                 case MediaType.ALBUM_TYPE:
@@ -110,13 +113,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     Log.d("BindAlbum", "Holder viewtyep: " + holder.getItemViewType());
                     AlbumViewHolder viewAlbumHolder;
                     viewAlbumHolder = (AlbumViewHolder) holder;
+                    Glide.with(viewAlbumHolder.itemView.getContext())
+                            .load(a.getImages().get(0).getUrl())
+                            .fitCenter()
+                            .into(viewAlbumHolder.albumArt);
                     viewAlbumHolder.albumName.setText(a.getName()+ "\n" + a.getArtists().get(0).getName());
-                    viewAlbumHolder.cardView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.d("Search cardView", "Successful album click");
-                            searchInterface.onMediaSelected(new MediaType(a));
-                        }
+                    viewAlbumHolder.cardView.setOnClickListener(view -> {
+                        Log.d("Search cardView", "Successful album click");
+                        searchInterface.onMediaSelected(new MediaType(a));
                     });
                     break;
                 case MediaType.PLAYLIST_TYPE:
@@ -124,13 +128,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     Log.d("BindPlaylist", "Holder viewtype: " + type.getMediaType());
                     PlaylistViewHolder viewPlayListHolder;
                     viewPlayListHolder = (PlaylistViewHolder) holder;
+                    Glide.with(viewPlayListHolder.itemView.getContext())
+                            .load(p.getImages().get(0).getUrl())
+                            .fitCenter()
+                            .into(viewPlayListHolder.playlistArt);
                     viewPlayListHolder.playlistName.setText(p.getName());
-                    viewPlayListHolder.cardView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.d("Search cardView", "Successful click");
-                            searchInterface.onMediaSelected(new MediaType(p));
-                        }
+                    viewPlayListHolder.cardView.setOnClickListener(view -> {
+                        Log.d("Search cardView", "Successful click");
+                        searchInterface.onMediaSelected(new MediaType(p));
                     });
                     break;
 
@@ -140,39 +145,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     ArtistViewHolder viewArtistHolder;
                     viewArtistHolder = (ArtistViewHolder) holder;
                     viewArtistHolder.artistName.setText(artist.getName());
-                    viewArtistHolder.cardView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.d("Search cardView", "Successful click");
-                            searchInterface.onMediaSelected(new MediaType(artist));
-                        }
+                    viewArtistHolder.cardView.setOnClickListener(view -> {
+                        Log.d("Search cardView", "Successful click");
+                        searchInterface.onMediaSelected(new MediaType(artist));
                     });
                     break;
             }
         }
-//        switch (holder.getItemViewType()-1) {
-//            case TRACK:
-//                final Track t  = (Track) items.get(position);
-//                Log.d("BindTrack", "Holder viewtyep: " + holder.getItemViewType());
-//                TrackViewHolder viewTrackHolder = (TrackViewHolder) holder;
-//                viewTrackHolder.trackName.setText(t.getName()
-//                        + "\n" + t.getArtists().get(0).getName());
-//                viewTrackHolder.cardView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        Log.d("Search cardView", "Successful click");
-//                        searchInterface.onTrackSelected(t);
-//                    }
-//                });
-//                break;
-//            default:
-//                final Album a = (Album) items.get(position);
-//                Log.d("BindAlbum", "Holder viewtyep: " + holder.getItemViewType());
-//                AlbumViewHolder viewAlbumHolder;
-//                viewAlbumHolder = (AlbumViewHolder) holder;
-//                viewAlbumHolder.albumName.setText(a.getName()+ "\n") ;
-//                break;
-//        }
     }
 
     @Override
@@ -194,6 +173,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         @BindView(R.id.album_name) TextView albumName;
         @BindView(R.id.artist_name) TextView artistName;
         @BindView(R.id.card_search) CardView cardView;
+        @BindView(R.id.album_card_art) ImageView albumArt;
         public AlbumViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -204,6 +184,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         @BindView(R.id.playlist_name) TextView playlistName;
         @BindView(R.id.playlist_owner) TextView playlist_owner;
         @BindView(R.id.card_search) CardView cardView;
+        @BindView(R.id.playlist_card_art) ImageView playlistArt;
         public PlaylistViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -214,6 +195,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         @BindView(R.id.track_name) TextView trackName;
         @BindView(R.id.track_artist_name) TextView artistName;
         @BindView(R.id.card_search) CardView cardView;
+        @BindView(R.id.track_card_art) ImageView trackArt;
         public TrackViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -238,16 +220,5 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                 return mediaType.getMediaType();
         }
         return 0;
-
-//        if (items.get(position) instanceof Track) {
-//            Log.d("getItemViewType", "Type: 0, Track: ");
-//            return TRACK;
-//        }
-//        else if (items.get(position) instanceof Album) {
-//            Log.d("getItemViewType", "Type: 1, Album ");
-//            return ALBUM;
-//        }
-//        else
-//            return -1;
     }
 }

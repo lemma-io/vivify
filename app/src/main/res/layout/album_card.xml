@@ -10,12 +10,18 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="10dp">
 
+        <ImageView
+            android:id="@+id/album_card_art"
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:paddingRight="5dip"/>
         <TextView
             android:id="@+id/album_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingTop="10dip"/>
 
         <TextView
             android:id="@+id/artist_name"

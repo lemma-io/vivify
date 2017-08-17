@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.bumptech.glide.Glide;
 import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
@@ -43,14 +48,13 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @BindView(R.id.edit_name) EditText editname;
     @BindView(R.id.edit_time) EditText mEditTime;
-//    @BindView(R.id.edit_repeat) EditText mEditRepeat;
     @BindView(R.id.track_tv) TextView mTrackTv;
     @BindView(R.id.isSet) CheckBox mIsSet;
     @BindView(R.id.standard_time) CheckBox mStandardTime;
     @BindView(R.id.shuffle) CheckBox mShuffle;
     @BindView(R.id.button_add) Button addbt;
-    @BindView(R.id.button_delete) Button deletebt;
-    @BindView(R.id.button_save) Button savebt;
+//    @BindView(R.id.button_delete) Button deletebt;
+//    @BindView(R.id.button_save) Button savebt;
     @BindView(R.id.sunday_check) CheckBox sundayCb;
     @BindView(R.id.monday_check) CheckBox mondayCb;
     @BindView(R.id.tuesday_check) CheckBox tuesdayCb;
@@ -58,6 +62,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.thursday_check) CheckBox thursdayCb;
     @BindView(R.id.friday_check) CheckBox fridayCb;
     @BindView(R.id.saturday_check) CheckBox saturdayCb;
+    @BindView(R.id.alarm_detail_bg) ImageView alarmDetailBg;
     private String trackName;
     private String artistName;
     private String trackId;
@@ -72,11 +77,12 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @Inject DetailPresenter detailPresenter;
     private AlarmAdapter.OnAlarmToggleListener alarmToggleListener;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);
 
         //inject dagger and butterknife dependencies
         DetailComponent detailComponent = DaggerDetailComponent.builder()
@@ -86,10 +92,28 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 .build();
         detailComponent.inject(this);
         ButterKnife.bind(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        Log.d("test", "ID: " + alarm.getId());
-        //check if this is a new alarm
         isNewAlarm();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case R.id.exit_alarm:
+                onDeleteAlarm();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -101,20 +125,18 @@ public class DetailActivity extends BaseActivity implements DetailView {
             setVisibility();
             if (bundle.getBoolean("NewAlarm", true) == false) {
                 alarm = Parcels.unwrap(getIntent().getParcelableExtra("Alarm"));
-//                Log.d("EditAlarm", alarm.getmWakeTime());
+                setMediaBackgroundImage(alarm.getTrackImage());
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
                 mStandardTime.setChecked(alarm.is24hr());
                 mShuffle.setChecked(alarm.isShuffle());
-                setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
-//                mEditRepeat.setText(alarm.getmcRepeat());
                 trackName = alarm.getTrackName();
-                artistName = bundle.getString("AlarmArtist");
+                artistName = alarm.getArtistName();
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
-                Log.d("trackImageDA", "track image url: " + trackImage);
                 setTrackTv();
+                setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
             }
         } else {
             // TODO fill with default settings for new alarm
@@ -124,12 +146,20 @@ public class DetailActivity extends BaseActivity implements DetailView {
         }
     }
 
-    private void setVisibility() {
-        addbt.setVisibility(View.GONE);
-        savebt.setVisibility(View.VISIBLE);
-        deletebt.setVisibility(View.VISIBLE);
+    private void setMediaBackgroundImage(String trackImage) {
+        Glide.with(getApplicationContext())
+                .load(trackImage)
+                .centerCrop()
+                .into(alarmDetailBg);
     }
 
+    private void setVisibility() {
+        addbt.setVisibility(View.GONE);
+//        savebt.setVisibility(View.VISIBLE);
+//        deletebt.setVisibility(View.VISIBLE);
+    }
+
+    // TODO handle by presenter
     private void setRepeatCheckBoxes(int daysOfWeek) {
         if ((daysOfWeek & Alarm.SUNDAY) == Alarm.SUNDAY)
             sundayCb.setChecked(true);
@@ -170,7 +200,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
      */
     @OnClick(R.id.button_add)
     public void onAddClick() {
-        Log.d("label",editname.getText().toString());
         setAlarm();
         detailPresenter.onAddClick(alarm, getApplicationContext());
 
@@ -184,7 +213,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be deleted
      */
-    @OnClick(R.id.button_delete)
+//    @OnClick(R.id.button_delete)
     public void onDeleteAlarm() {
         detailPresenter.onDeleteAlarm(alarm);
         finish();
@@ -193,11 +222,18 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be saved to realm
      */
-    @OnClick(R.id.button_save)
+//    @OnClick(R.id.button_save)
     public void onSaveAlarm() {
         setAlarm();
         detailPresenter.onSaveAlarm(alarm, getApplicationContext());
         finish();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        onSaveAlarm();
+        super.onBackPressed();  // optional depending on your needs
     }
 
     @OnClick(R.id.edit_time)
@@ -274,20 +310,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
         alarm.setMediaType(mediaType);
     }
 
-    // Not being used
-//    public void updateAlarm(Alarm updateAlarm) {
-//        updateAlarm.setAlarmLabel(editname.getText().toString());
-//        updateAlarm.setEnabled(mIsSet.isChecked());
-//        updateAlarm.setmWakeTime(mEditTime.getText().toString());
-//        Log.d("Set", "Time: " + mEditTime.getText().toString());
-//        updateAlarm.setTime(time.getTime());
-//        updateAlarm.setDaysOfWeek(Integer.toBinaryString(repeatDays));
-//        updateAlarm.setTrackId(trackId);
-//        updateAlarm.setTrackImage(trackImage);
-//        updateAlarm.setTrackName(trackName);
-//        updateAlarm.setArtist(artistName);
-//    }
-
     /**
      * This method called when the user selects a song in SearchActivity. This method sets music info
      * to the alarm object
@@ -301,6 +323,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
             if(resultCode == RESULT_OK){
                 MediaType type = Parcels.unwrap(data.getParcelableExtra("track"));
                 mediaType = type.getMediaType();
+                // todo handle by presenter
                 switch (type.getMediaType()) {
                     case MediaType.TRACK_TYPE:
                         Track track = type.getTrack();
@@ -332,12 +355,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                         trackImage = playlist.getImages().get(0).getUrl();
                         break;
                 }
-//                Track track = Parcels.unwrap(data.getParcelableExtra("track"));
-//                Log.d("onActivityResult", track.getName());
-//                trackName = track.getName();
-//                artistName = track.getArtists().get(0).getName();
-//                trackId = track.getId();
-//                trackImage = track.getAlbum().getImages().get(1).getUrl();
+                setMediaBackgroundImage(trackImage);
                 setTrackTv();
             }
         }
