@@ -128,10 +128,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                     Log.d("BindPlaylist", "Holder viewtype: " + type.getMediaType());
                     PlaylistViewHolder viewPlayListHolder;
                     viewPlayListHolder = (PlaylistViewHolder) holder;
-                    Glide.with(viewPlayListHolder.itemView.getContext())
-                            .load(p.getImages().get(0).getUrl())
-                            .fitCenter()
-                            .into(viewPlayListHolder.playlistArt);
+                    if(p.getImages().size() > 0) {
+                        Glide.with(viewPlayListHolder.itemView.getContext())
+                                .load(p.getImages().get(0).getUrl())
+                                .fitCenter()
+                                .into(viewPlayListHolder.playlistArt);
+                    }
                     viewPlayListHolder.playlistName.setText(p.getName());
                     viewPlayListHolder.cardView.setOnClickListener(view -> {
                         Log.d("Search cardView", "Successful click");
