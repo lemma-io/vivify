@@ -26,7 +26,7 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
     }
 
 
-    public String getNextAlarmTime() {
+    public Alarm getNextAlarmTime() {
         return mRealmService.getNextAlarm();
     }
 

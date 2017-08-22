@@ -21,6 +21,10 @@
         android:entryValues="@array/fadeinValues"
         android:defaultValue="30"/>
 
+    <CheckBoxPreference
+        android:key="notification_key"
+        android:title="Allow Upcoming Alarm Notification"
+        android:defaultValue="true"/>
 
     <CheckBoxPreference
         android:key="wifi_only_key"

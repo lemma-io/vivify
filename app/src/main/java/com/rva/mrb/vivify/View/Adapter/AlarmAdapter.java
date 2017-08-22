@@ -62,7 +62,7 @@ public class AlarmAdapter extends
     @Override
     public void onBindRealmViewHolder(
             final AlarmAdapter.ViewHolder viewHolder, final int position) {
-
+        dispose(viewHolder);
         final Alarm alarm = realmResults.get(position);
         viewHolder.timeTv.setText(alarm.getmWakeTime());
         viewHolder.nameTv.setText(alarm.getAlarmLabel());
@@ -79,37 +79,51 @@ public class AlarmAdapter extends
             Intent intent = new Intent(view.getContext(), DetailActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("NewAlarm", false);
-//            intent.putExtra("AlarmArtist", alarm.getArtistName());
+            intent.putExtra("AlarmArtist", alarm.getArtistName());
             intent.putExtra("Alarm", Parcels.wrap(alarm));
             view.getContext().startActivity(intent);
-            disposable.dispose();
-            Log.d(TAG, "disposable is " + disposable.isDisposed());
+            viewHolder.disposable.dispose();
+
         });
         viewHolder.isSet.setOnClickListener(v -> {
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
-            if (alarm.isEnabled()) {
-                viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
-            } else {
-                viewHolder.alarmTimer.setText("");
-            }
+            setAlarmTimer(alarm, viewHolder);
             alarmToggleListener.onAlarmToggle();
         });
 
         if (alarm.isValid()) {
-            disposable = Flowable.interval(1000L, TimeUnit.MILLISECONDS)
+            setAlarmTimer(alarm, viewHolder);
+            viewHolder.disposable = Flowable.interval(1000L, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(along -> {
-                        if (alarm.isValid()) {
-                            if (alarm.isEnabled())
-                                viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
-                            else
-                                viewHolder.alarmTimer.setText("");
-                        }
+                        setAlarmTimer(alarm, viewHolder);
                     });
         }
     }
 
+    public void setAlarmTimer(Alarm alarm, ViewHolder viewHolder) {
+        if (alarm.isValid()) {
+            if (alarm.isEnabled()) {
+                if (alarm.isSnoozed()){
+                    viewHolder.alarmTimer.setText(getTimeUntil(alarm.getSnoozedAt()));
+                }
+                else {
+                    viewHolder.alarmTimer.setText(getTimeUntil(alarm.getTime()));
+                }
+            }
+            else
+                viewHolder.alarmTimer.setText("");
+        }
+    }
+
+    public void dispose(ViewHolder viewHolder) {
+        if(viewHolder.disposable != null) {
+            Log.d("alarmadapter", "disposing");
+            viewHolder.disposable.dispose();
+            viewHolder.alarmTimer.setText("");
+        }
+    }
     private String getTimeUntil(Date time) {
         long millis = time.getTime() - System.currentTimeMillis();
         return TimeUnit.MILLISECONDS.toHours(millis) + "hrs " +
@@ -126,6 +140,7 @@ public class AlarmAdapter extends
         @BindView(R.id.alarm_media_info) TextView mediaInfoTv;
         @BindView(R.id.alarm_bg) ImageView alarmBg;
         @BindView(R.id.alarm_timer) TextView alarmTimer;
+        Disposable disposable;
 
         public ViewHolder(View itemView) {
             super(itemView);

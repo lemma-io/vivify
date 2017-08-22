@@ -1,11 +1,15 @@
 package com.rva.mrb.vivify.View.Alarm;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +21,7 @@ import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
 import com.rva.mrb.vivify.Model.Data.Alarm;
+import com.rva.mrb.vivify.Model.Service.NotificationService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.View.Adapter.AlarmAdapter;
 import com.rva.mrb.vivify.View.Detail.DetailActivity;
@@ -39,9 +44,10 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     @BindView(R.id.toolbar_notification) TextView alarmNotification;
     @BindView(R.id.recyclerview) RealmRecyclerView mRecyclerView;
     @Inject AlarmsPresenter alarmPresenter;
-
+    private NotificationService mNotificationService;
     private AlarmAdapter mAdapter;
     private AlarmAdapter.OnAlarmToggleListener listener;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +67,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
 
         //init default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
+        context = getApplicationContext();
         // set our own toolbar and disable the default app name title
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -81,8 +87,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         mAdapter = new AlarmAdapter(getApplicationContext(),
                 alarmPresenter.getAllAlarms(), listener, true, true);
         mRecyclerView.setAdapter(mAdapter);
-
-
+        mNotificationService = new NotificationService(context);
 //        updateAlarmNotification();
     }
 
@@ -158,7 +163,21 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     }
 
     public void updateAlarmNotification() {
-        alarmNotification.setText(alarmPresenter.getNextAlarmTime());
+        Alarm nextAlarm = alarmPresenter.getNextAlarmTime();
+
+        if (nextAlarm!=null){
+            if(nextAlarm.isSnoozed()) {
+                alarmNotification.setText(nextAlarm.getSnoozedAt() + "");
+            }
+            else {
+                alarmNotification.setText(nextAlarm.getTime() + "");
+            }
+            mNotificationService.setNotification(nextAlarm.getTime() +"", nextAlarm.isSnoozed());
+        }
+        else {
+            mNotificationService.cancelNotification();
+            alarmNotification.setText("No Alarms Set");
+        }
     }
 
     public void closeRealm(){

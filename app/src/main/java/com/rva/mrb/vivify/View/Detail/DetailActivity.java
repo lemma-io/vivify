@@ -52,6 +52,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.isSet) CheckBox mIsSet;
     @BindView(R.id.standard_time) CheckBox mStandardTime;
     @BindView(R.id.shuffle) CheckBox mShuffle;
+    @BindView(R.id.vibrate) CheckBox mVibrate;
     @BindView(R.id.button_add) Button addbt;
 //    @BindView(R.id.button_delete) Button deletebt;
 //    @BindView(R.id.button_save) Button savebt;
@@ -112,6 +113,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 onDeleteAlarm();
                 return true;
             default:
+                onSaveAlarm();
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -130,8 +132,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 mIsSet.setChecked(alarm.isEnabled());
                 mStandardTime.setChecked(alarm.is24hr());
                 mShuffle.setChecked(alarm.isShuffle());
+                mVibrate.setChecked(alarm.isVibrate());
                 trackName = alarm.getTrackName();
-                artistName = alarm.getArtistName();
+                artistName = bundle.getString("AlarmArtist");
+//                artistName = alarm.getArtistName();
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
@@ -215,7 +219,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
      */
 //    @OnClick(R.id.button_delete)
     public void onDeleteAlarm() {
-        detailPresenter.onDeleteAlarm(alarm);
+        detailPresenter.onDeleteAlarm(getApplicationContext(), alarm);
         finish();
     }
 
@@ -301,12 +305,15 @@ public class DetailActivity extends BaseActivity implements DetailView {
         alarm.setEnabled(mIsSet.isChecked());
         alarm.setmWakeTime(mEditTime.getText().toString());
         alarm.setShuffle(mShuffle.isChecked());
+        alarm.setVibrate(mVibrate.isChecked());
         Log.d("Set", "Time: " + alarm.getTime());
         alarm.setDaysOfWeek(Integer.toBinaryString(repeatDays));
         alarm.setTrackId(trackId);
         alarm.setTrackImage(trackImage);
         alarm.setTrackName(trackName);
+        Log.d("Set", "artist: " + artistName);
         alarm.setArtist(artistName);
+        Log.d("Set", "get artist: " + alarm.getArtistName());
         alarm.setMediaType(mediaType);
     }
 

@@ -47,6 +47,8 @@ public class Alarm extends RealmObject {
     private int mediaType;
     private boolean snoozed;
     private boolean shuffle;
+    private Date snoozedAt;
+    private boolean vibrate;
 
     public Alarm() {
     }
@@ -340,4 +342,12 @@ public class Alarm extends RealmObject {
     public void setShuffle(boolean shuffle) { this.shuffle = shuffle; }
 
     public boolean isShuffle() { return shuffle; }
+
+    public Date getSnoozedAt() { return snoozedAt; }
+
+    public void setSnoozedAt(Date snoozedAt) { this.snoozedAt = snoozedAt; }
+
+    public boolean isVibrate() { return vibrate; }
+
+    public void setVibrate(boolean vibrate) { this.vibrate = vibrate; }
 }

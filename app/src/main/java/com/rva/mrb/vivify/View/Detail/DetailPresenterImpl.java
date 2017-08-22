@@ -33,7 +33,11 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
     }
 
     @Override
-    public void onDeleteAlarm(Alarm alarm) {
+    public void onDeleteAlarm(Context context, Alarm alarm) {
+        AlarmScheduler.disableAlarm(context, alarm.getId());
+        if(alarm.isSnoozed()){
+            AlarmScheduler.cancelSnoozedAlarm(context);
+        }
         mRealmService.deleteAlarm(alarm);
     }
 
@@ -47,7 +51,11 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
         Date d = getDate(alarm);
         alarm.setTime(d);
         Log.d("DetailPresenter", "date: " + alarm.getTime());
+        Log.d("DetailPresenter", "artist: " + alarm.getArtistName());
         mRealmService.saveAlarm(alarm);
+        if(alarm.isSnoozed()){
+            AlarmScheduler.cancelSnoozedAlarm(applicationContext);
+        }
         AlarmScheduler.setNextAlarm(applicationContext);
     }
 
@@ -89,20 +97,20 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
         mRealmService.addAlarm(alarm);
         mRealmService.updateAlarms();
         AlarmScheduler.setNextAlarm(applicationContext);
-        if (alarm.isEnabled()) {
-            String newestAlarmId;
-            try {
-                newestAlarmId = mRealmService.getNewestAlarmId();
-                Log.d("New", "Alarm id is: " + newestAlarmId);
-            } catch (Exception e) {
-                Log.e(TAG, "Alarm not found, trying againg. " + e.getMessage());
-                newestAlarmId = mRealmService.getNewestAlarmId();
-            }
-            if (newestAlarmId != null) {
-                Log.d("realm", "Alarm id: " + newestAlarmId); // getAlarm.last()
-//                AlarmScheduler.enableAlarmById(context, newestAlarmId);
-            }
-        }
+//        if (alarm.isEnabled()) {
+//            String newestAlarmId;
+//            try {
+//                newestAlarmId = mRealmService.getNewestAlarmId();
+//                Log.d("New", "Alarm id is: " + newestAlarmId);
+//            } catch (Exception e) {
+//                Log.e(TAG, "Alarm not found, trying againg. " + e.getMessage());
+//                newestAlarmId = mRealmService.getNewestAlarmId();
+//            }
+//            if (newestAlarmId != null) {
+//                Log.d("realm", "Alarm id: " + newestAlarmId); // getAlarm.last()
+////                AlarmScheduler.enableAlarmById(context, newestAlarmId);
+//            }
+//        }
     }
 
     public String getCurrentTime() {
