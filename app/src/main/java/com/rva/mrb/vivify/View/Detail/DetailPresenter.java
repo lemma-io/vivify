@@ -12,7 +12,7 @@ public interface DetailPresenter extends BasePresenter<DetailView>{
     void onAddClick(Alarm alarm, Context applicationContext);
     Alarm getAlarm(String index);
     void onDeleteAlarm(String alarmid);
-    void onDeleteAlarm(Alarm alarm);
+    void onDeleteAlarm(Context context, Alarm alarm);
     void onSaveAlarm(Context applicationContext, String alarmid, String name, String time, boolean isSet, boolean isStandardTime, String repeat, String trackName, String artist, String trackId, String trackImage);
     void onSaveAlarm(Alarm alarm, Context applicationContext);
 

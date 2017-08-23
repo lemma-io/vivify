@@ -9,6 +9,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.WindowManager;
@@ -25,12 +26,14 @@ import com.rva.mrb.vivify.Model.Data.AccessToken;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Data.MediaType;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
+import com.rva.mrb.vivify.Model.Service.NotificationService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -73,6 +76,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private String alarmId;
     private boolean snoozed;
     private boolean shuffle;
+    private boolean vibrate;
+    private Vibrator vibrator;
     private Alarm alarm;
     private String playlistID;
     private Ringtone r;
@@ -83,6 +88,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private AudioTrackController audioTrackController;
     private Player.OperationCallback operationCallback;
     private Disposable disposable;
+    private NotificationService mNotificationService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +133,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             trackId = alarm.getTrackId();
             trackImage = alarm.getTrackImage();
             snoozed = alarm.isSnoozed();
+            vibrate = alarm.isVibrate();
             //Log.d("WakeActivity", "shuffleString: "+shuffleString);
             //shuffle = Boolean.parseBoolean(shuffleString);
             Log.d("WakeActivity", "trackId: "+trackId);
@@ -147,6 +154,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         }
         //Set the seekbar that dissmisses/snoozes alarm
         setSeekBar();
+        handleVibrator();
+        mNotificationService = new NotificationService(mContext);
+        mNotificationService.cancelNotification();
 
         //Allow activity to wake up device
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
@@ -165,15 +175,33 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     }
 
+    public void handleVibrator() {
+        Log.d("Vibration", Boolean.toString(vibrate));
+        if(vibrate){
+            Log.d("Vibration", "handling vibrate");
+            vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+            // Start without a delay
+            // Vibrate for 100 milliseconds
+            // Sleep for 1000 milliseconds
+            long[] pattern = {0, 300, 800};
+
+            // The '0' here means to repeat indefinitely
+            // '0' is actually the index at which the pattern keeps repeating from (the start)
+            // To repeat the pattern from any other point, you could increase the index, e.g. '1'
+            vibrator.vibrate(pattern, 0);
+        }
+    }
+
     public void handleRingVolume() {
         int fadein = Integer.parseInt(sharedPref.getString("fadein_key", "30"));
         Log.d("wake max volume: ", Integer.toString(am.getStreamMaxVolume(AudioManager.STREAM_ALARM)));
-        double remainder = (fadein % am.getStreamMaxVolume(AudioManager.STREAM_ALARM))/7.0;
+        double remainder = (fadein % 6)/6.0;
         int remain = ((int) (remainder*1000));
+
         Log.d("remain: ", Integer.toString(remain));
         if(fadein != 0) {
-            am.setStreamVolume(AudioManager.STREAM_ALARM, 0, 0);
-            disposable = Flowable.interval((fadein / am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) * 1000 + (remain), TimeUnit.MILLISECONDS)
+            am.setStreamVolume(AudioManager.STREAM_ALARM, 1, 0);
+            disposable = Flowable.interval((fadein / 6) * 1000 + (remain), TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(along -> {
                         am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
@@ -193,18 +221,31 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     player.
      */
     public void onDismiss() {
+        mPlayer.pause(operationCallback);
+
+        if (!disposable.isDisposed()){
+            disposable.dispose();
+        }
+        if (vibrate){
+            vibrator.cancel();
+        }
+
         if(snoozed){
+            if (alarmId != null) {
+                Log.d("Dismiss", "alarm ID: " + alarmId);
+                AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
+            }
             AlarmScheduler.cancelSnoozedAlarm(getApplicationContext());
         }
         else {
             AlarmScheduler.cancelNextAlarm(getApplicationContext());
+            if (alarmId != null) {
+                Log.d("Dismiss", "alarm ID: " + alarmId);
+                AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
+            }
         }
 
-        mPlayer.pause(operationCallback);
-        if (alarmId != null) {
-            Log.d("Dismiss", "alarm ID: " + alarmId);
-            AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
-        }
+
         finish();
 
     }
@@ -221,10 +262,18 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         Log.d("snooze", "Snooze time in millis: " + snoozeTime);
         if (alarmId != null) {
             Log.d("Snooze", "alarm ID: " + alarmId);
-            AlarmScheduler.setSnoozedById(getApplicationContext(), alarmId);
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MILLISECOND, snoozeTime);
+            AlarmScheduler.setSnoozedById(getApplicationContext(), alarmId, cal.getTime());
         }
         snoozed = true;
-        AlarmScheduler.snoozeNextAlarm(getApplicationContext(), alarmId, snoozeTime);
+        AlarmScheduler.snoozeNextAlarm(getApplicationContext());
+        if (!disposable.isDisposed()){
+            disposable.dispose();
+        }
+        if (vibrate){
+            vibrator.cancel();
+        }
         finish();
 
     }
@@ -440,6 +489,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     protected void onDestroy() {
         // VERY IMPORTANT! This must always be called or else you will leak resources
         Spotify.destroyPlayer(this);
+        if (vibrate){
+            vibrator.cancel();
+        }
         super.onDestroy();
     }
 

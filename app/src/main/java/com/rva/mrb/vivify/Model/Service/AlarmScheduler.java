@@ -19,6 +19,8 @@ import com.rva.mrb.vivify.Model.Data.Alarm;
 
 import org.parceler.Parcels;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import io.realm.Realm;
@@ -104,18 +106,34 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 
     }
 
-    public static void snoozeNextAlarm(Context context, String alarmId, int snoozeTime) {
+    public static Alarm getNextSnoozedAlarm() {
+        return RealmService.getNextSnoozedAlarm();
+    }
+
+    public static void snoozeNextAlarm(Context context) {
         cancelNextAlarm(context);
         Log.d(TAG, "Snoozing Alarm");
-        AlarmManager alarmManager = (AlarmManager)
-                context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, WakeReceiver.class);
-        intent.putExtra("alarmId", alarmId);
-        PendingIntent snoozedIntent = PendingIntent.getBroadcast(context,
-                Alarm.FLAG_SNOOZED_ALARM , intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // update
-        alarmManager.set(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + snoozeTime, snoozedIntent);
+        // grab the next alarm
+        // handle some error checking and no results. No alarms set
+        Alarm alarm = null;
+        try {
+            alarm = getNextSnoozedAlarm();
+            Log.d("setNextAlarm", "Alarm time: " + alarm.getTime());
+        } catch (Exception e) {
+            Log.e(TAG, "No alarms are set. " + e.getMessage());
+        }
+        if(alarm != null) {
+            AlarmManager alarmManager = (AlarmManager)
+                    context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, WakeReceiver.class);
+            intent.putExtra("alarmId", alarm.getId());
+            PendingIntent snoozedIntent = PendingIntent.getBroadcast(context,
+                    Alarm.FLAG_SNOOZED_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            // update
+            alarmManager.set(AlarmManager.RTC_WAKEUP,
+                    alarm.getSnoozedAt().getTime(), snoozedIntent);
+        }
+
         setNextAlarm(context);
     }
 
@@ -126,6 +144,7 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Alarm.FLAG_SNOOZED_ALARM,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
+        snoozeNextAlarm(context);
     }
 
     public static void cancelNextAlarm(Context context) {
@@ -139,8 +158,8 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 //        RealmService.updateAlarms();
     }
 
-    public static void setSnoozedById(Context context, String id){
-        RealmService.snoozeAlarmById(id);
+    public static void setSnoozedById(Context context, String id, Date date){
+        RealmService.snoozeAlarmById(id, date);
     }
 
     public static void enableAlarmById(Context context, String id) {
@@ -164,6 +183,11 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
 //        Alarm alarm = RealmService.getAlarmById(id);
 
         // reset the alarm manager and set the next enabled alarm
+        setNextAlarm(context);
+    }
+
+    public static void disableAlarm(Context context, String id) {
+        RealmService.disableAlarm(id);
         setNextAlarm(context);
     }
 

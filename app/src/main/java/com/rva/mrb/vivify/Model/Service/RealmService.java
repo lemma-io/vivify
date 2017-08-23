@@ -5,6 +5,7 @@ import android.util.Log;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -59,6 +60,11 @@ public class RealmService {
                 .findAllSorted("time").first();
     }
 
+    public static Alarm getNextSnoozedAlarm() {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(Alarm.class).equalTo("snoozed", true).findAllSorted("snoozedAt").first();
+    }
+
     public static void enableAlarm(final String alarmId) {
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
@@ -103,12 +109,30 @@ public class RealmService {
         }
     }
     // Return the the newest alarm by pulling the highest alarm id
-    public String getNextAlarm() {
-        if (mRealm.where(Alarm.class).equalTo("enabled",true).findAll().size() > 0)
-            return mRealm.where(Alarm.class).equalTo("enabled", true).findAll()
-                .sort("time").first().getTime()+"";
+    public Alarm getNextAlarm() {
+        if (mRealm.where(Alarm.class).equalTo("enabled",true).findAll().size() > 0) {
+            if (mRealm.where(Alarm.class).equalTo("snoozed",true).findAll().size() > 0) {
+                if (mRealm.where(Alarm.class).equalTo("enabled", true).findAll()
+                        .sort("time").first().getTime().after(mRealm.where(Alarm.class)
+                                .equalTo("enabled", true)
+                                .equalTo("snoozed", true).findAll()
+                                .sort("snoozedAt").first().getTime())) {
+                    return mRealm.where(Alarm.class)
+                            .equalTo("enabled", true)
+                            .equalTo("snoozed", true).findAll()
+                            .sort("snoozedAt").first();
+                }
+                else
+                    return mRealm.where(Alarm.class).equalTo("enabled", true).findAll()
+                            .sort("time").first();
+            }
+            else {
+                return mRealm.where(Alarm.class).equalTo("enabled", true).findAll()
+                        .sort("time").first();
+            }
+        }
         else
-            return "No Alarm set";
+            return null;
     }
 
     public void saveAlarm(final String alarmId, final String name, final String time,
@@ -166,7 +190,9 @@ public class RealmService {
                 editAlarm.setTrackImage(updatedAlarm.getTrackImage());
                 editAlarm.setMediaType(updatedAlarm.getMediaType());
                 editAlarm.setShuffle(updatedAlarm.isShuffle());
+                editAlarm.setVibrate(updatedAlarm.isVibrate());
                 editAlarm.setSnoozed(false);
+                editAlarm.setSnoozedAt(null);
             }
         });
 
@@ -277,7 +303,9 @@ public class RealmService {
                 alarm.setTrackImage(newalarm.getTrackImage());
                 alarm.setMediaType(newalarm.getMediaType());
                 alarm.setShuffle(newalarm.isShuffle());
+                alarm.setVibrate(newalarm.isVibrate());
                 alarm.setSnoozed(false);
+                alarm.setSnoozedAt(null);
 //                id = alarm.getId();
             }
 
@@ -297,7 +325,7 @@ public class RealmService {
 //            }
     }
 
-    public static void snoozeAlarmById(final String alarmId) {
+    public static void snoozeAlarmById(final String alarmId, final Date date) {
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -305,6 +333,7 @@ public class RealmService {
                 Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
                 Log.d("RealmService", "setting snooze");
                 alarm.setSnoozed(true);
+                alarm.setSnoozedAt(date);
             }
         });
     }
@@ -320,6 +349,7 @@ public class RealmService {
                     alarm.setEnabled(false);
                 }
                 alarm.setSnoozed(false);
+                alarm.setSnoozedAt(null);
 //                if (alarm.getDecDaysOfWeek() != 0){
 //                    alarm.setEnabled(true);
 //                }
@@ -336,6 +366,34 @@ public class RealmService {
         });
         updateAlarms();
     }
+
+    public static void disableAlarm(final String alarmId) {
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
+
+                alarm.setEnabled(false);
+                alarm.setSnoozed(false);
+                alarm.setSnoozedAt(null);
+//                if (alarm.getDecDaysOfWeek() != 0){
+//                    alarm.setEnabled(true);
+//                }
+//                else {
+//                    Log.d(TAG, "Alarm is: " + alarm.isEnabled());
+//                    alarm.setEnabled(false);
+//                }
+
+
+//                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
+//                "\nalarm time is" + alarm.getTime() +
+//                "\nalarm wake time is" + alarm.getmWakeTime());
+            }
+        });
+        updateAlarms();
+    }
+
     public String getMessage(){
         return "From realmService!!";
     }
