@@ -25,15 +25,24 @@ import com.rva.mrb.vivify.BuildConfig;
 import com.rva.mrb.vivify.Model.Data.AccessToken;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Data.MediaType;
+import com.rva.mrb.vivify.Model.Data.Track;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.NotificationService;
+import com.rva.mrb.vivify.Model.Service.PlayerService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
+import com.rva.mrb.vivify.Spotify.SpotifyService;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -42,8 +51,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,6 +76,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     WakePresenter wakePresenter;
     @Inject
     NodeService nodeService;
+    @Inject
+    SpotifyService spotifyService;
 
     // Spotify
     private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
@@ -89,6 +104,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private Player.OperationCallback operationCallback;
     private Disposable disposable;
     private NotificationService mNotificationService;
+    private PlayerService playerService;
+    private List<Track> shuffledTracks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,15 +132,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 Log.d("WakeActivity", "OperationCallback error: " + error);
             }
         };
-
-        //Retrieve access token from spotify
-        refreshToken();
         mContext = getApplicationContext();
-        am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        setVolumeControlStream(AudioManager.STREAM_ALARM);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        handleRingVolume();
-        audioTrackController = new AudioTrackController();
         //Get trackId and image URL from Bundle
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -152,6 +161,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
             Log.d("trackImage", "Traack Image Url: " + trackImage);
         }
+        playerService = new PlayerService(mContext, spotifyService, alarm);
+        //Retrieve access token from spotify
+        refreshToken();
+        am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        handleRingVolume();
+        audioTrackController = new AudioTrackController();
+
         //Set the seekbar that dissmisses/snoozes alarm
         setSeekBar();
         handleVibrator();
@@ -334,8 +352,37 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                 AccessToken results = response.body();
                 applicationModule.setAccessToken(results.getAccessToken());
+//                Disposable d = Observable.just("hello").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(result -> {
+//                    Log.d("WakeActivity", "getting tracks");
+//                    playerService.getTracks();
+//                    shuffledTracks = playerService.returnTracks();
+//
+//                });
+                if(shuffle) {
+                    Disposable d = playerService.getTracks().subscribe(() -> {
+                        shuffledTracks = playerService.returnTracks();
+                        initCustomPlayer();
+                    });
+                }
+                else{
+                    initCustomPlayer();
+                }
+//                spotifyService.getAlbumTracks(trackId)
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(res -> {
+//                            shuffledTracks = res.getItems();
+//                            Collections.shuffle(shuffledTracks);
+//                            Log.d("PlayerService", "getting response");
+//                            initCustomPlayer();
+//                        });
+
+               // playerService.getTracks();
+
+
+
 //                initSpotifyPlayer();
-                initCustomPlayer();
+
             }
 
             @Override
@@ -425,25 +472,48 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     @Override
     public void onLoggedIn() {
         Log.d("PlayAlbum", "Alarm Type: " + alarm.getMediaType());
-        switch (alarm.getMediaType()) {
-            case MediaType.DEFAULT_TYPE:
+        if(shuffle){
+            if(alarm.getMediaType() == MediaType.DEFAULT_TYPE){
                 playDefaultRingtone();
-                break;
-            case MediaType.TRACK_TYPE:
-                mPlayer.playUri(operationCallback,"spotify:track:" + trackId, 0, 0);
-                break;
-            case MediaType.ALBUM_TYPE:
-                Log.d("PlayAlbum", "spotify:album:" + trackId);
-                mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
-                Log.d("WakeActivity", "setting shuffle: " + shuffle);
-                break;
-            case MediaType.PLAYLIST_TYPE:
-                Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
-                mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
-                break;
+            }
+            else {
+                mPlayer.playUri(operationCallback, shuffledTracks.get(0).getUri(), 0, 0);
+                shuffledTracks.remove(0);
+                Disposable dispose = Flowable.interval(250, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(along -> {
+                            if(shuffledTracks.size() > 0){
+                                Log.d("wakeActivity", shuffledTracks.get(0).getUri());
+                                mPlayer.queue(operationCallback, shuffledTracks.get(0).getUri());
+                                shuffledTracks.remove(0);
+                            }
+                        });
+            }
         }
+        else {
+            switch (alarm.getMediaType()) {
+                case MediaType.DEFAULT_TYPE:
+                    playDefaultRingtone();
+                    break;
+                case MediaType.TRACK_TYPE:
+                    mPlayer.playUri(operationCallback, "spotify:track:" + trackId, 0, 0);
+                    break;
+                case MediaType.ALBUM_TYPE:
+                    Log.d("PlayAlbum", "spotify:album:" + trackId);
+                    mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
+                    Log.d("WakeActivity", "setting shuffle: " + shuffle);
+                    break;
+                case MediaType.PLAYLIST_TYPE:
+                    Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
+                    mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
+                    break;
+            }
+
+        }
+
         mPlayer.setShuffle(operationCallback, shuffle);
         mPlayer.setRepeat(operationCallback, true);
+
 
     }
 

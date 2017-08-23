@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name"
-                android:text="Morning Hustle"/>
+                android:text=""/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout

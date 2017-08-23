@@ -1,35 +1,41 @@
 package com.rva.mrb.vivify.Model.Data;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class User {
 
-    private String displayName;
-    private ExternalUrls externalUrls;
+public class User {
+    private String birthdate;
+    private String country;
+    private String display_name;
+    private String email;
+    private ExternalUrls external_urls;
     private Followers followers;
     private String href;
     private String id;
     private List<Image> images = new ArrayList<Image>();
+    private String product;
     private String type;
     private String uri;
 
     public String getDisplayName() {
-        return displayName;
+        return display_name;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setDisplayName(String display_name) {
+        this.display_name = display_name;
     }
 
     public ExternalUrls getExternalUrls() {
-        return externalUrls;
+        return external_urls;
     }
 
-    public void setExternalUrls(ExternalUrls externalUrls) {
-        this.externalUrls = externalUrls;
+    public void setExternalUrls(ExternalUrls external_urls) {
+        this.external_urls = external_urls;
     }
 
     public Followers getFollowers() {
@@ -80,15 +86,31 @@ public class User {
         this.uri = uri;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return additionalProperties;
-    }
+    public String getBirthdate() { return birthdate; }
 
-    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-        this.additionalProperties = additionalProperties;
-    }
+    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    public String getCountry() { return country; }
+
+    public void setCountry(String country) { this.country = country; }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getProduct() { return product; }
+
+    public void setProduct(String product) { this.product = product; }
+
+    //    public Map<String, Object> getAdditionalProperties() {
+//        return additionalProperties;
+//    }
+//
+//    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+//        this.additionalProperties = additionalProperties;
+//    }
+//
+//    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public class Image {
 
@@ -96,13 +118,13 @@ public class User {
         private String url;
         private Object width;
 
-        public Map<String, Object> getAdditionalProperties() {
-            return additionalProperties;
-        }
-
-        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties = additionalProperties;
-        }
+//        public Map<String, Object> getAdditionalProperties() {
+//            return additionalProperties;
+//        }
+//
+//        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+//            this.additionalProperties = additionalProperties;
+//        }
 
         public Object getHeight() {
             return height;
@@ -128,7 +150,7 @@ public class User {
             this.width = width;
         }
 
-        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+//        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     }
     public class Followers {
 
@@ -150,29 +172,29 @@ public class User {
         public void setTotal(Integer total) {
             this.total = total;
         }
-
-        public Map<String, Object> getAdditionalProperties() {
-            return additionalProperties;
-        }
-
-        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties = additionalProperties;
-        }
-
-        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+//
+//        public Map<String, Object> getAdditionalProperties() {
+//            return additionalProperties;
+//        }
+//
+//        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+//            this.additionalProperties = additionalProperties;
+//        }
+//
+//        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     }
 
     public class ExternalUrls {
 
         private String spotify;
 
-        public Map<String, Object> getAdditionalProperties() {
-            return additionalProperties;
-        }
-
-        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties = additionalProperties;
-        }
+//        public Map<String, Object> getAdditionalProperties() {
+//            return additionalProperties;
+//        }
+//
+//        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+//            this.additionalProperties = additionalProperties;
+//        }
 
         public String getSpotify() {
             return spotify;
@@ -182,6 +204,6 @@ public class User {
             this.spotify = spotify;
         }
 
-        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+//        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     }
 }
