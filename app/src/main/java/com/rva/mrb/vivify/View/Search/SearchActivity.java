@@ -51,6 +51,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,30 +115,48 @@ public class SearchActivity extends BaseActivity implements SearchView,
     }
 
     public void setUserPlaylists() {
-        spotifyService.getMyPlaylists().enqueue(new Callback<PlaylistPager>() {
-            @Override
-            public void onResponse(Call<PlaylistPager> call, Response<PlaylistPager> response) {
-                Log.d("response", response.message());
-                PlaylistPager myPlaylists = response.body();
+        spotifyService.getMyPlaylists()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    PlaylistPager myPlaylists = response;
 
-                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(myPlaylists);
-                searchAdapter = new SearchAdapter(mediaTypeList);
-                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                        new ArrayList<>();
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"My Playlists"));
-                setInterface();
-                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
-                mSectionedAdapter.setSections(sections.toArray(dummy));
-                recyclerview.setAdapter(mSectionedAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<PlaylistPager> call, Throwable t) {
-
-            }
-        });
+                    List<MediaType> mediaTypeList = searchPresenter.setupMediaList(myPlaylists);
+                    searchAdapter = new SearchAdapter(mediaTypeList);
+                    List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+                            new ArrayList<>();
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"My Playlists"));
+                    setInterface();
+                    SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+                    SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+                            SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
+                    mSectionedAdapter.setSections(sections.toArray(dummy));
+                    recyclerview.setAdapter(mSectionedAdapter);
+                });
+//                .enqueue(new Callback<PlaylistPager>() {
+//            @Override
+//            public void onResponse(Call<PlaylistPager> call, Response<PlaylistPager> response) {
+//                Log.d("response", response.message());
+//                PlaylistPager myPlaylists = response.body();
+//
+//                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(myPlaylists);
+//                searchAdapter = new SearchAdapter(mediaTypeList);
+//                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+//                        new ArrayList<>();
+//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"My Playlists"));
+//                setInterface();
+//                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+//                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+//                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
+//                mSectionedAdapter.setSections(sections.toArray(dummy));
+//                recyclerview.setAdapter(mSectionedAdapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<PlaylistPager> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -199,42 +219,71 @@ public class SearchActivity extends BaseActivity implements SearchView,
     public void onSearchClick() {
         Log.d("MyApp", "Fab Click");
         String searchQuery = searchEditText.getText().toString();
-        spotifyService.getFullSearchResults(searchQuery).enqueue(new Callback<Search>() {
-            @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
-                Log.d("Error Message", response.message());
-                Search results = response.body();
-                Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
+        spotifyService.getFullSearchResults(searchQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    Search results = response;
+                    List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
 
-                searchAdapter = new SearchAdapter(mediaTypeList);
-                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                        new ArrayList<>();
+                    searchAdapter = new SearchAdapter(mediaTypeList);
+                    List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+                            new ArrayList<>();
 
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-                        results.getTracks().getItems().size(),"Playlists"));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
+                            results.getTracks().getItems().size(),"Playlists"));
 //                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
 //                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
-                setInterface();
+                    setInterface();
 
-                //Add your adapter to the sectionAdapter
-                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
-                mSectionedAdapter.setSections(sections.toArray(dummy));
+                    //Add your adapter to the sectionAdapter
+                    SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+                    SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+                            SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
+                    mSectionedAdapter.setSections(sections.toArray(dummy));
 
-                //Apply this adapter to the RecyclerView
+                    //Apply this adapter to the RecyclerView
 //                mRecyclerView.setAdapter(mSectionedAdapter);
-                recyclerview.setAdapter(mSectionedAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<Search> call, Throwable t) {
-                Log.d("SpotifyService", "Call failed.");
-            }
-        });
+                    recyclerview.setAdapter(mSectionedAdapter);
+                });
+//                .enqueue(new Callback<Search>() {
+//            @Override
+//            public void onResponse(Call<Search> call, Response<Search> response) {
+//                Log.d("Error Message", response.message());
+//                Search results = response.body();
+//                Log.d("SpotifyService", "Successful: " + response.isSuccessful());
+//                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
+//
+//                searchAdapter = new SearchAdapter(mediaTypeList);
+//                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+//                        new ArrayList<>();
+//
+//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
+//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
+//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
+//                        results.getTracks().getItems().size(),"Playlists"));
+////                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
+////                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
+//                setInterface();
+//
+//                //Add your adapter to the sectionAdapter
+//                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+//                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+//                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
+//                mSectionedAdapter.setSections(sections.toArray(dummy));
+//
+//                //Apply this adapter to the RecyclerView
+////                mRecyclerView.setAdapter(mSectionedAdapter);
+//                recyclerview.setAdapter(mSectionedAdapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Search> call, Throwable t) {
+//                Log.d("SpotifyService", "Call failed.");
+//            }
+//        });
     }
 
     @Override

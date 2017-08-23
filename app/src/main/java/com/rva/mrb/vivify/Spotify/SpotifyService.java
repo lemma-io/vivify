@@ -2,10 +2,14 @@ package com.rva.mrb.vivify.Spotify;
 
 import com.rva.mrb.vivify.Model.Data.Playlist;
 import com.rva.mrb.vivify.Model.Data.PlaylistPager;
+import com.rva.mrb.vivify.Model.Data.PlaylistTracksPager;
 import com.rva.mrb.vivify.Model.Data.Search;
 import com.rva.mrb.vivify.Model.Data.SimpleTrack;
+import com.rva.mrb.vivify.Model.Data.TracksPager;
 import com.rva.mrb.vivify.Model.Data.User;
 
+
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -54,12 +58,22 @@ public interface SpotifyService {
      *Me
      ***********/
     @GET("me/playlists")
-    Call<PlaylistPager> getMyPlaylists();
+    Observable<PlaylistPager> getMyPlaylists();
+
+    /***********
+     *Albums
+     ***********/
+    @GET("albums/{id}/tracks")
+    Observable<TracksPager> getAlbumTracks(@Path("id") String albumId);
+
     /***********
      * Playlists
      ***********/
     @GET("browse/featured-playlists")
     Call<Playlist> getFeaturedPlaylists();
+
+    @GET("users/{user_id}/playlists/{playlist_id}/tracks")
+    Observable<PlaylistTracksPager> getPlaylistTracks(@Path("user_id") String userId, @Path("playlist_id") String playlistId);
     /***********
      * Tracks
      ***********/
@@ -84,5 +98,5 @@ public interface SpotifyService {
     Call<Search> getSearchResults(@Query("q") String searchQuery);
 
     @GET("search?type=playlist,album,track,artist&limit=5")
-    Call<Search> getFullSearchResults(@Query("q") String searchQuery);
+    Observable<Search> getFullSearchResults(@Query("q") String searchQuery);
 }
