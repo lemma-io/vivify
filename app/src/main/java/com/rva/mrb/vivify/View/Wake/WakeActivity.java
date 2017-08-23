@@ -479,6 +479,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             else {
                 mPlayer.playUri(operationCallback, shuffledTracks.get(0).getUri(), 0, 0);
                 shuffledTracks.remove(0);
+                Disposable dispose = Flowable.interval(250, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(along -> {
+                            if(shuffledTracks.size() > 0){
+                                Log.d("wakeActivity", shuffledTracks.get(0).getUri());
+                                mPlayer.queue(operationCallback, shuffledTracks.get(0).getUri());
+                                shuffledTracks.remove(0);
+                            }
+                        });
             }
         }
         else {
@@ -501,17 +510,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             }
 
         }
-        Disposable dispose = Flowable.interval(250, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(along -> {
-                    if(shuffledTracks.size() > 0){
-                        Log.d("wakeActivity", shuffledTracks.get(0).getUri());
-                        mPlayer.queue(operationCallback, shuffledTracks.get(0).getUri());
-                        shuffledTracks.remove(0);
-                    }
-
-
-                });
 
         mPlayer.setShuffle(operationCallback, shuffle);
         mPlayer.setRepeat(operationCallback, true);
