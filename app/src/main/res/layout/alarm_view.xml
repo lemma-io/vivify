@@ -66,12 +66,20 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/alarm_is_set"
+    <LinearLayout
+        android:id="@+id/alarm_toggle_layout"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"/>
+        android:clickable="true">
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/alarm_is_set"
+            android:layout_gravity="center|center_horizontal"/>
+    </LinearLayout>
+
 
     </RelativeLayout>
 

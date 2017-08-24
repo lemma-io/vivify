@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -92,6 +93,13 @@ public class AlarmAdapter extends
             alarmToggleListener.onAlarmToggle();
         });
 
+        viewHolder.toggleLayout.setOnClickListener(v -> {
+            Log.d(TAG, "Toggle alarm id: " + alarm.getId());
+            AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
+            setAlarmTimer(alarm, viewHolder);
+            alarmToggleListener.onAlarmToggle();
+        });
+
         if (alarm.isValid()) {
             setAlarmTimer(alarm, viewHolder);
             viewHolder.disposable = Flowable.interval(1000L, TimeUnit.MILLISECONDS)
@@ -140,6 +148,7 @@ public class AlarmAdapter extends
         @BindView(R.id.alarm_media_info) TextView mediaInfoTv;
         @BindView(R.id.alarm_bg) ImageView alarmBg;
         @BindView(R.id.alarm_timer) TextView alarmTimer;
+        @BindView(R.id.alarm_toggle_layout) LinearLayout toggleLayout;
         Disposable disposable;
 
         public ViewHolder(View itemView) {
