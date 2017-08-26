@@ -40,7 +40,6 @@ public class AlarmAdapter extends
         RealmBasedRecyclerViewAdapter<Alarm, AlarmAdapter.ViewHolder> {
 
     public static final String TAG = AlarmAdapter.class.getSimpleName();
-    private Disposable disposable;
 
     // lets the Alarm activity know when an alarm is pressed
     public OnAlarmToggleListener alarmToggleListener;
@@ -75,6 +74,7 @@ public class AlarmAdapter extends
                 .centerCrop()
                 .into(viewHolder.alarmBg);
         viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
+
         viewHolder.cardView.setOnClickListener(view -> {
             Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
             Intent intent = new Intent(view.getContext(), DetailActivity.class);
@@ -86,6 +86,7 @@ public class AlarmAdapter extends
             viewHolder.disposable.dispose();
 
         });
+
         viewHolder.isSet.setOnClickListener(v -> {
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
@@ -94,6 +95,7 @@ public class AlarmAdapter extends
         });
 
         viewHolder.toggleLayout.setOnClickListener(v -> {
+            viewHolder.isSet.toggle();
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
             setAlarmTimer(alarm, viewHolder);
