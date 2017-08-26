@@ -1,7 +1,13 @@
 package com.rva.mrb.vivify.View.Alarm;
 
+import android.content.Context;
+
 import com.rva.mrb.vivify.Model.Data.Alarm;
+import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
+import com.rva.mrb.vivify.Model.Service.NotificationService;
 import com.rva.mrb.vivify.Model.Service.RealmService;
+
+import java.util.List;
 
 import io.realm.RealmResults;
 
@@ -12,9 +18,7 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
     private AlarmsView mAlarmsView = new AlarmsView.EmptyAlarmsList();
     private boolean alarmsWereShown = false;
 
-    public AlarmPresenterImpl(RealmService realmService){
-        mRealmService = realmService;
-    }
+    public AlarmPresenterImpl(RealmService realmService){ mRealmService = realmService; }
 
     public String getRSMessage(){
         return mRealmService.getMessage();
@@ -25,6 +29,9 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
         return mRealmService.getAllAlarms().sort("timeOfDay");
     }
 
+    public void disableMissedAlarm(Alarm alarm){
+        mRealmService.disableAlarmById(alarm.getId());
+    }
 
     public Alarm getNextAlarmTime() {
         return mRealmService.getNextAlarm();
@@ -50,6 +57,22 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
             mAlarmsView.showAlarms(mRealmService.getAllAlarms());
             alarmsWereShown = true;
         }
+    }
+
+    @Override
+    public void checkMissedAlarms(Context context, NotificationService notificationService){
+        List<Alarm> missedAlarms = mRealmService.getMissedAlarms();
+        List<Alarm> missedSnoozed = mRealmService.getMissedSnoozedAlarms();
+        for (Alarm a : missedAlarms){
+
+            notificationService.setMissedAlarmNotification(a.getTime() + "", a.isSnoozed());
+        }
+        for (Alarm alarm : missedSnoozed){
+            notificationService.setMissedAlarmNotification(alarm.getTime() + "", alarm.isSnoozed());
+        }
+        mRealmService.disableMissedAlarms();
+        mRealmService.disableMissedSnoozed();
+        AlarmScheduler.cancelSnoozedAlarm(context);
     }
 
     @Override

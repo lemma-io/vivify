@@ -11,6 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.View.Alarm.AlarmActivity;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by Bao on 8/20/17.
  */
@@ -19,6 +21,14 @@ public class NotificationService {
     private NotificationManager mNotificationManager;
     private Context mContext;
     private SharedPreferences sharedPref;
+
+
+    private static final AtomicInteger counter = new AtomicInteger(2);
+
+    public static int nextValue() {
+        return counter.getAndIncrement();
+    }
+
 
     public NotificationService(Context context) {
         this.mContext = context;
@@ -43,6 +53,7 @@ public class NotificationService {
                 builder.setContentTitle("Upcoming Alarm");
             }
             builder.setContentIntent(intent);
+
             mNotificationManager.notify(1, builder.build());
         }
         else {
@@ -50,5 +61,26 @@ public class NotificationService {
         }
     }
 
-    public void cancelNotification() { mNotificationManager.cancelAll(); }
+    public void cancelNotification() { mNotificationManager.cancel(1); }
+
+    public void setMissedAlarmNotification(String time, boolean isSnoozed){
+        boolean key = sharedPref.getBoolean("notification_key", true);
+        if(key) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
+                    .setSmallIcon(R.drawable.drag_clock)
+                    .setContentText("Time: " + time)
+                    .setAutoCancel(true);
+            Intent notificationIntent = new Intent(mContext, AlarmActivity.class);
+            PendingIntent intent = PendingIntent.getActivity(mContext, 0,
+                    notificationIntent, 0);
+            if (isSnoozed) {
+                builder.setContentTitle("Missed Snoozed Alarm!");
+            } else {
+                builder.setContentTitle("Missed Alarm!");
+            }
+            builder.setContentIntent(intent);
+
+            mNotificationManager.notify(nextValue(), builder.build());
+        }
+    }
 }

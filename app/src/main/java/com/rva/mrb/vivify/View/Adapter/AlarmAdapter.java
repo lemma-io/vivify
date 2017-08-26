@@ -2,6 +2,7 @@ package com.rva.mrb.vivify.View.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.rva.mrb.vivify.View.Alarm.AlarmsPresenter;
 
 import org.parceler.Parcels;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -43,13 +45,15 @@ public class AlarmAdapter extends
 
     // lets the Alarm activity know when an alarm is pressed
     public OnAlarmToggleListener alarmToggleListener;
+    public AlarmClickListener alarmClickListener;
     @Inject AlarmsPresenter alarmsPresenter;
 
     public AlarmAdapter(Context context, RealmResults<Alarm> realmResults,
-                        OnAlarmToggleListener listener, boolean automaticUpdate,
+                        OnAlarmToggleListener listener, AlarmClickListener clickListener, boolean automaticUpdate,
                         boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         this.alarmToggleListener = listener;
+        this.alarmClickListener = clickListener;
     }
 
     @Override
@@ -75,20 +79,22 @@ public class AlarmAdapter extends
                 .into(viewHolder.alarmBg);
         viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
         viewHolder.cardView.setOnClickListener(view -> {
-            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
-            Intent intent = new Intent(view.getContext(), DetailActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("NewAlarm", false);
-            intent.putExtra("AlarmArtist", alarm.getArtistName());
-            intent.putExtra("Alarm", Parcels.wrap(alarm));
-            view.getContext().startActivity(intent);
+            alarmClickListener.onAlarmClick(position, alarm, viewHolder.alarmBg);
+//            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
+//            Intent intent = new Intent(view.getContext(), DetailActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.putExtra("NewAlarm", false);
+//            intent.putExtra("AlarmArtist", alarm.getArtistName());
+//            intent.putExtra("Alarm", Parcels.wrap(alarm));
+//            ActivityOptionsCompat options = ActivityOptionsCompat.
+//                    makeSceneTransitionAnimation(view, viewHolder.alarmBg, "detail");
+//            view.getContext().startActivity(intent);
             viewHolder.disposable.dispose();
-
         });
         viewHolder.isSet.setOnClickListener(v -> {
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
-            setAlarmTimer(alarm, viewHolder);
+
             alarmToggleListener.onAlarmToggle();
         });
 
@@ -150,6 +156,11 @@ public class AlarmAdapter extends
 
     public interface OnAlarmToggleListener {
         void onAlarmToggle();
+    }
+
+
+    public interface AlarmClickListener {
+        void onAlarmClick(int pos, Alarm alarm, ImageView sharedImageView);
     }
 }
 

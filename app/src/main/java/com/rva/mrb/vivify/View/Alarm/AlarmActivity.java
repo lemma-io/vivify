@@ -1,19 +1,17 @@
 package com.rva.mrb.vivify.View.Alarm;
 
-import android.app.AlarmManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
@@ -29,13 +27,15 @@ import com.rva.mrb.vivify.View.Login.LoginActivity;
 import com.rva.mrb.vivify.View.Settings.SettingsActivity;
 
 
+import org.parceler.Parcels;
+
 import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
 
-public class AlarmActivity extends BaseActivity implements AlarmsView {
+public class AlarmActivity extends BaseActivity implements AlarmsView{
 
     public static final String TAG = AlarmActivity.class.getSimpleName();
     public static final int DETAIL_ACTIVITY_REQUEST = 45;
@@ -47,6 +47,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     private NotificationService mNotificationService;
     private AlarmAdapter mAdapter;
     private AlarmAdapter.OnAlarmToggleListener listener;
+    private AlarmAdapter.AlarmClickListener clickListener;
     private Context context;
 
     @Override
@@ -54,7 +55,6 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         super.onCreate(savedInstanceState);
         //Check if user is logged in
         checkLoginStatus();
-
         setContentView(R.layout.activity_main);
         //Inject dagger and butterknife dependencies
         AlarmComponent alarmComponent = DaggerAlarmComponent.builder()
@@ -65,9 +65,11 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         alarmComponent.inject(this);
         ButterKnife.bind(this);
 
+        context = getApplicationContext();
+        mNotificationService = new NotificationService(context);
+        alarmPresenter.checkMissedAlarms(context, mNotificationService);
         //init default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        context = getApplicationContext();
         // set our own toolbar and disable the default app name title
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -82,12 +84,18 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
             }
         };
 
+        clickListener = new AlarmAdapter.AlarmClickListener() {
+            @Override
+            public void onAlarmClick(int pos, Alarm alarm, ImageView sharedImageView) {
+                startDetailActivity(pos, alarm, sharedImageView);
+            }
+        };
         // create a new container to list all alarms
         // and set to auto update from realm results
         mAdapter = new AlarmAdapter(getApplicationContext(),
-                alarmPresenter.getAllAlarms(), listener, true, true);
+                alarmPresenter.getAllAlarms(), listener, clickListener, true, true);
         mRecyclerView.setAdapter(mAdapter);
-        mNotificationService = new NotificationService(context);
+
 //        updateAlarmNotification();
     }
 
@@ -110,6 +118,19 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         }
     }
 
+    public void startDetailActivity(int pos, Alarm alarm, ImageView sharedImageView){
+        Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("NewAlarm", false);
+        intent.putExtra("AlarmArtist", alarm.getArtistName());
+        intent.putExtra("Alarm", Parcels.wrap(alarm));
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(this, sharedImageView, "detail");
+
+        startActivity(intent, options.toBundle());
+    }
+
     /**
      * This method checks if the user is logged in. If logged in, this method will start the
      * AlarmActivity
@@ -130,6 +151,9 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
 
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        alarmPresenter.checkMissedAlarms(context, mNotificationService);
+        mAdapter.notifyDataSetChanged();
+        supportStartPostponedEnterTransition();
         updateAlarmNotification();
     }
 
@@ -142,7 +166,9 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
     @Override
     public void onResume() {
         super.onResume();
+        alarmPresenter.checkMissedAlarms(context, mNotificationService);
         mAdapter.notifyDataSetChanged();
+        supportStartPostponedEnterTransition();
         updateAlarmNotification();
     }
 
@@ -204,3 +230,4 @@ public class AlarmActivity extends BaseActivity implements AlarmsView {
         }
     }
 }
+

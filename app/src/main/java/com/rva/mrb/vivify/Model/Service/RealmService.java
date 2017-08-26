@@ -4,8 +4,10 @@ import android.util.Log;
 
 import com.rva.mrb.vivify.Model.Data.Alarm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -389,6 +391,76 @@ public class RealmService {
 //                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
 //                "\nalarm time is" + alarm.getTime() +
 //                "\nalarm wake time is" + alarm.getmWakeTime());
+            }
+        });
+        updateAlarms();
+    }
+
+    public List<Alarm> getMissedAlarms(){
+        Date now = Calendar.getInstance().getTime();
+        List<Alarm> missed = new ArrayList<>();
+        RealmResults<Alarm> alarmList = mRealm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", false).findAll();
+        for (Alarm a : alarmList) {
+            if (a.getTime().before(now)){
+                missed.add(a);
+            }
+        }
+        return missed;
+    }
+
+    public List<Alarm> getMissedSnoozedAlarms(){
+        Date now = Calendar.getInstance().getTime();
+        List<Alarm> missed = new ArrayList<>();
+        RealmResults<Alarm> alarmList = mRealm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", true).findAll();
+        for (Alarm a : alarmList) {
+            if (a.getSnoozedAt().before(now)){
+                missed.add(a);
+            }
+        }
+        return missed;
+    }
+
+    public void disableMissedAlarms(){
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm){
+                Calendar cal = Calendar.getInstance();
+                Date now = cal.getTime();
+                RealmResults<Alarm> alarmList = realm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", false)
+                        .findAll();
+                for (final Alarm a:alarmList) {
+                    if(a.getTime().before(now)){
+                        if(a.getDecDaysOfWeek() == 0){
+                            a.setEnabled(false);
+                        }
+                        a.setSnoozed(false);
+                        a.setSnoozedAt(null);
+                    }
+                }
+            }
+        });
+        updateAlarms();
+    }
+
+    public void disableMissedSnoozed(){
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm){
+                Calendar cal = Calendar.getInstance();
+                Date now = cal.getTime();
+                RealmResults<Alarm> alarmList = realm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", true)
+                        .findAll();
+                for (final Alarm a:alarmList) {
+                    if(a.getSnoozedAt().before(now)){
+                        if(a.getDecDaysOfWeek() == 0){
+                            a.setEnabled(false);
+                        }
+                        a.setSnoozed(false);
+                        a.setSnoozedAt(null);
+                    }
+                }
             }
         });
         updateAlarms();
