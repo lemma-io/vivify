@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -41,7 +42,6 @@ public class AlarmAdapter extends
         RealmBasedRecyclerViewAdapter<Alarm, AlarmAdapter.ViewHolder> {
 
     public static final String TAG = AlarmAdapter.class.getSimpleName();
-    private Disposable disposable;
 
     // lets the Alarm activity know when an alarm is pressed
     public OnAlarmToggleListener alarmToggleListener;
@@ -78,6 +78,7 @@ public class AlarmAdapter extends
                 .centerCrop()
                 .into(viewHolder.alarmBg);
         viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
+
         viewHolder.cardView.setOnClickListener(view -> {
             alarmClickListener.onAlarmClick(position, alarm, viewHolder.alarmBg);
 //            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
@@ -91,10 +92,19 @@ public class AlarmAdapter extends
 //            view.getContext().startActivity(intent);
             viewHolder.disposable.dispose();
         });
+
         viewHolder.isSet.setOnClickListener(v -> {
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
 
+            alarmToggleListener.onAlarmToggle();
+        });
+
+        viewHolder.toggleLayout.setOnClickListener(v -> {
+            viewHolder.isSet.toggle();
+            Log.d(TAG, "Toggle alarm id: " + alarm.getId());
+            AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
+            setAlarmTimer(alarm, viewHolder);
             alarmToggleListener.onAlarmToggle();
         });
 
@@ -146,6 +156,7 @@ public class AlarmAdapter extends
         @BindView(R.id.alarm_media_info) TextView mediaInfoTv;
         @BindView(R.id.alarm_bg) ImageView alarmBg;
         @BindView(R.id.alarm_timer) TextView alarmTimer;
+        @BindView(R.id.alarm_toggle_layout) LinearLayout toggleLayout;
         Disposable disposable;
 
         public ViewHolder(View itemView) {
