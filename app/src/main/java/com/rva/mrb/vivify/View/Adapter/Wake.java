@@ -1,6 +1,5 @@
 package com.rva.mrb.vivify.View.Adapter;
 
-import android.provider.MediaStore;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,13 +19,13 @@ import butterknife.ButterKnife;
  * Created by rigo on 8/28/17.
  */
 
-public class WakeAdapter extends RecyclerView.Adapter<WakeAdapter.ViewHolder>
-    implements ItemTouchHelperAdapter{
+public class Wake extends RecyclerView.Adapter<Wake.ViewHolder>
+    implements CardTouchHelper {
 
     private Alarm alarm;
     private MediaListener listener;
 
-    public WakeAdapter(Alarm alarm, MediaListener listener){
+    public Wake(Alarm alarm, MediaListener listener){
         Log.d("Adapter", "new wakeadapter");
         this.alarm = alarm;
         this.listener = listener;
@@ -34,7 +33,7 @@ public class WakeAdapter extends RecyclerView.Adapter<WakeAdapter.ViewHolder>
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        WakeAdapter.ViewHolder viewHolder;
+        Wake.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View wakeView = inflater.inflate(R.layout.wake_view, parent, false);
         viewHolder = new ViewHolder(wakeView);
@@ -47,9 +46,9 @@ public class WakeAdapter extends RecyclerView.Adapter<WakeAdapter.ViewHolder>
         Log.d("Bind", "BindViewHolder");
         holder.mediaName.setText(alarm.getTrackName());
         holder.mediaOwner.setText(alarm.getArtistName());
-//        getArtistNameholder.nextSong.setOnClickListener(view -> {
-//            listener.onNextSong();
-//        });
+        holder.nextSong.setOnClickListener(view -> {
+            listener.onNextSong();
+        });
     }
 
     @Override

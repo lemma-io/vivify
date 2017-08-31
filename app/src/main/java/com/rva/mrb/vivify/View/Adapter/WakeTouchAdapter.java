@@ -17,12 +17,10 @@ import com.rva.mrb.vivify.R;
 
 public class WakeTouchAdapter extends ItemTouchHelper.Callback {
 
-    private final ItemTouchHelperAdapter adapter;
     public WakeTouchListener listener;
     public static final float ALPHA_FULL = 1.0f;
 
-    public WakeTouchAdapter(ItemTouchHelperAdapter adapter, WakeTouchListener listener) {
-        this.adapter = adapter;
+    public WakeTouchAdapter(WakeTouchListener listener) {
         this.listener = listener;
     }
 
@@ -43,30 +41,31 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    public boolean onMove(RecyclerView recyclerView,
+                          RecyclerView.ViewHolder viewHolder,
+                          RecyclerView.ViewHolder target) {
         return false;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         if (direction == ItemTouchHelper.RIGHT) {
-            Log.d("SWIPE", "Right Swipe");
             listener.onAlarmDismissed();
         } else {
-            Log.d("SWIPE", "Left Swipe");
             listener.onAlarmSnoozed();
         }
-        adapter.onAlarmDismiss(viewHolder.getAdapterPosition());
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             // Get RecyclerView item from the ViewHolder
             View itemView = viewHolder.itemView;
 
             Paint p = new Paint();
             Bitmap icon;
+
             if (dX > 0) {
             /* Set your color for positive displacement */
                 icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.drag_clock);
@@ -76,7 +75,8 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
                         (float) itemView.getBottom(), p);
                 c.drawBitmap(icon,
                         (float) itemView.getLeft() + convertDpToPx(recyclerView.getContext(), 16),
-                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight())/2,
+                        (float) itemView.getTop() + ((float) itemView.getBottom()
+                                - (float) itemView.getTop() - icon.getHeight())/2,
                         p);
             } else {
             /* Set your color for negative displacement */

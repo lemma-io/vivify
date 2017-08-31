@@ -2,7 +2,6 @@ package com.rva.mrb.vivify.View.Wake;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.Ringtone;
@@ -16,9 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.rva.mrb.vivify.AlarmApplication;
@@ -35,34 +32,23 @@ import com.rva.mrb.vivify.Model.Service.PlayerService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.rva.mrb.vivify.Spotify.SpotifyService;
-import com.rva.mrb.vivify.View.Adapter.WakeAdapter;
+import com.rva.mrb.vivify.View.Adapter.Wake;
 import com.rva.mrb.vivify.View.Adapter.WakeTouchAdapter;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -109,9 +95,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private NotificationService mNotificationService;
     private PlayerService playerService;
     private List<Track> shuffledTracks;
-    private WakeAdapter wakeAdapter;
+    private Wake wakeAdapter;
     private WakeTouchAdapter.WakeTouchListener listener;
-    private WakeAdapter.MediaListener mediaListener;
+    private Wake.MediaListener mediaListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,13 +156,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setHasFixedSize(true);
-//            mediaListener = new WakeAdapter.MediaListener() {
-//                @Override
-//                public void onNextSong() {
-//                    onNextSong();
-//                }
-//            };
-            wakeAdapter = new WakeAdapter(alarm, mediaListener);
+            mediaListener = () -> onNextSongClick();
+            wakeAdapter = new Wake(alarm, mediaListener);
             listener = new WakeTouchAdapter.WakeTouchListener() {
                 @Override
                 public void onAlarmDismissed() {
@@ -189,7 +170,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                     onSnooze();
                 }
             };
-            ItemTouchHelper.Callback callback = new WakeTouchAdapter(wakeAdapter, listener);
+            ItemTouchHelper.Callback callback = new WakeTouchAdapter(listener);
             ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
             touchHelper.attachToRecyclerView(recyclerView);
             recyclerView.setAdapter(wakeAdapter);

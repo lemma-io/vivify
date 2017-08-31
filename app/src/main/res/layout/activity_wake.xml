@@ -19,14 +19,14 @@
         android:paddingTop="75dip"
         android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/wake_media_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Zhu: GENERATION WHY"
-        android:textSize="20dip"
-        android:layout_below="@+id/wake_time"
-        android:layout_centerHorizontal="true"/>
+    <!--<TextView-->
+        <!--android:id="@+id/wake_media_info"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Zhu: GENERATION WHY"-->
+        <!--android:textSize="20dip"-->
+        <!--android:layout_below="@+id/wake_time"-->
+        <!--android:layout_centerHorizontal="true"/>-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/wake_recyclerview"
