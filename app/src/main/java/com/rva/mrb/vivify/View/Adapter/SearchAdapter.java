@@ -37,7 +37,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private Playlist playlists;
     private SimpleTrack simpleTrack;
 
-
     public static final int TRACK = 0;
     public static final int ALBUM = 1;
 
@@ -162,12 +161,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-//        @BindView(R.id.playlist_name) TextView playlistName;
-//        @BindView(R.id.artist_name) TextView artistName;
-//        @BindView(R.id.card_search) CardView cardView;
         public ViewHolder(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
     }
 

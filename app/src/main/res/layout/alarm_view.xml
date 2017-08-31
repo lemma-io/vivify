@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="185dip"
     android:clickable="true"
-    android:layout_marginBottom="5dip">
+    android:layout_marginBottom="20dip">
 
     <ImageView
         android:id="@+id/alarm_bg"
@@ -17,8 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="20dp">
-
-
 
     <LinearLayout
         android:id="@+id/inner_layout"

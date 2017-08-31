@@ -11,6 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -32,6 +35,8 @@ import com.rva.mrb.vivify.Model.Service.PlayerService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.rva.mrb.vivify.Spotify.SpotifyService;
+import com.rva.mrb.vivify.View.Adapter.WakeAdapter;
+import com.rva.mrb.vivify.View.Adapter.WakeTouchAdapter;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
@@ -62,22 +67,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class WakeActivity extends BaseActivity implements ConnectionStateCallback, SpotifyPlayer.NotificationCallback {
+public class WakeActivity extends BaseActivity implements ConnectionStateCallback, SpotifyPlayer.NotificationCallback, WakeView {
 
     private static final String TAG = WakeActivity.class.getSimpleName();
     @BindView(R.id.dismiss_tv) TextView dismissTv;
     @BindView(R.id.snooze_tv) TextView snoozeTv;
-    @BindView(R.id.myseek) SeekBar seekBar;
+//    @BindView(R.id.myseek) SeekBar seekBar;
     @BindView(R.id.trackImageView) ImageView trackIV;
-    @BindView(R.id.next_song) ImageButton fastForward;
+//    @BindView(R.id.next_song) ImageView fastForward;
     @BindView(R.id.wake_media_info) TextView mediaInfo;
     @BindView(R.id.wake_time) TextView clock;
-    @Inject
-    WakePresenter wakePresenter;
-    @Inject
-    NodeService nodeService;
-    @Inject
-    SpotifyService spotifyService;
+    @BindView(R.id.wake_recyclerview) RecyclerView recyclerView;
+    @Inject WakePresenter wakePresenter;
+    @Inject NodeService nodeService;
+    @Inject SpotifyService spotifyService;
 
     // Spotify
     private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
@@ -106,6 +109,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private NotificationService mNotificationService;
     private PlayerService playerService;
     private List<Track> shuffledTracks;
+    private WakeAdapter wakeAdapter;
+    private WakeTouchAdapter.WakeTouchListener listener;
+    private WakeAdapter.MediaListener mediaListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +166,36 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                     .into(trackIV);
             trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
             Log.d("trackImage", "Traack Image Url: " + trackImage);
+
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setHasFixedSize(true);
+//            mediaListener = new WakeAdapter.MediaListener() {
+//                @Override
+//                public void onNextSong() {
+//                    onNextSong();
+//                }
+//            };
+            wakeAdapter = new WakeAdapter(alarm, mediaListener);
+            listener = new WakeTouchAdapter.WakeTouchListener() {
+                @Override
+                public void onAlarmDismissed() {
+
+                    onDismiss();
+                }
+
+                @Override
+                public void onAlarmSnoozed() {
+                    onSnooze();
+                }
+            };
+            ItemTouchHelper.Callback callback = new WakeTouchAdapter(wakeAdapter, listener);
+            ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+            touchHelper.attachToRecyclerView(recyclerView);
+            recyclerView.setAdapter(wakeAdapter);
         }
+
+
         playerService = new PlayerService(mContext, spotifyService, alarm);
         //Retrieve access token from spotify
         refreshToken();
@@ -171,7 +206,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         audioTrackController = new AudioTrackController();
 
         //Set the seekbar that dissmisses/snoozes alarm
-        setSeekBar();
+//        setSeekBar();
         handleVibrator();
         mNotificationService = new NotificationService(mContext);
         mNotificationService.cancelNotification();
@@ -183,10 +218,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     }
-
-
-//    @Override
-//    protected void onResume() {}
 
     @Override
     protected void closeRealm() {
@@ -299,41 +330,41 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     /*
     This method sets the seekbar listener and allows user to snooze or dismiss the alarm.
      */
-    public void setSeekBar() {
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (seekBar.getProgress() > 85) {
-                    dismissTv.setTextSize(30);
-                    dismissTv.setTypeface(null, Typeface.BOLD);
-                    dismissRingtone();
-                } else if (seekBar.getProgress() < 15) {
-                    snoozeTv.setTextSize(30);
-                    snoozeTv.setTypeface(null, Typeface.BOLD);
-                    dismissRingtone();
-                } else {
-                    dismissTv.setTextSize(20);
-                    snoozeTv.setTextSize(20);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seekBar.getProgress() > 85) {
-                    onDismiss();
-                } else if (seekBar.getProgress() < 15) {
-                    onSnooze();
-                } else {
-                    seekBar.setProgress(50);
-                }
-            }
-        });
-    }
+//    public void setSeekBar() {
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                if (seekBar.getProgress() > 85) {
+//                    dismissTv.setTextSize(30);
+//                    dismissTv.setTypeface(null, Typeface.BOLD);
+//                    dismissRingtone();
+//                } else if (seekBar.getProgress() < 15) {
+//                    snoozeTv.setTextSize(30);
+//                    snoozeTv.setTypeface(null, Typeface.BOLD);
+//                    dismissRingtone();
+//                } else {
+//                    dismissTv.setTextSize(20);
+//                    snoozeTv.setTextSize(20);
+//                }
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                if (seekBar.getProgress() > 85) {
+//                    onDismiss();
+//                } else if (seekBar.getProgress() < 15) {
+//                    onSnooze();
+//                } else {
+//                    seekBar.setProgress(50);
+//                }
+//            }
+//        });
+//    }
 
     private void dismissRingtone() {
         if (r != null && r.isPlaying())
@@ -461,7 +492,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         });
     }
 
-    @OnClick(R.id.next_song)
+//    @OnClick(R.id.next_song)
     public void onNextSongClick(){
         mPlayer.skipToNext(operationCallback);
     }
