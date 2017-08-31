@@ -49,24 +49,24 @@
         <!--android:layout_alignParentLeft="true"-->
         <!--android:layout_alignParentStart="true" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Snooze"
-        android:id="@+id/snooze_tv"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:textSize="20dp"/>
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Snooze"-->
+        <!--android:id="@+id/snooze_tv"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:textSize="20dp"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dismiss"
-        android:id="@+id/dismiss_tv"
-        android:layout_alignBottom="@+id/snooze_tv"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textSize="20dp"/>
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Dismiss"-->
+        <!--android:id="@+id/dismiss_tv"-->
+        <!--android:layout_alignBottom="@+id/snooze_tv"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:textSize="20dp"/>-->
 
     <!--<ImageButton-->
         <!--style="?android:attr/buttonStyleSmall"-->

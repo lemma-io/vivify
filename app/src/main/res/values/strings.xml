@@ -15,7 +15,7 @@
     <string name="save_alarm">Save</string>
     <string name="name">Alarm name</string>
     <string name="title_activity_alert">AlertActivity</string>
-    <string name="dismiss">dismiss</string>
+    <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
     <string name="pending_alarm">No alarm set</string>
     <string name="login">Login</string>

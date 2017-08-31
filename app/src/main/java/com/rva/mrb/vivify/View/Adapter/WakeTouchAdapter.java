@@ -1,24 +1,24 @@
 package com.rva.mrb.vivify.View.Adapter;
 
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.*;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import com.rva.mrb.vivify.R;
 
 public class WakeTouchAdapter extends ItemTouchHelper.Callback {
 
-    public WakeTouchListener listener;
     public static final float ALPHA_FULL = 1.0f;
+    public WakeTouchListener listener;
+
 
     public WakeTouchAdapter(WakeTouchListener listener) {
         this.listener = listener;
@@ -41,9 +41,10 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView,
-                          RecyclerView.ViewHolder viewHolder,
-                          RecyclerView.ViewHolder target) {
+    public boolean onMove(
+        RecyclerView recyclerView,
+        RecyclerView.ViewHolder viewHolder,
+        RecyclerView.ViewHolder target) {
         return false;
     }
 
@@ -58,21 +59,30 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        float dX, float dY, int actionState, boolean isCurrentlyActive) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             // Get RecyclerView item from the ViewHolder
             View itemView = viewHolder.itemView;
 
             Paint p = new Paint();
+            p.setStyle(Paint.Style.FILL);
+            // Set the text color
+            p.setColor(Color.RED);
+            p.setAntiAlias(true);
             Bitmap icon;
 
             if (dX > 0) {
             /* Set your color for positive displacement */
-                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.drag_clock);
+
+                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.arrow);
                 p.setARGB(255, 0, 255, 0);
                 // Draw Rect with varying right side, equal to displacement dX
                 c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
                         (float) itemView.getBottom(), p);
+
+//                c.drawText("Dismiss", (float) itemView.getLeft() + convertDpToPx(recyclerView.getContext(), 16),
+//                        (float) itemView.getTop() + ((float) itemView.getBottom()
+//                                - (float) itemView.getTop()), p);
                 c.drawBitmap(icon,
                         (float) itemView.getLeft() + convertDpToPx(recyclerView.getContext(), 16),
                         (float) itemView.getTop() + ((float) itemView.getBottom()
@@ -80,11 +90,15 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
                         p);
             } else {
             /* Set your color for negative displacement */
-                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.drag_clock);
+                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.alarm_clock);
                 p.setARGB(255, 255, 0, 0);
                 // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
                 c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
                         (float) itemView.getRight(), (float) itemView.getBottom(), p);
+
+//                c.drawText("Snooze", (float) itemView.getLeft() + convertDpToPx(recyclerView.getContext(), 16),
+//                        (float) itemView.getTop() + ((float) itemView.getBottom()
+//                                - (float) itemView.getTop()), p);
                 c.drawBitmap(icon,
                         (float) itemView.getRight() - convertDpToPx(recyclerView.getContext(), 16) - icon.getWidth(),
                         (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight())/2,

@@ -32,7 +32,7 @@ import com.rva.mrb.vivify.Model.Service.PlayerService;
 import com.rva.mrb.vivify.R;
 import com.rva.mrb.vivify.Spotify.NodeService;
 import com.rva.mrb.vivify.Spotify.SpotifyService;
-import com.rva.mrb.vivify.View.Adapter.Wake;
+import com.rva.mrb.vivify.View.Adapter.WakeRecyclerViewAdapter;
 import com.rva.mrb.vivify.View.Adapter.WakeTouchAdapter;
 import com.spotify.sdk.android.player.*;
 import com.spotify.sdk.android.player.Error;
@@ -56,12 +56,12 @@ import retrofit2.Response;
 public class WakeActivity extends BaseActivity implements ConnectionStateCallback, SpotifyPlayer.NotificationCallback, WakeView {
 
     private static final String TAG = WakeActivity.class.getSimpleName();
-    @BindView(R.id.dismiss_tv) TextView dismissTv;
-    @BindView(R.id.snooze_tv) TextView snoozeTv;
+//    @BindView(R.id.dismiss_tv) TextView dismissTv;
+//    @BindView(R.id.snooze_tv) TextView snoozeTv;
 //    @BindView(R.id.myseek) SeekBar seekBar;
     @BindView(R.id.trackImageView) ImageView trackIV;
 //    @BindView(R.id.next_song) ImageView fastForward;
-    @BindView(R.id.wake_media_info) TextView mediaInfo;
+//    @BindView(R.id.wake_media_info) TextView mediaInfo;
     @BindView(R.id.wake_time) TextView clock;
     @BindView(R.id.wake_recyclerview) RecyclerView recyclerView;
     @Inject WakePresenter wakePresenter;
@@ -95,9 +95,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private NotificationService mNotificationService;
     private PlayerService playerService;
     private List<Track> shuffledTracks;
-    private Wake wakeAdapter;
-    private WakeTouchAdapter.WakeTouchListener listener;
-    private Wake.MediaListener mediaListener;
+    private WakeRecyclerViewAdapter wakeAdapterRecyclerViewAdapter;
+    private WakeTouchAdapter.WakeTouchListener touchListener;
+    private WakeRecyclerViewAdapter.NextMediaListener nextMediaListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +143,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             Log.d("PlayAlbum", "Alarm created");
 //            alarm = RealmService.getAlarmById(alarmId);
             playlistID = alarm.getArtistName();
-            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
+//            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
 
             //Use Glide to load image URL
             Glide.with(this)
@@ -153,27 +153,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
             Log.d("trackImage", "Traack Image Url: " + trackImage);
 
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setHasFixedSize(true);
-            mediaListener = () -> onNextSongClick();
-            wakeAdapter = new Wake(alarm, mediaListener);
-            listener = new WakeTouchAdapter.WakeTouchListener() {
-                @Override
-                public void onAlarmDismissed() {
-
-                    onDismiss();
-                }
-
-                @Override
-                public void onAlarmSnoozed() {
-                    onSnooze();
-                }
-            };
-            ItemTouchHelper.Callback callback = new WakeTouchAdapter(listener);
-            ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-            touchHelper.attachToRecyclerView(recyclerView);
-            recyclerView.setAdapter(wakeAdapter);
+            attachAdaptersToRecyclerview();
         }
 
 
@@ -198,6 +178,29 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+    }
+
+    private void attachAdaptersToRecyclerview() {
+        nextMediaListener = () -> onNextSongClick();
+        wakeAdapterRecyclerViewAdapter = new WakeRecyclerViewAdapter(alarm, nextMediaListener);
+        touchListener = new WakeTouchAdapter.WakeTouchListener() {
+            @Override
+            public void onAlarmDismissed() {
+                onDismiss();
+            }
+
+            @Override
+            public void onAlarmSnoozed() {
+                onSnooze();
+            }
+        };
+        ItemTouchHelper.Callback callback = new WakeTouchAdapter(touchListener);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(wakeAdapterRecyclerViewAdapter);
     }
 
     @Override
@@ -251,7 +254,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     player.
      */
     public void onDismiss() {
-        mPlayer.pause(operationCallback);
+        if (mPlayer != null)
+            mPlayer.pause(operationCallback);
 
         if (!disposable.isDisposed()){
             disposable.dispose();
@@ -274,10 +278,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
             }
         }
-
-
         finish();
-
     }
 
     /*
@@ -285,7 +286,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     alarm.
      */
     public void onSnooze() {
-        mPlayer.pause(operationCallback);
+        if (mPlayer != null)
+            mPlayer.pause(operationCallback);
         int snoozeMins = Integer.parseInt(sharedPref.getString("snooze_key", "5"));
         int snoozeTime = snoozeMins * 60000;
         Log.d("snooze", "Snooze time in mins: " + snoozeMins);
@@ -305,11 +307,10 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             vibrator.cancel();
         }
         finish();
-
     }
 
     /*
-    This method sets the seekbar listener and allows user to snooze or dismiss the alarm.
+    This method sets the seekbar touchListener and allows user to snooze or dismiss the alarm.
      */
 //    public void setSeekBar() {
 //        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

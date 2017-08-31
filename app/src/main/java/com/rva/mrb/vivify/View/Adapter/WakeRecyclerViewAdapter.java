@@ -15,40 +15,34 @@ import com.rva.mrb.vivify.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by rigo on 8/28/17.
- */
+public class WakeRecyclerViewAdapter extends RecyclerView.Adapter<WakeRecyclerViewAdapter.ViewHolder>
+    implements WakeAlarmTouchHelper {
 
-public class Wake extends RecyclerView.Adapter<Wake.ViewHolder>
-    implements CardTouchHelper {
-
+    private static String TAG = WakeRecyclerViewAdapter.class.getSimpleName();
     private Alarm alarm;
-    private MediaListener listener;
+    private NextMediaListener nextMediaListener;
 
-    public Wake(Alarm alarm, MediaListener listener){
-        Log.d("Adapter", "new wakeadapter");
+    public WakeRecyclerViewAdapter(Alarm alarm, NextMediaListener nextMediaListener){
         this.alarm = alarm;
-        this.listener = listener;
+        this.nextMediaListener = nextMediaListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Wake.ViewHolder viewHolder;
+        WakeRecyclerViewAdapter.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View wakeView = inflater.inflate(R.layout.wake_view, parent, false);
         viewHolder = new ViewHolder(wakeView);
-        Log.d("Wake", "CreateViewHolder");
+        Log.d(TAG, "CreateViewHolder");
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.d("Bind", "BindViewHolder");
+        Log.d(TAG, "BindViewHolder");
         holder.mediaName.setText(alarm.getTrackName());
         holder.mediaOwner.setText(alarm.getArtistName());
-        holder.nextSong.setOnClickListener(view -> {
-            listener.onNextSong();
-        });
+        holder.nextSong.setOnClickListener(view -> nextMediaListener.onNextSong());
     }
 
     @Override
@@ -77,7 +71,7 @@ public class Wake extends RecyclerView.Adapter<Wake.ViewHolder>
         }
     }
 
-    public interface MediaListener {
+    public interface NextMediaListener {
         void onNextSong();
     }
 }
