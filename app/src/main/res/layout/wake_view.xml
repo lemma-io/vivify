@@ -13,6 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginRight="50dip"
             android:orientation="vertical">
 
             <TextView
@@ -21,24 +22,38 @@
                 android:layout_height="wrap_content"
                 android:text="Generation WHY"
                 android:textSize="24dip"
-                android:paddingLeft="30dip"/>
+                android:paddingLeft="30dip"
+                android:textColor="#ffffff"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:maxEms="12"/>
             <TextView
                 android:id="@+id/wake_media_owner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Zhu"
                 android:textSize="20dip"
-                android:paddingLeft="30dip"/>
+                android:paddingLeft="30dip"
+                android:textColor="#ffffff"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:maxEms="12"/>
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/next_song"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="70dip"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_ff"
-            android:paddingRight="15dip"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true">
+
+            <ImageView
+                android:id="@+id/next_song"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_media_skip"
+                android:layout_centerVertical="true" />
+
+        </LinearLayout>
+
 
     </RelativeLayout>
 
