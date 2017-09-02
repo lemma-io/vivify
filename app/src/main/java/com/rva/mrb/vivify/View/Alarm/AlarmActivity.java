@@ -142,6 +142,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         if(!sharedPreferences.getBoolean("isLoggedIn", false)) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
