@@ -115,7 +115,7 @@ public class RealmService {
                         .sort("time").first().getTime().after(mRealm.where(Alarm.class)
                                 .equalTo("enabled", true)
                                 .equalTo("snoozed", true).findAll()
-                                .sort("snoozedAt").first().getTime())) {
+                                .sort("snoozedAt").first().getSnoozedAt())) {
                     return mRealm.where(Alarm.class)
                             .equalTo("enabled", true)
                             .equalTo("snoozed", true).findAll()

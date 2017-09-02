@@ -96,6 +96,10 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private Player.OperationCallback operationCallback;
     private Disposable disposable;
     private Disposable initPlayer;
+    private Disposable shuffleDis;
+    private Disposable musicDisposable;
+    private Disposable queue;
+    private boolean destroyed;
     private NotificationService mNotificationService;
     private PlayerService playerService;
     private List<Track> shuffledTracks;
@@ -106,7 +110,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        destroyed = false;
         //Dagger and Butterknife dependenncy injecetions
         setContentView(R.layout.activity_wake);
         WakeComponent wakeComponent = DaggerWakeComponent.builder()
@@ -376,7 +380,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //
 //                });
                 if(shuffle) {
-                    Disposable d = playerService.getTracks().subscribe(() -> {
+                    shuffleDis = playerService.getTracks().subscribe(() -> {
                         shuffledTracks = playerService.returnTracks();
                         initPlayer = initCustomPlayer().subscribe();
                     });
@@ -446,7 +450,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                             Log.d("WakeActivity", "logged in: " + spotifyPlayer.isLoggedIn());
                             mPlayer = spotifyPlayer;
                             if(spotifyPlayer.isLoggedIn()){
-                                playMusic();
+                                musicDisposable = playMusic().subscribe();
                             }
                             else {
                                 mPlayer.addConnectionStateCallback(WakeActivity.this);
@@ -468,71 +472,58 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     }
 
-    /**
-     * This method initializes SpotifyPlayer after a fresh access token has been obtained.
-     */
-    public void initSpotifyPlayer() {
-        playerConfig = new Config(this, applicationModule.getAccessToken(), CLIENT_ID);
-        Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+    public Completable playMusic(){
+        return Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void onInitialized(SpotifyPlayer spotifyPlayer) {
-                mPlayer = spotifyPlayer;
-                mPlayer.addConnectionStateCallback(WakeActivity.this);
-                mPlayer.addNotificationCallback(WakeActivity.this);
+            public void subscribe(CompletableEmitter e) throws Exception {
+                if(!destroyed) {
+                    Log.d("PlayAlbum", "Alarm Type: " + alarm.getMediaType());
+                    if (shuffle) {
+                        if (alarm.getMediaType() == MediaType.DEFAULT_TYPE) {
+                            playDefaultRingtone();
+                        } else {
+                            mPlayer.playUri(operationCallback, shuffledTracks.get(0).getUri(), 0, 0);
+                            shuffledTracks.remove(0);
+                            queue = Flowable.interval(250, TimeUnit.MILLISECONDS)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(along -> {
+                                        if (shuffledTracks.size() > 0) {
+                                            Log.d("wakeActivity", shuffledTracks.get(0).getUri());
+                                            mPlayer.queue(operationCallback, shuffledTracks.get(0).getUri());
+                                            shuffledTracks.remove(0);
+                                        }
+                                    });
+                        }
+                    } else {
+                        switch (alarm.getMediaType()) {
+                            case MediaType.DEFAULT_TYPE:
+                                playDefaultRingtone();
+                                break;
+                            case MediaType.TRACK_TYPE:
+                                mPlayer.playUri(operationCallback, "spotify:track:" + trackId, 0, 0);
+                                break;
+                            case MediaType.ALBUM_TYPE:
+                                Log.d("PlayAlbum", "spotify:album:" + trackId);
+                                mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
+                                Log.d("WakeActivity", "setting shuffle: " + shuffle);
+                                break;
+                            case MediaType.PLAYLIST_TYPE:
+                                Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
+                                mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
+                                break;
+                        }
 
-                Log.d("spotifyPlayer", "initialized player");
-            }
+                    }
 
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("MainActivity", "Could not initialize custom player: " + throwable.getMessage());
+                    mPlayer.setShuffle(operationCallback, shuffle);
+                    mPlayer.setRepeat(operationCallback, true);
+                }
+                else{
+                    Spotify.destroyPlayer(this);
+                }
             }
         });
-    }
 
-    public void playMusic(){
-        Log.d("PlayAlbum", "Alarm Type: " + alarm.getMediaType());
-        if(shuffle){
-            if(alarm.getMediaType() == MediaType.DEFAULT_TYPE){
-                playDefaultRingtone();
-            }
-            else {
-                mPlayer.playUri(operationCallback, shuffledTracks.get(0).getUri(), 0, 0);
-                shuffledTracks.remove(0);
-                Disposable dispose = Flowable.interval(250, TimeUnit.MILLISECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(along -> {
-                            if(shuffledTracks.size() > 0){
-                                Log.d("wakeActivity", shuffledTracks.get(0).getUri());
-                                mPlayer.queue(operationCallback, shuffledTracks.get(0).getUri());
-                                shuffledTracks.remove(0);
-                            }
-                        });
-            }
-        }
-        else {
-            switch (alarm.getMediaType()) {
-                case MediaType.DEFAULT_TYPE:
-                    playDefaultRingtone();
-                    break;
-                case MediaType.TRACK_TYPE:
-                    mPlayer.playUri(operationCallback, "spotify:track:" + trackId, 0, 0);
-                    break;
-                case MediaType.ALBUM_TYPE:
-                    Log.d("PlayAlbum", "spotify:album:" + trackId);
-                    mPlayer.playUri(operationCallback, "spotify:album:" + trackId, 0, 0);
-                    Log.d("WakeActivity", "setting shuffle: " + shuffle);
-                    break;
-                case MediaType.PLAYLIST_TYPE:
-                    Log.d("PlayAlbum", "spotify:user:" + playlistID + ":playlist:" + trackId);
-                    mPlayer.playUri(operationCallback, "spotify:user:" + playlistID + ":playlist:" + trackId, 0, 0);
-                    break;
-            }
-
-        }
-
-        mPlayer.setShuffle(operationCallback, shuffle);
-        mPlayer.setRepeat(operationCallback, true);
     }
 
 //    @OnClick(R.id.next_song)
@@ -545,9 +536,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
      */
     @Override
     public void onLoggedIn() {
-        playMusic();
-
-
+            musicDisposable = playMusic().subscribe();
     }
 
     public void playDefaultRingtone() {
@@ -592,8 +581,19 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     protected void onDestroy() {
         // VERY IMPORTANT! This must always be called or else you will leak resources
         Log.d("WakeActivity", "onDestroy");
+        destroyed = true;
         if(initPlayer != null && !initPlayer.isDisposed()) {
+            Log.d("WakeActivity", "disposing initplayer");
             initPlayer.dispose();
+        }
+        if(shuffleDis != null && !shuffleDis.isDisposed()) {
+            shuffleDis.dispose();
+        }
+        if(musicDisposable != null && !musicDisposable.isDisposed()) {
+            musicDisposable.dispose();
+        }
+        if(queue != null && !queue.isDisposed()) {
+            queue.dispose();
         }
         Spotify.destroyPlayer(this);
         if (vibrate){
