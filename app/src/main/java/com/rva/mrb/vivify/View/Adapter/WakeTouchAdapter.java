@@ -90,7 +90,7 @@ public class WakeTouchAdapter extends ItemTouchHelper.Callback {
                         p);
             } else {
             /* Set your color for negative displacement */
-                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.alarm_clock);
+                icon = BitmapFactory.decodeResource(recyclerView.getContext().getResources(), R.drawable.ic_snooze_alarm);
                 p.setARGB(255, 255, 0, 0);
                 // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
                 c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),

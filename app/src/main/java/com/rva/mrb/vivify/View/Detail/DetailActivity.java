@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -12,10 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -45,6 +49,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class DetailActivity extends BaseActivity implements DetailView {
 
@@ -53,13 +58,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.edit_name) EditText editname;
     @BindView(R.id.edit_time) EditText mEditTime;
     @BindView(R.id.track_tv) TextView mTrackTv;
-    @BindView(R.id.isSet) CheckBox mIsSet;
+    @BindView(R.id.isSet) Switch mIsSet;
 //    @BindView(R.id.standard_time) CheckBox mStandardTime;
-    @BindView(R.id.shuffle) CheckBox mShuffle;
-    @BindView(R.id.vibrate) CheckBox mVibrate;
+    @BindView(R.id.shuffle) CheckedTextView mShuffle;
+    @BindView(R.id.vibrate) CheckedTextView mVibrate;
 //    @BindView(R.id.button_add) Button addbt;
 //    @BindView(R.id.button_delete) Button deletebt;
 //    @BindView(R.id.button_save) Button savebt;
+    @BindView(R.id.button_save) FloatingActionButton saveFab;
     @BindView(R.id.sunday_check) CheckBox sundayCb;
     @BindView(R.id.monday_check) CheckBox mondayCb;
     @BindView(R.id.tuesday_check) CheckBox tuesdayCb;
@@ -110,10 +116,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
-        if(isNew){
-            getMenuInflater().inflate(R.menu.new_alarm_menu, menu);
-        }
-        else {
+//        if(isNew){
+//            getMenuInflater().inflate(R.menu.new_alarm_menu, menu);
+//        }
+        if (!isNew) {
             getMenuInflater().inflate(R.menu.detail_menu, menu);
         }
         return true;
@@ -169,6 +175,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
+                saveFab.setVisibility(View.INVISIBLE);
                 setTrackTv();
                 setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
             }
@@ -181,6 +188,9 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     private void setMediaBackgroundImage(String trackImage) {
+        if (alarm.getMediaType() == MediaType.DEFAULT_TYPE) {
+            supportStartPostponedEnterTransition();
+        }
         Glide.with(getApplicationContext())
                 .load(trackImage)
                 .centerCrop()
@@ -244,7 +254,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the alarm object to detailPresenter to add the alarm to realm
      */
-//    @OnClick(R.id.button_add)
+    @OnClick(R.id.button_save)
     public void onAddClick() {
         setAlarm();
         detailPresenter.onAddClick(alarm, getApplicationContext());
@@ -269,7 +279,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be saved to realm
      */
-//    @OnClick(R.id.button_save)
     public void onSaveAlarm() {
         setAlarm();
         detailPresenter.onSaveAlarm(alarm, getApplicationContext());
@@ -339,11 +348,23 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method starts(for result) a new SearchActivity to search for spotify music
      */
-    @OnClick(R.id.spotify_search)
+    @OnClick({R.id.spotify_search,
+              R.id.music_queue,
+              R.id.alarm_detail_bg})
     public void onSearchClick() {
 
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, requestCode);
+    }
+
+    @OnClick(R.id.vibrate)
+    public void onVibrateClick() {
+        mVibrate.toggle();
+    }
+
+    @OnClick(R.id.shuffle)
+    public void onShuffleClick() {
+        mShuffle.toggle();
     }
 
     public void setAlarm() {

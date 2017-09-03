@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
@@ -40,7 +41,7 @@ public class NotificationService {
         boolean key = sharedPref.getBoolean("notification_key", true);
         if(key) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
-                    .setSmallIcon(R.drawable.drag_clock)
+                    .setSmallIcon(R.drawable.ic_vivify_notification)
                     .setContentText("Time: " + time)
                     .setAutoCancel(false)
                     .setOngoing(true);
@@ -67,7 +68,7 @@ public class NotificationService {
         boolean key = sharedPref.getBoolean("notification_key", true);
         if(key) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
-                    .setSmallIcon(R.drawable.drag_clock)
+                    .setSmallIcon(R.drawable.ic_vivify_notification)
                     .setContentText("Time: " + time)
                     .setAutoCancel(true);
             Intent notificationIntent = new Intent(mContext, AlarmActivity.class);

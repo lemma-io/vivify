@@ -19,15 +19,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:titleTextColor="@android:color/white"
-            android:background="?attr/colorPrimary"
             android:theme="@style/AppTheme.NoActionBar">
 
             <TextView
                 android:id="@+id/toolbar_notification"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pending_alarm"
+                android:text="@string/app_name"
                 android:textColor="@android:color/white"
+                android:gravity="center"
                 style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 />
 
@@ -52,6 +52,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:elevation="10dp"
-        android:src="@android:drawable/ic_input_add" />
+        android:scaleType="center"
+        android:src="@drawable/ic_add_alarm" />
 
 </android.support.design.widget.CoordinatorLayout>

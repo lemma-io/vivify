@@ -17,4 +17,11 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="toggleButton"  parent="@android:style/Theme.Black">
+        <item name="android:buttonStyleToggle">@style/toggleButton</item>
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+    </style>
+
+
 </resources>

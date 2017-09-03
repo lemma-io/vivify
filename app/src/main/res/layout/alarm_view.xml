@@ -11,12 +11,13 @@
         android:id="@+id/alarm_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:transitionName="detail"/>
+        android:transitionName="detail" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:background="#55000000">
 
     <LinearLayout
         android:id="@+id/inner_layout"
@@ -31,6 +32,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="Early"
+            android:textColor="#eeeeee"
             android:layout_weight="1"/>
 
         <TextView
@@ -39,6 +41,7 @@
             android:layout_height="wrap_content"
             android:textSize="42sp"
             android:textStyle="bold"
+            android:textColor="#fffafa"
             android:paddingBottom="5dip" />
 
         <RelativeLayout
@@ -48,7 +51,8 @@
             <TextView
                 android:id="@+id/alarm_timer"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:id="@+id/alarm_media_info"
@@ -63,7 +67,8 @@
                 android:focusableInTouchMode="true"
                 android:scrollHorizontally="true"
                 android:clickable="true"
-                android:text="Generation Wh.."/>
+                android:text="Generation Wh.."
+                android:textColor="#ffffff" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -79,7 +84,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/alarm_is_set"
             android:layout_gravity="center"
-            android:paddingLeft="30dip"/>
+            android:paddingLeft="30dip"
+            android:elevation="10dp"/>
     </LinearLayout>
 
 

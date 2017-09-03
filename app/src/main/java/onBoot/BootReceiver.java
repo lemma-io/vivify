@@ -9,6 +9,9 @@ import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.NotificationService;
 import com.rva.mrb.vivify.Model.Service.RealmService;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -47,7 +50,30 @@ public class BootReceiver extends BroadcastReceiver
         Alarm nextAlarm = realmService.getNextAlarm();
 
         if (nextAlarm!=null){
-            notificationService.setNotification(nextAlarm.getTime() +"", nextAlarm.isSnoozed());
+            notificationService.setNotification(prettyDateFormat(nextAlarm.getTime()) +"", nextAlarm.isSnoozed());
+        }
+    }
+
+    public String prettyDateFormat(Date time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+        String daySuffix = getDaySuffix(cal.get(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d'" + daySuffix + "' hh:m a");
+        return sdf.format(time.getTime());
+    }
+
+    private String getDaySuffix(int day) {
+        if (day >= 11 && day <= 13)
+            return "th";
+        switch (day % 10) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
         }
     }
 }

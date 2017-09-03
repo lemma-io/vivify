@@ -7,6 +7,9 @@ import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.NotificationService;
 import com.rva.mrb.vivify.Model.Service.RealmService;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.RealmResults;
@@ -56,6 +59,29 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
         if(!alarmsWereShown) {
             mAlarmsView.showAlarms(mRealmService.getAllAlarms());
             alarmsWereShown = true;
+        }
+    }
+
+    public String prettyDateFormat(Date alarmTime) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(alarmTime);
+        String daySuffix = getDaySuffix(cal.get(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d'" + daySuffix + "' hh:m a");
+        return sdf.format(alarmTime.getTime());
+    }
+
+    private String getDaySuffix(int day) {
+        if (day >= 11 && day <= 13)
+            return "th";
+        switch (day % 10) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
         }
     }
 

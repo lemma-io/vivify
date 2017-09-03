@@ -215,7 +215,7 @@ public class SearchActivity extends BaseActivity implements SearchView,
      * Search button was clicked. This method makes a retrofit call to Spotify API with the string in
      * searchEditText to search for music.
      */
-    @OnClick(R.id.fab3)
+//    @OnClick(R.id.fab3)
     public void onSearchClick() {
         Log.d("MyApp", "Fab Click");
         String searchQuery = searchEditText.getText().toString();
