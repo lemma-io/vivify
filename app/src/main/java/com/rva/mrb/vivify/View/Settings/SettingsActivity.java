@@ -52,9 +52,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     editor.commit();
                     AlarmScheduler.cancelSnoozedAlarm(getActivity().getApplicationContext());
                     AlarmScheduler.cancelNextAlarm(getActivity().getApplicationContext());
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
-                    getActivity().finish();
+                    getActivity().onBackPressed();
                     return true;
                 }
             });
