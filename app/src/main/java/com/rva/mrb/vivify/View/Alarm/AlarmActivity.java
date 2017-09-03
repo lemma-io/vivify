@@ -133,6 +133,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         if(!sharedPreferences.getBoolean("isLoggedIn", false)) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -146,6 +147,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         alarmPresenter.checkMissedAlarms(context, mNotificationService);
         mAdapter.notifyDataSetChanged();
         supportStartPostponedEnterTransition();
+        checkLoginStatus();
         updateAlarmNotification();
     }
 
@@ -161,6 +163,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         alarmPresenter.checkMissedAlarms(context, mNotificationService);
         mAdapter.notifyDataSetChanged();
         supportStartPostponedEnterTransition();
+        checkLoginStatus();
         updateAlarmNotification();
     }
 

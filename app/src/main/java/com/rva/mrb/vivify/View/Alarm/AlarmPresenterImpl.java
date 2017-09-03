@@ -98,7 +98,7 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
         }
         mRealmService.disableMissedAlarms();
         mRealmService.disableMissedSnoozed();
-        AlarmScheduler.cancelSnoozedAlarm(context);
+        //AlarmScheduler.cancelSnoozedAlarm(context);
     }
 
     @Override

@@ -1,40 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <RingtonePreference
         android:key="default_ringtone_key"
         android:title="Default Ringtone"
         android:ringtoneType="alarm"
         android:defaultValue="content://settings/system/awaken"/>
-
     <ListPreference
         android:key="snooze_key"
         android:title="Snooze"
         android:entries="@array/snoozeIntervals"
         android:entryValues="@array/snoozeValues"
         android:defaultValue="5"/>
-
     <ListPreference
         android:key="fadein_key"
         android:title="Fade in Duration"
         android:entries="@array/fadeinIntervals"
         android:entryValues="@array/fadeinValues"
         android:defaultValue="30"/>
-
     <CheckBoxPreference
         android:key="notification_key"
         android:title="Allow Upcoming Alarm Notification"
         android:defaultValue="true"/>
-
     <CheckBoxPreference
         android:key="wifi_only_key"
         android:title="Wifi Only"
         android:defaultValue="false"/>
-
-    <com.rva.mrb.vivify.View.Settings.SeekBarPreference
-        android:summary="Maximum Alarm Volume"
-        android:key="max_volume_key"
-        android:title="Maximum Alarm Volume"
-        android:defaultValue="100"/>
-
+    <Preference
+        android:title="Logout"
+        android:enabled="true"
+        android:key="logout">
+    </Preference>
 </PreferenceScreen>
