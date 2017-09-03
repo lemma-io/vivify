@@ -52,6 +52,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:elevation="10dp"
-        android:src="@android:drawable/ic_input_add" />
+        android:scaleType="center"
+        android:src="@drawable/ic_add_alarm" />
 
 </android.support.design.widget.CoordinatorLayout>
