@@ -42,8 +42,6 @@ public class NotificationService {
         if(key) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
                     .setSmallIcon(R.drawable.ic_vivify_notification)
-                    .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(),
-                            R.drawable.ic_vivify_notification))
                     .setContentText("Time: " + time)
                     .setAutoCancel(false)
                     .setOngoing(true);
@@ -71,8 +69,6 @@ public class NotificationService {
         if(key) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
                     .setSmallIcon(R.drawable.ic_vivify_notification)
-                    .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(),
-                            R.drawable.ic_vivify_notification))
                     .setContentText("Time: " + time)
                     .setAutoCancel(true);
             Intent notificationIntent = new Intent(mContext, AlarmActivity.class);

@@ -74,29 +74,20 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         // find the next scheduled alarm
-//        updateAlarmNotification();
+        updateAlarmNotification();
 
         // custom listener listening alarm toggles
-        listener = new AlarmAdapter.OnAlarmToggleListener() {
-            @Override
-            public void onAlarmToggle() {
-                updateAlarmNotification();
-            }
-        };
+        listener = () -> updateAlarmNotification();
 
-        clickListener = new AlarmAdapter.AlarmClickListener() {
-            @Override
-            public void onAlarmClick(int pos, Alarm alarm, ImageView sharedImageView) {
-                startDetailActivity(pos, alarm, sharedImageView);
-            }
-        };
+        clickListener = (pos, alarm, sharedImageView) -> startDetailActivity(pos, alarm, sharedImageView);
+
         // create a new container to list all alarms
         // and set to auto update from realm results
         mAdapter = new AlarmAdapter(getApplicationContext(),
                 alarmPresenter.getAllAlarms(), listener, clickListener, true, true);
         mRecyclerView.setAdapter(mAdapter);
 
-//        updateAlarmNotification();
+        updateAlarmNotification();
     }
 
     @Override
@@ -193,17 +184,18 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         Alarm nextAlarm = alarmPresenter.getNextAlarmTime();
 
         if (nextAlarm!=null){
-            if(nextAlarm.isSnoozed()) {
-                alarmNotification.setText(nextAlarm.getSnoozedAt() + "");
-            }
-            else {
-                alarmNotification.setText(nextAlarm.getTime() + "");
-            }
-            mNotificationService.setNotification(nextAlarm.getTime() +"", nextAlarm.isSnoozed());
+//            if(nextAlarm.isSnoozed()) {
+//                alarmNotification.setText(nextAlarm.getSnoozedAt() + "");
+//            }
+//            else {
+//                alarmNotification.setText(nextAlarm.getTime() + "");
+//            }
+            mNotificationService.setNotification(
+                    alarmPresenter.prettyDateFormat(nextAlarm.getTime())+"", nextAlarm.isSnoozed());
         }
         else {
             mNotificationService.cancelNotification();
-            alarmNotification.setText("No Alarms Set");
+//            alarmNotification.setText("No Alarms Set");
         }
     }
 

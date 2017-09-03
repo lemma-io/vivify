@@ -349,7 +349,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
      * This method starts(for result) a new SearchActivity to search for spotify music
      */
     @OnClick({R.id.spotify_search,
-              R.id.music_queue})
+              R.id.music_queue,
+              R.id.alarm_detail_bg})
     public void onSearchClick() {
 
         Intent intent = new Intent(this, SearchActivity.class);
