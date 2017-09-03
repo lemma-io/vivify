@@ -16,7 +16,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:background="#55000000">
 
     <LinearLayout
         android:id="@+id/inner_layout"
@@ -31,7 +32,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="Early"
-            android:textColor="#ffffff"
+            android:textColor="#eeeeee"
             android:layout_weight="1"/>
 
         <TextView
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textSize="42sp"
             android:textStyle="bold"
-            android:textColor="#ffffff"
+            android:textColor="#fffafa"
             android:paddingBottom="5dip" />
 
         <RelativeLayout
@@ -83,7 +84,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/alarm_is_set"
             android:layout_gravity="center"
-            android:paddingLeft="30dip"/>
+            android:paddingLeft="30dip"
+            android:elevation="10dp"/>
     </LinearLayout>
 
 
