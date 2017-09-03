@@ -43,7 +43,8 @@ public class NotificationService {
                     .setSmallIcon(R.drawable.drag_clock)
                     .setContentText("Time: " + time)
                     .setAutoCancel(false)
-                    .setOngoing(true);
+                    .setOngoing(true)
+                    .setShowWhen(false);
             Intent notificationIntent = new Intent(mContext, AlarmActivity.class);
             PendingIntent intent = PendingIntent.getActivity(mContext, 0,
                     notificationIntent, 0);
@@ -69,7 +70,8 @@ public class NotificationService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
                     .setSmallIcon(R.drawable.drag_clock)
                     .setContentText("Time: " + time)
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .setShowWhen(false);
             Intent notificationIntent = new Intent(mContext, AlarmActivity.class);
             PendingIntent intent = PendingIntent.getActivity(mContext, 0,
                     notificationIntent, 0);

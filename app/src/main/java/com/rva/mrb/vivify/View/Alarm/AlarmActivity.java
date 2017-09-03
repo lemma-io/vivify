@@ -156,6 +156,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         alarmPresenter.checkMissedAlarms(context, mNotificationService);
         mAdapter.notifyDataSetChanged();
         supportStartPostponedEnterTransition();
+        checkLoginStatus();
         updateAlarmNotification();
     }
 
@@ -171,6 +172,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
         alarmPresenter.checkMissedAlarms(context, mNotificationService);
         mAdapter.notifyDataSetChanged();
         supportStartPostponedEnterTransition();
+        checkLoginStatus();
         updateAlarmNotification();
     }
 

@@ -95,7 +95,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private AudioTrackController audioTrackController;
     private Player.OperationCallback operationCallback;
     private Disposable disposable;
-    private Disposable initPlayer;
+    //private Disposable initPlayer;
     private Disposable shuffleDis;
     private Disposable musicDisposable;
     private Disposable queue;
@@ -382,11 +382,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 if(shuffle) {
                     shuffleDis = playerService.getTracks().subscribe(() -> {
                         shuffledTracks = playerService.returnTracks();
-                        initPlayer = initCustomPlayer().subscribe();
+                        //initPlayer = initCustomPlayer().subscribe();
+                        initCustomPlayer();
                     });
                 }
                 else{
-                    initPlayer = initCustomPlayer().subscribe();
+                    //initPlayer = initCustomPlayer().subscribe();
+                    initCustomPlayer();
                 }
 //                spotifyService.getAlbumTracks(trackId)
 //                        .subscribeOn(Schedulers.io())
@@ -413,10 +415,10 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         });
     }
 
-    public Completable initCustomPlayer() {
-        return Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
+    public void initCustomPlayer() {
+//        return Completable.create(new CompletableOnSubscribe() {
+//            @Override
+//            public void subscribe(CompletableEmitter e) throws Exception {
                 Log.d("Player", "Init custom player");
                 playerConfig = new Config(mContext, applicationModule.getAccessToken(), CLIENT_ID);
                 SpotifyPlayer.Builder builder = new SpotifyPlayer.Builder(playerConfig)
@@ -467,8 +469,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                         Log.e("MainActivity", "Could not initialize custom player: " + throwable.getMessage());
                     }
                 });
-            }
-        });
+//            }
+//        });
 
     }
 
@@ -582,10 +584,10 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         // VERY IMPORTANT! This must always be called or else you will leak resources
         Log.d("WakeActivity", "onDestroy");
         destroyed = true;
-        if(initPlayer != null && !initPlayer.isDisposed()) {
-            Log.d("WakeActivity", "disposing initplayer");
-            initPlayer.dispose();
-        }
+//        if(initPlayer != null && !initPlayer.isDisposed()) {
+//            Log.d("WakeActivity", "disposing initplayer");
+//            initPlayer.dispose();
+//        }
         if(shuffleDis != null && !shuffleDis.isDisposed()) {
             shuffleDis.dispose();
         }
