@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/track_tv"
-                android:text="Zhu:GENERATION WHY"
+                android:hint="Your morning jam"
                 android:textSize="25dp"
                 android:lines="1"
                 android:ellipsize="marquee"/>

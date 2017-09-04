@@ -13,6 +13,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.RealmService;
@@ -73,11 +74,13 @@ public class AlarmAdapter extends
         viewHolder.isSet.setChecked(alarm.isEnabled());
         viewHolder.mediaInfoTv.setText(alarm.getTrackName() + ": " + alarm.getArtistName());
         viewHolder.mediaInfoTv.setSelected(true);
+
+        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
         Glide.with(viewHolder.itemView.getContext())
                 .load(alarm.getTrackImage())
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .into(viewHolder.alarmBg);
-        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
 
         viewHolder.cardView.setOnClickListener(view -> {
             alarmClickListener.onAlarmClick(position, alarm, viewHolder.alarmBg);

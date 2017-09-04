@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -184,6 +186,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
             Log.d("DetailTime", detailPresenter.getCurrentTime());
             mEditTime.setText(detailPresenter.getCurrentTime());
             alarm.setTime(Calendar.getInstance().getTime());
+            mIsSet.toggle();
         }
     }
 
@@ -191,8 +194,11 @@ public class DetailActivity extends BaseActivity implements DetailView {
         if (alarm.getMediaType() == MediaType.DEFAULT_TYPE) {
             supportStartPostponedEnterTransition();
         }
+
+        alarmDetailBg.setScaleType(ImageView.ScaleType.FIT_XY);
         Glide.with(getApplicationContext())
                 .load(trackImage)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override

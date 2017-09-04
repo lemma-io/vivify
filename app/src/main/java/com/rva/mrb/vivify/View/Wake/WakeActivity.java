@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
@@ -154,11 +155,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
 
             //Use Glide to load image URL
+            trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
             Glide.with(this)
                     .load(trackImage)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .centerCrop()
                     .into(trackIV);
-            trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
+
             Log.d("trackImage", "Traack Image Url: " + trackImage);
 
             attachAdaptersToRecyclerview();
