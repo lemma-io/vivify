@@ -3,7 +3,10 @@ package com.rva.mrb.vivify.View.Detail;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -11,12 +14,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
@@ -41,6 +51,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class DetailActivity extends BaseActivity implements DetailView {
 
@@ -49,13 +60,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.edit_name) EditText editname;
     @BindView(R.id.edit_time) EditText mEditTime;
     @BindView(R.id.track_tv) TextView mTrackTv;
-    @BindView(R.id.isSet) CheckBox mIsSet;
-    @BindView(R.id.standard_time) CheckBox mStandardTime;
-    @BindView(R.id.shuffle) CheckBox mShuffle;
-    @BindView(R.id.vibrate) CheckBox mVibrate;
-    @BindView(R.id.button_add) Button addbt;
+    @BindView(R.id.isSet) Switch mIsSet;
+//    @BindView(R.id.standard_time) CheckBox mStandardTime;
+    @BindView(R.id.shuffle) CheckedTextView mShuffle;
+    @BindView(R.id.vibrate) CheckedTextView mVibrate;
+//    @BindView(R.id.button_add) Button addbt;
 //    @BindView(R.id.button_delete) Button deletebt;
 //    @BindView(R.id.button_save) Button savebt;
+    @BindView(R.id.button_save) FloatingActionButton saveFab;
     @BindView(R.id.sunday_check) CheckBox sundayCb;
     @BindView(R.id.monday_check) CheckBox mondayCb;
     @BindView(R.id.tuesday_check) CheckBox tuesdayCb;
@@ -69,6 +81,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     private String trackId;
     private String trackImage;
     private int mediaType;
+    private boolean isNew;
     private Alarm alarm = new Alarm();
     final private int requestCode = 1;
 
@@ -81,6 +94,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportPostponeEnterTransition();
         setContentView(R.layout.activity_add_alarm);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
@@ -93,15 +107,28 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 .build();
         detailComponent.inject(this);
         ButterKnife.bind(this);
+        Bundle bundle = getIntent().getExtras();
+        if(bundle == null){
+            isNew = true;
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
         isNewAlarm();
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+//        if(isNew){
+//            getMenuInflater().inflate(R.menu.new_alarm_menu, menu);
+//        }
+        if (!isNew) {
+            getMenuInflater().inflate(R.menu.detail_menu, menu);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
         return true;
     }
 
@@ -112,9 +139,16 @@ public class DetailActivity extends BaseActivity implements DetailView {
             case R.id.exit_alarm:
                 onDeleteAlarm();
                 return true;
+            case R.id.save_alarm:
+                onAddClick();
+                return true;
             default:
-                onSaveAlarm();
-                return super.onOptionsItemSelected(item);
+                if(!isNew) {
+                    onSaveAlarm();
+                }
+                supportFinishAfterTransition();
+                return true;
+//                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -122,15 +156,19 @@ public class DetailActivity extends BaseActivity implements DetailView {
      * This method programmatically shows add, save, and delete buttons
      */
     private void isNewAlarm() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alarmDetailBg.setTransitionName("detail");
+        }
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            setVisibility();
+//            setVisibility();
+            Log.d("DetailActivity", Boolean.toString(bundle.getBoolean("NewAlarm", true)));
             if (bundle.getBoolean("NewAlarm", true) == false) {
                 alarm = Parcels.unwrap(getIntent().getParcelableExtra("Alarm"));
                 setMediaBackgroundImage(alarm.getTrackImage());
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
-                mStandardTime.setChecked(alarm.is24hr());
+//                mStandardTime.setChecked(alarm.is24hr());
                 mShuffle.setChecked(alarm.isShuffle());
                 mVibrate.setChecked(alarm.isVibrate());
                 trackName = alarm.getTrackName();
@@ -139,6 +177,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
+                saveFab.setVisibility(View.INVISIBLE);
                 setTrackTv();
                 setRepeatCheckBoxes(alarm.getDecDaysOfWeek());
             }
@@ -147,21 +186,40 @@ public class DetailActivity extends BaseActivity implements DetailView {
             Log.d("DetailTime", detailPresenter.getCurrentTime());
             mEditTime.setText(detailPresenter.getCurrentTime());
             alarm.setTime(Calendar.getInstance().getTime());
+            mIsSet.toggle();
         }
     }
 
     private void setMediaBackgroundImage(String trackImage) {
+        if (alarm.getMediaType() == MediaType.DEFAULT_TYPE) {
+            supportStartPostponedEnterTransition();
+        }
+
+        alarmDetailBg.setScaleType(ImageView.ScaleType.FIT_XY);
         Glide.with(getApplicationContext())
                 .load(trackImage)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+                })
                 .into(alarmDetailBg);
     }
 
-    private void setVisibility() {
-        addbt.setVisibility(View.GONE);
-//        savebt.setVisibility(View.VISIBLE);
-//        deletebt.setVisibility(View.VISIBLE);
-    }
+//    private void setVisibility() {
+//        addbt.setVisibility(View.GONE);
+////        savebt.setVisibility(View.VISIBLE);
+////        deletebt.setVisibility(View.VISIBLE);
+//    }
 
     // TODO handle by presenter
     private void setRepeatCheckBoxes(int daysOfWeek) {
@@ -202,7 +260,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the alarm object to detailPresenter to add the alarm to realm
      */
-    @OnClick(R.id.button_add)
+    @OnClick(R.id.button_save)
     public void onAddClick() {
         setAlarm();
         detailPresenter.onAddClick(alarm, getApplicationContext());
@@ -211,7 +269,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
         returnIntent.putExtra("enabled", true);
         Log.d(TAG, "Extra " + returnIntent.getBooleanExtra("enabled", true));
         setResult(Activity.RESULT_OK, returnIntent);
-        finish();
+        supportFinishAfterTransition();
+//        finish();
     }
 
     /**
@@ -226,18 +285,21 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method passes the current alarm object to detailPresenter to be saved to realm
      */
-//    @OnClick(R.id.button_save)
     public void onSaveAlarm() {
         setAlarm();
         detailPresenter.onSaveAlarm(alarm, getApplicationContext());
-        finish();
+        supportFinishAfterTransition();
+//        finish();
     }
 
     @Override
     public void onBackPressed()
     {
-        onSaveAlarm();
-        super.onBackPressed();  // optional depending on your needs
+        if(!isNew) {
+            onSaveAlarm();
+        }
+        supportFinishAfterTransition();
+//        super.onBackPressed();  // optional depending on your needs
     }
 
     @OnClick(R.id.edit_time)
@@ -292,11 +354,23 @@ public class DetailActivity extends BaseActivity implements DetailView {
     /**
      * This method starts(for result) a new SearchActivity to search for spotify music
      */
-    @OnClick(R.id.spotify_search)
+    @OnClick({R.id.spotify_search,
+              R.id.music_queue,
+              R.id.alarm_detail_bg})
     public void onSearchClick() {
 
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, requestCode);
+    }
+
+    @OnClick(R.id.vibrate)
+    public void onVibrateClick() {
+        mVibrate.toggle();
+    }
+
+    @OnClick(R.id.shuffle)
+    public void onShuffleClick() {
+        mShuffle.toggle();
     }
 
     public void setAlarm() {

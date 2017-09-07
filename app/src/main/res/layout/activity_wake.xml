@@ -19,55 +19,63 @@
         android:paddingTop="75dip"
         android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/wake_media_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Zhu: GENERATION WHY"
-        android:textSize="20dip"
-        android:layout_below="@+id/wake_time"
-        android:layout_centerHorizontal="true"/>
-    <SeekBar
-        android:id="@+id/myseek"
+    <!--<TextView-->
+        <!--android:id="@+id/wake_media_info"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Zhu: GENERATION WHY"-->
+        <!--android:textSize="20dip"-->
+        <!--android:layout_below="@+id/wake_time"-->
+        <!--android:layout_centerHorizontal="true"/>-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/wake_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="85dp"
-        android:clickable="false"
-        android:max="100"
-        android:progressDrawable="@android:color/transparent"
-        android:progress="50"
-        android:thumb="@drawable/drag_clock"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Snooze"
-        android:id="@+id/snooze_tv"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/myseek"
-        android:textSize="20dp"/>
+        android:layout_centerInParent="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dismiss"
-        android:id="@+id/dismiss_tv"
-        android:layout_alignBottom="@+id/snooze_tv"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textSize="20dp"/>
+    </android.support.v7.widget.RecyclerView>
 
-    <ImageButton
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_media_next"
-        android:id="@+id/next_song"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/dismiss_tv"
-        android:layout_toStartOf="@+id/dismiss_tv"
-        android:layout_marginBottom="85dp" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/myseek"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="85dp"-->
+        <!--android:clickable="false"-->
+        <!--android:max="100"-->
+        <!--android:progressDrawable="@android:color/transparent"-->
+        <!--android:progress="50"-->
+        <!--android:thumb="@drawable/drag_clock"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Snooze"-->
+        <!--android:id="@+id/snooze_tv"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:textSize="20dp"/>-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Dismiss"-->
+        <!--android:id="@+id/dismiss_tv"-->
+        <!--android:layout_alignBottom="@+id/snooze_tv"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:textSize="20dp"/>-->
+
+    <!--<ImageButton-->
+        <!--style="?android:attr/buttonStyleSmall"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@android:drawable/ic_media_next"-->
+        <!--android:id="@+id/next_song"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_toLeftOf="@+id/dismiss_tv"-->
+        <!--android:layout_toStartOf="@+id/dismiss_tv"-->
+        <!--android:layout_marginBottom="85dp" />-->
 </RelativeLayout>

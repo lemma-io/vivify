@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name=".AlarmApplication"
@@ -15,7 +16,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".View.Alarm.AlarmActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,10 +28,12 @@
         <activity
             android:name=".View.Detail.DetailActivity"
             android:label="NewAlarmActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".View.Alarm.AlarmActivity"/>
         <activity
             android:name=".View.Search.SearchActivity"
-            android:label="SearchActivity">
+            android:label="SearchActivity"
+            android:screenOrientation="portrait">
 
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value=".View.Detail.DetailActivity"/>
@@ -37,18 +41,28 @@
         <activity
             android:name=".View.Wake.WakeActivity"
             android:label="@string/title_activity_alert"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".View.Login.LoginActivity"
-            android:label="LoginActivity">
+            android:label="LoginActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".View.Settings.SettingsActivity"
-            android:label="SettingsActivity">
+            android:label="SettingsActivity"
+            android:screenOrientation="portrait">
         </activity>
         <receiver android:name=".Model.Service.WakeReceiver"/>
         <receiver android:name=".Model.Service.AlarmScheduler"/>
+
+        <receiver android:name="onBoot.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <!--<category android:name="android.intent.category.HOME" />-->
+            </intent-filter>
+        </receiver>
         <service android:name=".Model.Service.WakeService"
             android:enabled="true"
             android:exported="false">

@@ -130,10 +130,21 @@ public class AlarmScheduler extends WakefulBroadcastReceiver{
             PendingIntent snoozedIntent = PendingIntent.getBroadcast(context,
                     Alarm.FLAG_SNOOZED_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             // update
-            alarmManager.set(AlarmManager.RTC_WAKEUP,
-                    alarm.getSnoozedAt().getTime(), snoozedIntent);
+            // set alarm manager according to build version
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.d(TAG, "Manager set and allow at " + alarm.getTime());
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                        alarm.getSnoozedAt().getTime(), snoozedIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Log.d(TAG, "Manager set exact at " + alarm.getTime());
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP,
+                        alarm.getSnoozedAt().getTime(), snoozedIntent);
+            } else {
+                Log.d(TAG, "Manager set at " + alarm.getTime());
+                alarmManager.set(AlarmManager.RTC_WAKEUP,
+                        alarm.getSnoozedAt().getTime(), snoozedIntent);
+            }
         }
-
         setNextAlarm(context);
     }
 

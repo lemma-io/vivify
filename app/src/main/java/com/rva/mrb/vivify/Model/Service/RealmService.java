@@ -4,8 +4,10 @@ import android.util.Log;
 
 import com.rva.mrb.vivify.Model.Data.Alarm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -55,7 +57,7 @@ public class RealmService {
                 realm.where(Alarm.class).equalTo("enabled", true).findAll().size());
         Log.d(TAG, "Pending alarm date: " +
                 realm.where(Alarm.class).equalTo("enabled", true)
-                    .findAllSorted("time").first().getTime());
+                        .findAllSorted("time").first().getTime());
         return realm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", false)
                 .findAllSorted("time").first();
     }
@@ -74,9 +76,6 @@ public class RealmService {
                 Log.d(TAG, "Alarm is: " + alarm.isEnabled());
                 alarm.setEnabled(!alarm.isEnabled());
                 alarm.setSnoozed(false);
-//                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
-//                "\nalarm time is" + alarm.getTime() +
-//                "\nalarm wake time is" + alarm.getmWakeTime());
             }
         });
 
@@ -116,7 +115,7 @@ public class RealmService {
                         .sort("time").first().getTime().after(mRealm.where(Alarm.class)
                                 .equalTo("enabled", true)
                                 .equalTo("snoozed", true).findAll()
-                                .sort("snoozedAt").first().getTime())) {
+                                .sort("snoozedAt").first().getSnoozedAt())) {
                     return mRealm.where(Alarm.class)
                             .equalTo("enabled", true)
                             .equalTo("snoozed", true).findAll()
@@ -140,150 +139,77 @@ public class RealmService {
                           final String trackName, final String artist, final String trackId,
                           final String trackImage) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Alarm editAlarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
-                editAlarm.setAlarmLabel(name);
-//                editAlarm.setId(alarmId);
-//                editAlarm.setmWakeTime(time);
-//                editAlarm.setTime(time);
-                editAlarm.setEnabled(isSet);
-//                editAlarm.set24hr(isStandardTime);
-                editAlarm.setDaysOfWeek(repeat);
-                editAlarm.setTrackName(trackName);
-                editAlarm.setArtist(artist);
-                editAlarm.setTrackId(trackId);
-                editAlarm.setTrackImage(trackImage);
-                editAlarm.setSnoozed(false);
-            }
+        realm.executeTransaction(realm1 -> {
+            Alarm editAlarm = realm1.where(Alarm.class).equalTo("id", alarmId).findFirst();
+            editAlarm.setAlarmLabel(name);
+            editAlarm.setEnabled(isSet);
+            editAlarm.setDaysOfWeek(repeat);
+            editAlarm.setTrackName(trackName);
+            editAlarm.setArtist(artist);
+            editAlarm.setTrackId(trackId);
+            editAlarm.setTrackImage(trackImage);
+            editAlarm.setSnoozed(false);
         });
-//                , new Realm.Transaction.OnSuccess() {
-//            @Override
-//            public void onSuccess() {
-//                Log.d(TAG, "Save Alarm Success");
-//            }
-//        }, new Realm.Transaction.OnError() {
-//            @Override
-//            public void onError(Throwable error) {
-//                Log.d("EditAlarm", "failed: " + error.getMessage());
-//            }
-//        });
     }
 
     public void saveAlarm(final Alarm updatedAlarm) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Alarm editAlarm = realm.where(Alarm.class).equalTo("id", updatedAlarm.getId()).findFirst();
-                editAlarm.setAlarmLabel(updatedAlarm.getAlarmLabel());
-                editAlarm.setId(updatedAlarm.getId());
-                editAlarm.setmWakeTime(updatedAlarm.getmWakeTime());
-                editAlarm.setTime(updatedAlarm.getTime());
-                editAlarm.setEnabled(updatedAlarm.isEnabled());
-                editAlarm.set24hr(updatedAlarm.is24hr());
-                editAlarm.setDaysOfWeek(updatedAlarm.getDaysOfWeek());
-                editAlarm.setTrackName(updatedAlarm.getTrackName());
-                editAlarm.setArtist(updatedAlarm.getArtistName());
-                editAlarm.setTrackId(updatedAlarm.getTrackId());
-                editAlarm.setTrackImage(updatedAlarm.getTrackImage());
-                editAlarm.setMediaType(updatedAlarm.getMediaType());
-                editAlarm.setShuffle(updatedAlarm.isShuffle());
-                editAlarm.setVibrate(updatedAlarm.isVibrate());
-                editAlarm.setSnoozed(false);
-                editAlarm.setSnoozedAt(null);
-            }
+        realm.executeTransaction(realm1 -> {
+            Alarm editAlarm = realm1.where(Alarm.class).equalTo("id", updatedAlarm.getId()).findFirst();
+            editAlarm.setAlarmLabel(updatedAlarm.getAlarmLabel());
+            editAlarm.setId(updatedAlarm.getId());
+            editAlarm.setmWakeTime(updatedAlarm.getmWakeTime());
+            editAlarm.setTime(updatedAlarm.getTime());
+            editAlarm.setEnabled(updatedAlarm.isEnabled());
+            editAlarm.set24hr(updatedAlarm.is24hr());
+            editAlarm.setDaysOfWeek(updatedAlarm.getDaysOfWeek());
+            editAlarm.setTrackName(updatedAlarm.getTrackName());
+            editAlarm.setArtist(updatedAlarm.getArtistName());
+            editAlarm.setTrackId(updatedAlarm.getTrackId());
+            editAlarm.setTrackImage(updatedAlarm.getTrackImage());
+            editAlarm.setMediaType(updatedAlarm.getMediaType());
+            editAlarm.setShuffle(updatedAlarm.isShuffle());
+            editAlarm.setVibrate(updatedAlarm.isVibrate());
+            editAlarm.setSnoozed(false);
+            editAlarm.setSnoozedAt(null);
         });
 
     }
 
     public void deleteAlarm(final String alarmId) {
         final Realm realm = Realm.getDefaultInstance();
-//        Log.d("Realm", realm.toString());
-        final RealmResults<Alarm> results = realm.where(Alarm.class).equalTo("id", alarmId).findAll();
-//        Log.d("realm", results.get(0).getmWakeTime());
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(Alarm.class).equalTo("id", alarmId).findAll().deleteAllFromRealm();
-            }
-//                , new Realm.Transaction.OnSuccess() {
-//            @Override
-//            public void onSuccess() {
-//                Log.d("Successful", "Alarm deleted");
-//            }
-//        }, new Realm.Transaction.OnError() {
-//            @Override
-//            public void onError(Throwable error) {
-//                Log.d("Error", error.getMessage());
-//            }
-        });
+//        final RealmResults<Alarm> results = realm.where(Alarm.class).equalTo("id", alarmId).findAll();
+        realm.executeTransactionAsync(realm1 ->
+            realm1.where(Alarm.class).equalTo("id", alarmId).findAll().deleteAllFromRealm());
     }
 
     public void deleteAlarm(final Alarm alarm) {
         final Realm realm = Realm.getDefaultInstance();
-//        Log.d("Realm", realm.toString());
-        final RealmResults<Alarm> results = realm.where(Alarm.class).equalTo("id", alarm.getId()).findAll();
-//        Log.d("realm", results.get(0).getmWakeTime());
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(Alarm.class).equalTo("id", alarm.getId()).findAll().deleteAllFromRealm();
-            }
-//                , new Realm.Transaction.OnSuccess() {
-//            @Override
-//            public void onSuccess() {
-//                Log.d("Successful", "Alarm deleted");
-//            }
-//        }, new Realm.Transaction.OnError() {
-//            @Override
-//            public void onError(Throwable error) {
-//                Log.d("Error", error.getMessage());
-//            }
-        });
+//        final RealmResults<Alarm> results = realm.where(Alarm.class).equalTo("id", alarm.getId()).findAll();
+        realm.executeTransactionAsync(realm1 ->
+            realm1.where(Alarm.class).equalTo("id", alarm.getId()).findAll().deleteAllFromRealm());
     }
 
     public void addAlarm(final String name, final String time,
                          final boolean isSet, final boolean isStandardTime,
                          final String repeat, final String trackName, final String artist,
                          final String trackId, final String trackImage) {
-        mRealm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(final Realm realm) {
-                Alarm alarm = realm.createObject(Alarm.class);
-                alarm.setId(UUID.randomUUID().toString());
-                alarm.setAlarmLabel(name);
-//                alarm.setmWakeTime(time);
-//                alarm.setTime(time);
-                alarm.setEnabled(isSet);
-//                alarm.set24hr(isStandardTime);
-                alarm.setDaysOfWeek(repeat);
-                alarm.setTimeOfDay(Calendar.getInstance().getTime());
-                alarm.setTrackName(trackName);
-                alarm.setArtist(artist);
-                alarm.setTrackId(trackId);
-                alarm.setTrackImage(trackImage);
-                alarm.setSnoozed(false);
-            }
+        mRealm.executeTransaction(realm -> {
+            Alarm alarm = realm.createObject(Alarm.class);
+            alarm.setId(UUID.randomUUID().toString());
+            alarm.setAlarmLabel(name);
+            alarm.setEnabled(isSet);
+            alarm.setDaysOfWeek(repeat);
+            alarm.setTimeOfDay(Calendar.getInstance().getTime());
+            alarm.setTrackName(trackName);
+            alarm.setArtist(artist);
+            alarm.setTrackId(trackId);
+            alarm.setTrackImage(trackImage);
+            alarm.setSnoozed(false);
         });
-//                ,
-//                new Realm.Transaction.OnSuccess() {
-//
-//            @Override
-//            public void onSuccess() {
-//                Log.d("successful", "Successful transaction!");
-//            }
-//        }, new Realm.Transaction.OnError(){
-//
-//            @Override
-//            public void onError(Throwable error) {
-//                Log.d("error", error.getMessage());
-//            }
     }
 
     public void addAlarm(final Alarm newalarm) {
-         String id;
         mRealm.executeTransaction(new Realm.Transaction() {
             Alarm alarm;
             @Override
@@ -296,7 +222,6 @@ public class RealmService {
                 alarm.setEnabled(newalarm.isEnabled());
                 alarm.set24hr(newalarm.is24hr());
                 alarm.setDaysOfWeek(newalarm.getDaysOfWeek());
-//                alarm.setTimeOfDay(Calendar.getInstance().getTime());
                 alarm.setTrackName(newalarm.getTrackName());
                 alarm.setArtist(newalarm.getArtistName());
                 alarm.setTrackId(newalarm.getTrackId());
@@ -306,89 +231,115 @@ public class RealmService {
                 alarm.setVibrate(newalarm.isVibrate());
                 alarm.setSnoozed(false);
                 alarm.setSnoozedAt(null);
-//                id = alarm.getId();
             }
-
         });
-//                ,
-//                new Realm.Transaction.OnSuccess() {
-//
-//            @Override
-//            public void onSuccess() {
-//                Log.d("successful", "Successful transaction!");
-//            }
-//        }, new Realm.Transaction.OnError(){
-//
-//            @Override
-//            public void onError(Throwable error) {
-//                Log.d("error", error.getMessage());
-//            }
     }
 
     public static void snoozeAlarmById(final String alarmId, final Date date) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
-                Log.d("RealmService", "setting snooze");
-                alarm.setSnoozed(true);
-                alarm.setSnoozedAt(date);
-            }
+        realm.executeTransaction(realm1 -> {
+            Alarm alarm = realm1.where(Alarm.class).equalTo("id", alarmId).findFirst();
+            Log.d("RealmService", "setting snooze");
+            alarm.setSnoozed(true);
+            alarm.setSnoozedAt(date);
         });
     }
 
     public static void disableAlarmById(final String alarmId) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
+        realm.executeTransaction(realm1 -> {
+            Alarm alarm = realm1.where(Alarm.class).equalTo("id", alarmId).findFirst();
 
-                if(alarm.getDecDaysOfWeek() == 0){
-                    alarm.setEnabled(false);
-                }
-                alarm.setSnoozed(false);
-                alarm.setSnoozedAt(null);
-//                if (alarm.getDecDaysOfWeek() != 0){
-//                    alarm.setEnabled(true);
-//                }
-//                else {
-//                    Log.d(TAG, "Alarm is: " + alarm.isEnabled());
-//                    alarm.setEnabled(false);
-//                }
-
-
-//                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
-//                "\nalarm time is" + alarm.getTime() +
-//                "\nalarm wake time is" + alarm.getmWakeTime());
+            if(alarm.getDecDaysOfWeek() == 0){
+                alarm.setEnabled(false);
             }
+            alarm.setSnoozed(false);
+            alarm.setSnoozedAt(null);
         });
         updateAlarms();
     }
 
     public static void disableAlarm(final String alarmId) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Alarm alarm = realm.where(Alarm.class).equalTo("id", alarmId).findFirst();
+        realm.executeTransaction(realm1 -> {
+            Alarm alarm = realm1.where(Alarm.class).equalTo("id", alarmId).findFirst();
 
-                alarm.setEnabled(false);
-                alarm.setSnoozed(false);
-                alarm.setSnoozedAt(null);
-//                if (alarm.getDecDaysOfWeek() != 0){
-//                    alarm.setEnabled(true);
-//                }
-//                else {
-//                    Log.d(TAG, "Alarm is: " + alarm.isEnabled());
-//                    alarm.setEnabled(false);
-//                }
+            alarm.setEnabled(false);
+            alarm.setSnoozed(false);
+            alarm.setSnoozedAt(null);
+        });
+        updateAlarms();
+    }
 
+    public List<Alarm> getMissedAlarms(){
+        Date now = Calendar.getInstance().getTime();
+        List<Alarm> missed = new ArrayList<>();
+        RealmResults<Alarm> alarmList = mRealm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", false).findAll();
+        for (Alarm a : alarmList) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(a.getTime());
+            cal.add(Calendar.MILLISECOND, 5000);
+            if (cal.getTime().before(now)){
+                missed.add(a);
+            }
+        }
+        return missed;
+    }
 
-//                Log.d(TAG, "Alarm Enabled: " + alarm.isEnabled() +
-//                "\nalarm time is" + alarm.getTime() +
-//                "\nalarm wake time is" + alarm.getmWakeTime());
+    public List<Alarm> getMissedSnoozedAlarms(){
+        Date now = Calendar.getInstance().getTime();
+        List<Alarm> missed = new ArrayList<>();
+        RealmResults<Alarm> alarmList = mRealm.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", true).findAll();
+        for (Alarm a : alarmList) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(a.getSnoozedAt());
+            cal.add(Calendar.MILLISECOND, 5000);
+            if (cal.getTime().before(now)){
+                missed.add(a);
+            }
+        }
+        return missed;
+    }
+
+    public void disableMissedAlarms(){
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> {
+            Calendar cal = Calendar.getInstance();
+            Date now = cal.getTime();
+            RealmResults<Alarm> alarmList = realm1.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", false)
+                    .findAll();
+            for (final Alarm a:alarmList) {
+                cal.setTime(a.getTime());
+                cal.add(Calendar.MILLISECOND, 5000);
+                if (cal.getTime().before(now)){
+                    if(a.getDecDaysOfWeek() == 0){
+                        a.setEnabled(false);
+                    }
+                    a.setSnoozed(false);
+                    a.setSnoozedAt(null);
+                }
+            }
+        });
+        updateAlarms();
+    }
+
+    public void disableMissedSnoozed(){
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> {
+            Calendar cal = Calendar.getInstance();
+            Date now = cal.getTime();
+            RealmResults<Alarm> alarmList = realm1.where(Alarm.class).equalTo("enabled", true).equalTo("snoozed", true)
+                    .findAll();
+            for (final Alarm a:alarmList) {
+                cal.setTime(a.getSnoozedAt());
+                cal.add(Calendar.MILLISECOND, 5000);
+                if (cal.getTime().before(now)){
+                    if(a.getDecDaysOfWeek() == 0){
+                        a.setEnabled(false);
+                    }
+                    a.setSnoozed(false);
+                    a.setSnoozedAt(null);
+                }
             }
         });
         updateAlarms();

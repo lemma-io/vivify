@@ -143,7 +143,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
         SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat(TIME_FORMAT, Locale.US);
         String time = simpleDateFormat.format(cal.getTime());
-        Log.d(TAG, "Wake Time: " + cal.getTime());
+        Log.d(TAG, "WakeRecyclerViewAdapter Time: " + cal.getTime());
         return (time.indexOf("0")==0) ? time.substring(1) : time;
     }
 
@@ -186,7 +186,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 //        SimpleDateFormat simpleDateFormat =
 //                new SimpleDateFormat(TIME_FORMAT, Locale.US);
 //        String time = simpleDateFormat.format(cal.getTime());
-//        Log.d(TAG, "Wake Time: " + cal.getTime());
+//        Log.d(TAG, "WakeRecyclerViewAdapter Time: " + cal.getTime());
 //        return (time.indexOf("0")==0) ? time.substring(1) : time;
         return cal.getTime();
     }

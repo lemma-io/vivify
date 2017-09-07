@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    android:id="@+id/wake_card"
+    android:layout_width="match_parent"
+    android:layout_height="100dip"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dip">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="50dip"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/wake_media_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Generation WHY"
+                android:textSize="24dip"
+                android:paddingLeft="30dip"
+                android:textColor="#ffffff"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:maxEms="12"/>
+            <TextView
+                android:id="@+id/wake_media_owner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zhu"
+                android:textSize="20dip"
+                android:paddingLeft="30dip"
+                android:textColor="#ffffff"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:maxEms="12"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="70dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true">
+
+            <ImageView
+                android:id="@+id/next_song"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_media_skip"
+                android:layout_centerVertical="true" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

@@ -2,15 +2,18 @@ package com.rva.mrb.vivify.View.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.rva.mrb.vivify.Model.Data.Alarm;
 import com.rva.mrb.vivify.Model.Service.AlarmScheduler;
 import com.rva.mrb.vivify.Model.Service.RealmService;
@@ -21,6 +24,7 @@ import com.rva.mrb.vivify.View.Alarm.AlarmsPresenter;
 
 import org.parceler.Parcels;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -39,17 +43,18 @@ public class AlarmAdapter extends
         RealmBasedRecyclerViewAdapter<Alarm, AlarmAdapter.ViewHolder> {
 
     public static final String TAG = AlarmAdapter.class.getSimpleName();
-    private Disposable disposable;
 
     // lets the Alarm activity know when an alarm is pressed
     public OnAlarmToggleListener alarmToggleListener;
+    public AlarmClickListener alarmClickListener;
     @Inject AlarmsPresenter alarmsPresenter;
 
     public AlarmAdapter(Context context, RealmResults<Alarm> realmResults,
-                        OnAlarmToggleListener listener, boolean automaticUpdate,
+                        OnAlarmToggleListener listener, AlarmClickListener clickListener, boolean automaticUpdate,
                         boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         this.alarmToggleListener = listener;
+        this.alarmClickListener = clickListener;
     }
 
     @Override
@@ -69,23 +74,37 @@ public class AlarmAdapter extends
         viewHolder.isSet.setChecked(alarm.isEnabled());
         viewHolder.mediaInfoTv.setText(alarm.getTrackName() + ": " + alarm.getArtistName());
         viewHolder.mediaInfoTv.setSelected(true);
+
+        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
         Glide.with(viewHolder.itemView.getContext())
                 .load(alarm.getTrackImage())
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .into(viewHolder.alarmBg);
-        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
-        viewHolder.cardView.setOnClickListener(view -> {
-            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
-            Intent intent = new Intent(view.getContext(), DetailActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("NewAlarm", false);
-            intent.putExtra("AlarmArtist", alarm.getArtistName());
-            intent.putExtra("Alarm", Parcels.wrap(alarm));
-            view.getContext().startActivity(intent);
-            viewHolder.disposable.dispose();
 
+        viewHolder.cardView.setOnClickListener(view -> {
+            alarmClickListener.onAlarmClick(position, alarm, viewHolder.alarmBg);
+//            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
+//            Intent intent = new Intent(view.getContext(), DetailActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.putExtra("NewAlarm", false);
+//            intent.putExtra("AlarmArtist", alarm.getArtistName());
+//            intent.putExtra("Alarm", Parcels.wrap(alarm));
+//            ActivityOptionsCompat options = ActivityOptionsCompat.
+//                    makeSceneTransitionAnimation(view, viewHolder.alarmBg, "detail");
+//            view.getContext().startActivity(intent);
+            viewHolder.disposable.dispose();
         });
+
         viewHolder.isSet.setOnClickListener(v -> {
+            Log.d(TAG, "Toggle alarm id: " + alarm.getId());
+            AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
+
+            alarmToggleListener.onAlarmToggle();
+        });
+
+        viewHolder.toggleLayout.setOnClickListener(v -> {
+            viewHolder.isSet.toggle();
             Log.d(TAG, "Toggle alarm id: " + alarm.getId());
             AlarmScheduler.enableAlarmById(v.getContext(), alarm.getId());
             setAlarmTimer(alarm, viewHolder);
@@ -140,6 +159,7 @@ public class AlarmAdapter extends
         @BindView(R.id.alarm_media_info) TextView mediaInfoTv;
         @BindView(R.id.alarm_bg) ImageView alarmBg;
         @BindView(R.id.alarm_timer) TextView alarmTimer;
+        @BindView(R.id.alarm_toggle_layout) LinearLayout toggleLayout;
         Disposable disposable;
 
         public ViewHolder(View itemView) {
@@ -150,6 +170,11 @@ public class AlarmAdapter extends
 
     public interface OnAlarmToggleListener {
         void onAlarmToggle();
+    }
+
+
+    public interface AlarmClickListener {
+        void onAlarmClick(int pos, Alarm alarm, ImageView sharedImageView);
     }
 }
 
