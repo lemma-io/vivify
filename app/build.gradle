@@ -19,6 +19,7 @@ android {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
         buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
+        buildConfigField("String", "BUGFENDER_APP_KEY", BUGFENDER_APP_KEY)
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -100,4 +101,5 @@ dependencies {
     compile 'org.parceler:parceler-api:1.1.5'
     apt 'org.parceler:parceler:1.1.5'
     compile 'com.android.support:palette-v7:23.4.0'
+    compile 'com.bugfender.sdk:android:0.+'
 }
