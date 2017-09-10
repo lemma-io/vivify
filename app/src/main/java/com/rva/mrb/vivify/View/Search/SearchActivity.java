@@ -219,71 +219,34 @@ public class SearchActivity extends BaseActivity implements SearchView,
     public void onSearchClick() {
         Log.d("MyApp", "Fab Click");
         String searchQuery = searchEditText.getText().toString();
-        spotifyService.getFullSearchResults(searchQuery)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    Search results = response;
-                    List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            spotifyService.getFullSearchResults(searchQuery)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(response -> {
+                        Search results = response;
+                        List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
 
-                    searchAdapter = new SearchAdapter(mediaTypeList);
-                    List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                            new ArrayList<>();
+                        searchAdapter = new SearchAdapter(mediaTypeList);
+                        List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+                                new ArrayList<>();
 
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-                            results.getTracks().getItems().size(),"Playlists"));
-//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-//                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
-                    setInterface();
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0, "Tracks"));
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(), "Albums"));
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size() +
+                                results.getTracks().getItems().size(), "Playlists"));
+                        setInterface();
 
-                    //Add your adapter to the sectionAdapter
-                    SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-                    SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-                            SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
-                    mSectionedAdapter.setSections(sections.toArray(dummy));
+                        //Add your adapter to the sectionAdapter
+                        SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+                        SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+                                SimpleSectionedRecyclerViewAdapter(getApplicationContext(), R.layout.section, R.id.section_text, searchAdapter);
+                        mSectionedAdapter.setSections(sections.toArray(dummy));
 
-                    //Apply this adapter to the RecyclerView
-//                mRecyclerView.setAdapter(mSectionedAdapter);
-                    recyclerview.setAdapter(mSectionedAdapter);
-                });
-//                .enqueue(new Callback<Search>() {
-//            @Override
-//            public void onResponse(Call<Search> call, Response<Search> response) {
-//                Log.d("Error Message", response.message());
-//                Search results = response.body();
-//                Log.d("SpotifyService", "Successful: " + response.isSuccessful());
-//                List<MediaType> mediaTypeList = searchPresenter.setupMediaList(results);//new ArrayList<MediaType>();
-//
-//                searchAdapter = new SearchAdapter(mediaTypeList);
-//                List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-//                        new ArrayList<>();
-//
-//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"Tracks"));
-//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getTracks().getItems().size(),"Albums"));
-//                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-//                        results.getTracks().getItems().size(),"Playlists"));
-////                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(results.getAlbums().getItems().size()+
-////                        results.getTracks().getItems().size()+results.getPlaylists().getItems().size(),"Artists"));
-//                setInterface();
-//
-//                //Add your adapter to the sectionAdapter
-//                SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-//                SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-//                        SimpleSectionedRecyclerViewAdapter(getApplicationContext(),R.layout.section,R.id.section_text,searchAdapter);
-//                mSectionedAdapter.setSections(sections.toArray(dummy));
-//
-//                //Apply this adapter to the RecyclerView
-////                mRecyclerView.setAdapter(mSectionedAdapter);
-//                recyclerview.setAdapter(mSectionedAdapter);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Search> call, Throwable t) {
-//                Log.d("SpotifyService", "Call failed.");
-//            }
-//        });
+                        //Apply this adapter to the RecyclerView
+                        recyclerview.setAdapter(mSectionedAdapter);
+                    });
+        }
     }
 
     @Override

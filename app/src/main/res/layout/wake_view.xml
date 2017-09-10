@@ -8,12 +8,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dip">
+        android:padding="16dip">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginRight="50dip"
+            android:layout_marginLeft="56dp"
             android:orientation="vertical">
 
             <TextView
@@ -22,7 +24,6 @@
                 android:layout_height="wrap_content"
                 android:text="Generation WHY"
                 android:textSize="24dip"
-                android:paddingLeft="30dip"
                 android:textColor="#ffffff"
                 android:ellipsize="marquee"
                 android:lines="1"
@@ -33,7 +34,6 @@
                 android:layout_height="wrap_content"
                 android:text="Zhu"
                 android:textSize="20dip"
-                android:paddingLeft="30dip"
                 android:textColor="#ffffff"
                 android:ellipsize="marquee"
                 android:lines="1"
