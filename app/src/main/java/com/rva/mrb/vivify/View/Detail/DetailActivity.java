@@ -3,8 +3,12 @@ package com.rva.mrb.vivify.View.Detail;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +49,7 @@ import org.parceler.Parcels;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -52,6 +57,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+
+import static com.rva.mrb.vivify.R.xml.preferences;
 
 public class DetailActivity extends BaseActivity implements DetailView {
 
@@ -87,8 +94,9 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     // used to create a binary representation of days an alarm is enabled
     private int repeatDays = 0;
-
+    private SharedPreferences preferences;
     @Inject DetailPresenter detailPresenter;
+
     private AlarmAdapter.OnAlarmToggleListener alarmToggleListener;
 
     @Override
@@ -168,12 +176,11 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 setMediaBackgroundImage(alarm.getTrackImage());
                 mEditTime.setText(alarm.getmWakeTime());
                 mIsSet.setChecked(alarm.isEnabled());
-//                mStandardTime.setChecked(alarm.is24hr());
+                editname.setText(alarm.getAlarmLabel());
                 mShuffle.setChecked(alarm.isShuffle());
                 mVibrate.setChecked(alarm.isVibrate());
                 trackName = alarm.getTrackName();
-                artistName = bundle.getString("AlarmArtist");
-//                artistName = alarm.getArtistName();
+                artistName = bundle.getString("AlarmArtist");//alarm.getArtistName();
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
@@ -187,6 +194,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
             mEditTime.setText(detailPresenter.getCurrentTime());
             alarm.setTime(Calendar.getInstance().getTime());
             mIsSet.toggle();
+            Uri imgPath = Uri.parse("android.resource://com.rva.mrb.vivify/drawable/alarm_placeholder");
+            Log.d(TAG, "ImagePath:" + imgPath.getPath());
+            Log.d(TAG, "ImagePath:" + imgPath.toString());
+            trackName = "Default Ringtone";
+            mTrackTv.setText(trackName);
+//            trackImage = imgPath.toString();
+//            alarmDetailBg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.alarm_placeholder));
+            setMediaBackgroundImage(trackImage);
         }
     }
 
@@ -194,10 +209,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
         if (alarm.getMediaType() == MediaType.DEFAULT_TYPE) {
             supportStartPostponedEnterTransition();
         }
-
-        alarmDetailBg.setScaleType(ImageView.ScaleType.FIT_XY);
+        alarmDetailBg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Glide.with(getApplicationContext())
                 .load(trackImage)
+                .placeholder(ContextCompat.getDrawable(getApplicationContext(), R.drawable.placeholder4))
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .listener(new RequestListener<String, GlideDrawable>() {
@@ -244,6 +259,11 @@ public class DetailActivity extends BaseActivity implements DetailView {
     protected void onStart() {
         super.onStart();
         detailPresenter.setView(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -436,6 +456,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
                         trackImage = playlist.getImages().get(0).getUrl();
                         break;
                 }
+                alarm.setArtist(artistName);
+                alarm.setTrackName(trackName);
                 setMediaBackgroundImage(trackImage);
                 setTrackTv();
             }
@@ -446,7 +468,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
      * This method displays the current spotify music assigned to the alarm object
      */
     public void setTrackTv() {
-        mTrackTv.setText(trackName + " by " + artistName);
+        mTrackTv.setText((artistName != null ?
+                alarm.getTrackName() + " by " + artistName : alarm.getTrackName()));
     }
 
 }

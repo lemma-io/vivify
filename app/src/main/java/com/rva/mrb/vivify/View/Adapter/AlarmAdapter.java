@@ -2,7 +2,9 @@ package com.rva.mrb.vivify.View.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -72,18 +74,22 @@ public class AlarmAdapter extends
         viewHolder.timeTv.setText(alarm.getmWakeTime());
         viewHolder.nameTv.setText(alarm.getAlarmLabel());
         viewHolder.isSet.setChecked(alarm.isEnabled());
-        viewHolder.mediaInfoTv.setText(alarm.getTrackName() + ": " + alarm.getArtistName());
+        viewHolder.mediaInfoTv.setText((alarm.getArtistName() != null ?
+                alarm.getTrackName() + " by " + alarm.getArtistName() : alarm.getTrackName()));
         viewHolder.mediaInfoTv.setSelected(true);
 
-        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.FIT_XY);
+        viewHolder.alarmBg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Glide.with(viewHolder.itemView.getContext())
                 .load(alarm.getTrackImage())
+                .placeholder(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.placeholder4))
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .into(viewHolder.alarmBg);
 
         viewHolder.cardView.setOnClickListener(view -> {
             alarmClickListener.onAlarmClick(position, alarm, viewHolder.alarmBg);
+            Log.d(TAG, "Alarm Name: " + alarm.getArtistName());
+
 //            Log.d(TAG, "Opening Detail activity on id: " + alarm.getId());
 //            Intent intent = new Intent(view.getContext(), DetailActivity.class);
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
