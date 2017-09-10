@@ -268,7 +268,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         if (mPlayer != null)
             mPlayer.pause(operationCallback);
 
-        if (!disposable.isDisposed()){
+        if (disposable != null && !disposable.isDisposed()){
             disposable.dispose();
         }
         if (vibrate){
@@ -311,12 +311,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         }
         snoozed = true;
         AlarmScheduler.snoozeNextAlarm(getApplicationContext());
-        if (!disposable.isDisposed()){
-            disposable.dispose();
+        if (disposable != null) {
+            if (!disposable.isDisposed()){
+                disposable.dispose();
+            }
+            if (vibrate){
+                vibrator.cancel();
+            }
         }
-        if (vibrate){
-            vibrator.cancel();
-        }
+
         finish();
     }
 
