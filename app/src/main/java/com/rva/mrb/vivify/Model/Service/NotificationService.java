@@ -14,10 +14,6 @@ import com.rva.mrb.vivify.View.Alarm.AlarmActivity;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Created by Bao on 8/20/17.
- */
-
 public class NotificationService {
     private NotificationManager mNotificationManager;
     private Context mContext;
@@ -86,4 +82,5 @@ public class NotificationService {
             mNotificationManager.notify(nextValue(), builder.build());
         }
     }
+
 }

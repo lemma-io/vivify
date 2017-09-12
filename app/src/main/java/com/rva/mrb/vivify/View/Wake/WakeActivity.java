@@ -312,12 +312,14 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         }
         snoozed = true;
         AlarmScheduler.snoozeNextAlarm(getApplicationContext());
+
         if (disposable != null && !disposable.isDisposed()){
             disposable.dispose();
         }
         if (vibrate){
             vibrator.cancel();
         }
+
         finish();
     }
 

@@ -36,10 +36,10 @@ public class BootReceiver extends BroadcastReceiver
         List<Alarm> missedSnoozed = realmService.getMissedSnoozedAlarms();
         for (Alarm a : missedAlarms){
 
-            notificationService.setMissedAlarmNotification(a.getTime() + "", a.isSnoozed());
+            notificationService.setMissedAlarmNotification(prettyDateFormat(a.getTime()) + "", a.isSnoozed());
         }
         for (Alarm alarm : missedSnoozed){
-            notificationService.setMissedAlarmNotification(alarm.getTime() + "", alarm.isSnoozed());
+            notificationService.setMissedAlarmNotification(prettyDateFormat(alarm.getTime()) + "", alarm.isSnoozed());
         }
         realmService.disableMissedAlarms();
         realmService.disableMissedSnoozed();

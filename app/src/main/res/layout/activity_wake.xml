@@ -4,7 +4,8 @@
     android:id="@+id/wakeRL"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="#55000000">
 
     <ImageView
         android:layout_width="match_parent"
@@ -78,4 +79,14 @@
         <!--android:layout_toLeftOf="@+id/dismiss_tv"-->
         <!--android:layout_toStartOf="@+id/dismiss_tv"-->
         <!--android:layout_marginBottom="85dp" />-->
+
+    <ImageView
+        android:id="@+id/wake_spotify_logo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/spotify_icon"
+        android:elevation="10dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

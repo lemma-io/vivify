@@ -132,12 +132,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                                 .load(p.getImages().get(0).getUrl())
                                 .fitCenter()
                                 .into(viewPlayListHolder.playlistArt);
+                        viewPlayListHolder.cardView.setOnClickListener(view -> {
+                            Log.d("Search cardView", "Successful click");
+                            searchInterface.onMediaSelected(new MediaType(p));
+                        });
                     }
                     viewPlayListHolder.playlistName.setText(p.getName());
-                    viewPlayListHolder.cardView.setOnClickListener(view -> {
-                        Log.d("Search cardView", "Successful click");
-                        searchInterface.onMediaSelected(new MediaType(p));
-                    });
                     break;
 
                 case MediaType.ARTIST_TYPE:
