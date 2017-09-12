@@ -17,6 +17,11 @@ public class Tokens {
     @SerializedName("refresh_token")
     @Expose
     private String refreshToken;
+
+    @SerializedName("expires_in")
+    @Expose
+    private int expiresIn;
+
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
@@ -55,6 +60,14 @@ public class Tokens {
      */
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public int getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpires_in(int expiresIn) {
+        this.expiresIn = expiresIn;
     }
 
     public Map<String, Object> getAdditionalProperties() {
