@@ -44,6 +44,8 @@ import com.spotify.sdk.android.player.Player;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -195,20 +197,39 @@ public class SearchActivity extends BaseActivity implements SearchView,
         String refreshToken = sharedPreferences.getString("refresh_token", null);
         Log.d("Node", "sharedpref refresh token: " + refreshToken);
 
-        //Make call to node.js server to obtain a fresh access token
-        nodeService.refreshToken(refreshToken).enqueue(new Callback<AccessToken>() {
-            @Override
-            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                AccessToken results = response.body();
-                applicationModule.setAccessToken(results.getAccessToken());
-                setUserPlaylists();
-            }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(sharedPreferences.getLong("expires", -1));
+        Date expires = cal.getTime();
+        Log.d("Node", "Expired: " + sharedPreferences.getLong("expires", -1));
+        if(expires.before(Calendar.getInstance().getTime())) {
+            Log.d("Node", "making node call");
+            //Make call to node.js server to obtain a fresh access token
+            nodeService.refreshToken(refreshToken).enqueue(new Callback<AccessToken>() {
+                @Override
+                public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                    AccessToken results = response.body();
+                    applicationModule.setAccessToken(results.getAccessToken());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.SECOND, results.getExpiresIn());
+                    Log.d("Node", "New expire time: " + calendar.getTimeInMillis());
+                    editor.putLong("expires", calendar.getTimeInMillis());
+                    editor.putString("access_token", results.getAccessToken());
+                    editor.commit();
+                    setUserPlaylists();
+                }
 
-            @Override
-            public void onFailure(Call<AccessToken> call, Throwable t) {
-                Log.d("Node", "error: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<AccessToken> call, Throwable t) {
+                    Log.d("Node", "error: " + t.getMessage());
+                }
+            });
+        }
+        else{
+            String accesstoken = sharedPreferences.getString("access_token", null);
+            applicationModule.setAccessToken(accesstoken);
+            setUserPlaylists();
+        }
     }
 
     /**

@@ -40,6 +40,7 @@ import com.spotify.sdk.android.player.Error;
 import com.rva.mrb.vivify.Spotify.AudioTrackController;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -268,7 +269,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         if (mPlayer != null)
             mPlayer.pause(operationCallback);
 
-        if (!disposable.isDisposed()){
+        if (disposable != null && !disposable.isDisposed()){
             disposable.dispose();
         }
         if (vibrate){
@@ -311,7 +312,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         }
         snoozed = true;
         AlarmScheduler.snoozeNextAlarm(getApplicationContext());
-        if (!disposable.isDisposed()){
+        if (disposable != null && !disposable.isDisposed()){
             disposable.dispose();
         }
         if (vibrate){
@@ -371,28 +372,36 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         String refreshToken = sharedPreferences.getString("refresh_token", null);
         Log.d("Node", "sharedpref refresh token: " + refreshToken);
-        nodeService.refreshToken(refreshToken).enqueue(new Callback<AccessToken>() {
-            @Override
-            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                AccessToken results = response.body();
-                applicationModule.setAccessToken(results.getAccessToken());
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(sharedPreferences.getLong("expires", -1));
+        Date expires = cal.getTime();
+        if(expires.before(Calendar.getInstance().getTime())) {
+            nodeService.refreshToken(refreshToken).enqueue(new Callback<AccessToken>() {
+                @Override
+                public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                    AccessToken results = response.body();
+                    applicationModule.setAccessToken(results.getAccessToken());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.SECOND, results.getExpiresIn());
+                    editor.putLong("expires", calendar.getTimeInMillis());
+                    editor.commit();
 //                Disposable d = Observable.just("hello").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(result -> {
 //                    Log.d("WakeActivity", "getting tracks");
 //                    playerService.getTracks();
 //                    shuffledTracks = playerService.returnTracks();
 //
 //                });
-                if(shuffle) {
-                    shuffleDis = playerService.getTracks().subscribe(() -> {
-                        shuffledTracks = playerService.returnTracks();
+                    if (shuffle) {
+                        shuffleDis = playerService.getTracks().subscribe(() -> {
+                            shuffledTracks = playerService.returnTracks();
+                            //initPlayer = initCustomPlayer().subscribe();
+                            initCustomPlayer();
+                        });
+                    } else {
                         //initPlayer = initCustomPlayer().subscribe();
                         initCustomPlayer();
-                    });
-                }
-                else{
-                    //initPlayer = initCustomPlayer().subscribe();
-                    initCustomPlayer();
-                }
+                    }
 //                spotifyService.getAlbumTracks(trackId)
 //                        .subscribeOn(Schedulers.io())
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -403,19 +412,33 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //                            initCustomPlayer();
 //                        });
 
-               // playerService.getTracks();
-
+                    // playerService.getTracks();
 
 
 //                initSpotifyPlayer();
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<AccessToken> call, Throwable t) {
-                Log.d("Node", "error: " + t.getMessage());
+                @Override
+                public void onFailure(Call<AccessToken> call, Throwable t) {
+                    Log.d("Node", "error: " + t.getMessage());
+                }
+            });
+        }
+        else{
+            String accessToken = sharedPreferences.getString("access_token", null);
+            applicationModule.setAccessToken(accessToken);
+            if (shuffle) {
+                shuffleDis = playerService.getTracks().subscribe(() -> {
+                    shuffledTracks = playerService.returnTracks();
+                    //initPlayer = initCustomPlayer().subscribe();
+                    initCustomPlayer();
+                });
+            } else {
+                //initPlayer = initCustomPlayer().subscribe();
+                initCustomPlayer();
             }
-        });
+        }
     }
 
     public void initCustomPlayer() {

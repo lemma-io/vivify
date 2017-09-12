@@ -20,6 +20,9 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -105,12 +108,16 @@ public class LoginActivity extends BaseActivity {
                             Log.d("Node", "AccessToken: " + results.getAccessToken());
                             Log.d("Node", "Refresh Token: " + results.getRefreshToken());
 
+                            Calendar cal = Calendar.getInstance();
+                            cal.add(Calendar.SECOND, results.getExpiresIn());
+                            long expires = cal.getTimeInMillis();
                             //save the access token and refesh token in Shared Preferences
                             SharedPreferences sharedPref = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString("access_token", results.getAccessToken());
                             editor.putString("refresh_token", results.getRefreshToken());
                             editor.putBoolean("isLoggedIn", true);
+                            editor.putLong("expires", expires);
                             editor.commit();
 
                             //Start alarm activity
