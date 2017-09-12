@@ -66,7 +66,7 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
         Calendar cal = Calendar.getInstance();
         cal.setTime(alarmTime);
         String daySuffix = getDaySuffix(cal.get(Calendar.DAY_OF_MONTH));
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d'" + daySuffix + "' hh:m a");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d'" + daySuffix + "' hh:mm a");
         return sdf.format(alarmTime.getTime());
     }
 
@@ -90,11 +90,10 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
         List<Alarm> missedAlarms = mRealmService.getMissedAlarms();
         List<Alarm> missedSnoozed = mRealmService.getMissedSnoozedAlarms();
         for (Alarm a : missedAlarms){
-
-            notificationService.setMissedAlarmNotification(a.getTime() + "", a.isSnoozed());
+            notificationService.setMissedAlarmNotification(prettyDateFormat(a.getTime()) + "", a.isSnoozed());
         }
         for (Alarm alarm : missedSnoozed){
-            notificationService.setMissedAlarmNotification(alarm.getTime() + "", alarm.isSnoozed());
+            notificationService.setMissedAlarmNotification(prettyDateFormat(alarm.getTime()) + "", alarm.isSnoozed());
         }
         mRealmService.disableMissedAlarms();
         mRealmService.disableMissedSnoozed();

@@ -1,14 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/login2">
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login"
-        android:id="@+id/login_button"
-        android:layout_alignParentBottom="true"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:text="Vivify"
+        android:textSize="30dp"
+        android:textColor="#EFEFEF"/>
+
+    <TextView
+        android:id="@+id/login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="150dp" />
+        android:layout_marginTop="175dp"
+        android:text="Wake Up\nYour Way"
+        android:textSize="60dp"
+        android:textColor="#EFEFEF"
+        android:paddingBottom="15dp" />
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_title"
+        android:layout_centerInParent="true">
+
+        <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@drawable/ic_spotify_pref"/>-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/login"
+            android:textSize="20dp"
+            android:id="@+id/login_button"
+            android:background="@drawable/login_button"
+            android:drawableLeft="@drawable/ic_spotify_pref"/>
+    </LinearLayout>
+
 </RelativeLayout>

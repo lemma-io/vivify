@@ -5,22 +5,22 @@
 
     <RingtonePreference
         android:key="default_ringtone_key"
-        android:title="Default Ringtone"
+        android:title="@string/title_ringtone"
         android:ringtoneType="alarm"
         android:summary="@string/summary_ringtone"
         android:defaultValue="content://settings/system/awaken"/>
 
     <ListPreference
-        android:key="snooze_key"
-        android:title="Snooze"
+        android:key="@string/key_snooze"
+        android:title="@string/title_snooze"
         android:summary="@string/summary_snooze"
         android:entries="@array/snoozeIntervals"
         android:entryValues="@array/snoozeValues"
         android:defaultValue="5"/>
 
     <ListPreference
-        android:key="fadein_key"
-        android:title="Fade in Duration"
+        android:key="@string/key_fade_in"
+        android:title="@string/title_fade_in"
         android:summary="@string/summary_fade"
         android:entries="@array/fadeinIntervals"
         android:entryValues="@array/fadeinValues"
@@ -29,8 +29,8 @@
     <PreferenceCategory android:title="@string/pref_header_notifications"/>
 
     <CheckBoxPreference
-        android:key="notification_key"
-        android:title="Allow Upcoming Alarm Notification"
+        android:key="@string/key_notification"
+        android:title="@string/title_alarm_notif"
         android:summary="@string/summary_notification"
         android:defaultValue="true"/>
 
@@ -63,8 +63,8 @@
     <Preference
         android:title="@string/logout"
         android:enabled="true"
-        android:key="logout"
-        android:summary="You are logged into Spotify"
+        android:key="@string/key_logout"
+        android:summary="@string/summary_logout"
         android:icon="@drawable/ic_spotify_pref"/>
 
 </PreferenceScreen>

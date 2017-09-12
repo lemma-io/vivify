@@ -31,7 +31,9 @@
                 android:id="@+id/alarm_detail_bg"
                 android:layout_width="match_parent"
                 android:layout_height="250dip"
-                android:transitionName="detail"/>
+                android:transitionName="detail"
+                android:adjustViewBounds="true"/>
+                <!--android:background="#5C94F1"-->
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -82,7 +84,9 @@
                 android:hint="Your morning jam"
                 android:textSize="25dp"
                 android:lines="1"
-                android:ellipsize="marquee"/>
+                android:ellipsize="marquee"
+                android:nextFocusLeft="@id/track_tv"
+                android:nextFocusRight="@id/track_tv"/>
         </LinearLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -93,7 +97,12 @@
                 android:id="@+id/edit_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/name" />
+                android:hint="@string/name"
+                android:lines="1"
+                android:inputType="textCapWords"
+                android:imeOptions="actionDone"
+                android:nextFocusLeft="@id/edit_name"
+                android:nextFocusRight="@id/edit_name"/>
         </android.support.design.widget.TextInputLayout>
 
         <RelativeLayout
