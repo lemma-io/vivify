@@ -168,7 +168,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             attachAdaptersToRecyclerview();
         }
 
-
+        audioTrackController = new AudioTrackController();
         playerService = new PlayerService(mContext, spotifyService, alarm);
         //Retrieve access token from spotify
         refreshToken();
@@ -176,7 +176,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         setVolumeControlStream(AudioManager.STREAM_ALARM);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         handleRingVolume();
-        audioTrackController = new AudioTrackController();
 
         //Set the seekbar that dissmisses/snoozes alarm
 //        setSeekBar();
@@ -239,6 +238,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     public void handleRingVolume() {
         int fadein = Integer.parseInt(sharedPref.getString("fadein_key", "30"));
+        Log.d(TAG, "FadeIn: " + fadein);
         Log.d("wake max volume: ", Integer.toString(am.getStreamMaxVolume(AudioManager.STREAM_ALARM)));
         double remainder = (fadein % 6)/6.0;
         int remain = ((int) (remainder*1000));
@@ -261,6 +261,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         }
 
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        onDismiss();
+    }
+
     /*
     This method is called when the user dismisses the alarm. It cancels the alarm and pauses the
     player.
@@ -290,6 +297,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 AlarmScheduler.disableAlarmById(getApplicationContext(), alarmId);
             }
         }
+        dismissRingtone();
         finish();
     }
 
@@ -319,6 +327,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         if (vibrate){
             vibrator.cancel();
         }
+
+        dismissRingtone();
 
         finish();
     }
