@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/phantompunk/vivify.svg?branch=master)](https://travis-ci.org/phantompunk/vivify)
 # Vivify (Beta)
 Vivify is a beautiful ad-free and open source Android Alarm Clock under GPLv3 license.Vivify is currently available in a beta release in the Google Play Store(App Store release coming soon).
-<img style="margin-left:10px;" src="/Screenshots/vivifyFeature.png" >
+<img style="margin-left:10px;" src="/screenshots/vivifyFeature.png" >
 
 
 Wake up your way with Vivify, by using Spotify's Android SDK we are able to give premium users access to Spotify entire music catalog. The goal is to allow users to take control of their morning be it waking up happy to Bob Marley or jumping out of bed to heavy rock.
