@@ -9,11 +9,11 @@ Wake up your way with Vivify, by using Spotify's Android SDK we are able to give
 <a href='https://play.google.com/store/apps/details?id=com.rva.mrb.vivify&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="35%" src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 ## Screenshots
-<img style="margin-left:10px;" src="/Screenshots/Screenshot_splash.png" width="30%" >
-<img style="margin-left:10px;" src="/Screenshots/Screenshot_alarms.png" width="30%" >
-<img style="margin-left:10px;" src="/Screenshots/Screenshot_details.png" width="30%" >
-<img style="margin-left:10px;" src="/Screenshots/Screenshot_search.png" width="30%" >
-<img style="margin-left:10px;" src="/Screenshots/Screenshot_wake.png" width="30%" >
+<img style="margin-left:10px;" src="/screenshots/Screenshot_splash.png" width="30%" >
+<img style="margin-left:10px;" src="/screenshots/Screenshot_alarms.png" width="30%" >
+<img style="margin-left:10px;" src="/screenshots/Screenshot_details.png" width="30%" >
+<img style="margin-left:10px;" src="/screenshots/Screenshot_search.png" width="30%" >
+<img style="margin-left:10px;" src="/screenshots/Screenshot_wake.png" width="30%" >
 
 ## Development
 1. Clone the project to your folder
