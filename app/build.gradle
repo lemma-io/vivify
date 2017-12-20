@@ -15,9 +15,9 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-//        ndk {
-//            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
-//        }
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+        }
         buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
 //        buildConfigField("String", "BUGFENDER_APP_KEY", BUGFENDER_APP_KEY)
 //        buildConfigField("String", "RELEASE_STORE_PASS", RELEASE_STORE_PASS)
@@ -64,9 +64,10 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    maven {
-        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
-    }
+//    maven {
+//        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+//    }         TEMP STETHO FIX UNTIL OFFICIAL REPO IS UPDATED
+    maven { url 'https://github.com/WickeDev/stetho-realm/raw/master/maven-repo' }
     maven { url "https://jitpack.io" }
 }
 
@@ -101,7 +102,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.0.5'
     implementation 'com.facebook.stetho:stetho:1.5.0'
-    implementation 'com.uphyca:stetho_realm:2.1.0'
+    implementation 'com.uphyca:stetho_realm:2.2.2'
     implementation 'com.android.support:appcompat-v7:25.2.0'
     implementation 'com.android.support:support-v4:25.2.0'
     implementation 'com.github.bumptech.glide:glide:3.6.1'
