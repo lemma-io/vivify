@@ -37,7 +37,8 @@ public class AlarmApplication extends Application {
     }
 
     private void initRealmConfiguration() {
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this)
+        Realm.init(getApplicationContext());
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);

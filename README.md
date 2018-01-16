@@ -47,7 +47,7 @@ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore -
 ```
 On Windows run:
 ```bash
-keytool -exportcert -alias androiddebugkey -keystore %HOMEPATH%\.android\debug.keystore -list -v | grep SHA1
+keytool -list -v -keystore "C:\Users\username\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
 ```
 
 The result should look something like this:

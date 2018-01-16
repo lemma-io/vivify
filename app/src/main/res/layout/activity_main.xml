@@ -35,15 +35,24 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:rrvIsRefreshable="false"
-        app:rrvEmptyLayoutId="@layout/empyt_view"
-        app:rrvLayoutType="LinearLayout"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <!--<co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView-->
+        <!--android:id="@+id/recyclerview"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:rrvIsRefreshable="false"-->
+        <!--app:rrvEmptyLayoutId="@layout/empyt_view"-->
+        <!--app:rrvLayoutType="LinearLayout"-->
+        <!--android:clipToPadding="false"-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_alarm_fab"

@@ -155,9 +155,11 @@ public class RealmService {
     public void saveAlarm(final Alarm updatedAlarm) {
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(realm1 -> {
-            Alarm editAlarm = realm1.where(Alarm.class).equalTo("id", updatedAlarm.getId()).findFirst();
+            Alarm editAlarm = realm1.where(Alarm.class)
+                                    .equalTo("id", updatedAlarm.getId())
+                                    .findFirst();
             editAlarm.setAlarmLabel(updatedAlarm.getAlarmLabel());
-            editAlarm.setId(updatedAlarm.getId());
+//            editAlarm.setId(updatedAlarm.getId());
             editAlarm.setmWakeTime(updatedAlarm.getmWakeTime());
             editAlarm.setTime(updatedAlarm.getTime());
             editAlarm.setEnabled(updatedAlarm.isEnabled());
@@ -195,8 +197,8 @@ public class RealmService {
                          final String repeat, final String trackName, final String artist,
                          final String trackId, final String trackImage) {
         mRealm.executeTransaction(realm -> {
-            Alarm alarm = realm.createObject(Alarm.class);
-            alarm.setId(UUID.randomUUID().toString());
+            Alarm alarm = realm.createObject(Alarm.class, UUID.randomUUID().toString());
+//            alarm.setId(UUID.randomUUID().toString());
             alarm.setAlarmLabel(name);
             alarm.setEnabled(isSet);
             alarm.setDaysOfWeek(repeat);
@@ -214,8 +216,8 @@ public class RealmService {
             Alarm alarm;
             @Override
             public void execute(final Realm realm) {
-                alarm = realm.createObject(Alarm.class);
-                alarm.setId(UUID.randomUUID().toString());
+                alarm = realm.createObject(Alarm.class,UUID.randomUUID().toString());
+//                alarm.setId(UUID.randomUUID().toString());
                 alarm.setAlarmLabel(newalarm.getAlarmLabel());
                 alarm.setmWakeTime(newalarm.getmWakeTime());
                 alarm.setTime(newalarm.getTime());

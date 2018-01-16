@@ -7,6 +7,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -14,7 +16,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import com.rva.mrb.vivify.AlarmApplication;
 import com.rva.mrb.vivify.ApplicationModule;
 import com.rva.mrb.vivify.BaseActivity;
@@ -42,7 +43,7 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.toolbar_notification) TextView alarmNotification;
-    @BindView(R.id.recyclerview) RealmRecyclerView mRecyclerView;
+    @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
     @Inject AlarmsPresenter alarmPresenter;
     private NotificationService mNotificationService;
     private AlarmAdapter mAdapter;
@@ -83,8 +84,8 @@ public class AlarmActivity extends BaseActivity implements AlarmsView{
 
         // create a new container to list all alarms
         // and set to auto update from realm results
-        mAdapter = new AlarmAdapter(getApplicationContext(),
-                alarmPresenter.getAllAlarms(), listener, clickListener, true, true);
+        mAdapter = new AlarmAdapter(alarmPresenter.getAllAlarms(), clickListener, listener);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
 
         updateAlarmNotification();
