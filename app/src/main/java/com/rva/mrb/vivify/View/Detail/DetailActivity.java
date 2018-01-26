@@ -68,12 +68,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.edit_time) EditText mEditTime;
     @BindView(R.id.track_tv) TextView mTrackTv;
     @BindView(R.id.isSet) Switch mIsSet;
-//    @BindView(R.id.standard_time) CheckBox mStandardTime;
     @BindView(R.id.shuffle) CheckedTextView mShuffle;
     @BindView(R.id.vibrate) CheckedTextView mVibrate;
-//    @BindView(R.id.button_add) Button addbt;
-//    @BindView(R.id.button_delete) Button deletebt;
-//    @BindView(R.id.button_save) Button savebt;
     @BindView(R.id.button_save) FloatingActionButton saveFab;
     @BindView(R.id.sunday_check) CheckBox sundayCb;
     @BindView(R.id.monday_check) CheckBox mondayCb;
@@ -169,9 +165,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
         }
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-//            setVisibility();
             Log.d("DetailActivity", Boolean.toString(bundle.getBoolean("NewAlarm", true)));
-            if (bundle.getBoolean("NewAlarm", true) == false) {
+            if (!bundle.getBoolean("NewAlarm", true)) {
                 alarm = Parcels.unwrap(getIntent().getParcelableExtra("Alarm"));
                 setMediaBackgroundImage(alarm.getTrackImage());
                 mEditTime.setText(alarm.getmWakeTime());
@@ -180,7 +175,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 mShuffle.setChecked(alarm.isShuffle());
                 mVibrate.setChecked(alarm.isVibrate());
                 trackName = alarm.getTrackName();
-                artistName = bundle.getString("AlarmArtist");//alarm.getArtistName();
+                artistName = bundle.getString("AlarmArtist");
                 trackId = alarm.getTrackId();
                 trackImage = alarm.getTrackImage();
                 mediaType = alarm.getMediaType();
@@ -324,19 +319,16 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @OnClick(R.id.edit_time)
     public void onPickTime() {
+        // Set Alarm time as default if it exists
         TimePickerDialog timePickerDialog =
-                new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                mEditTime.setText(detailPresenter.getTime(hour, minute));
-                Log.d("timepicker", "hour: " + hour);
-                alarm.setmWakeTime(mEditTime.getText().toString());
-                Date date = detailPresenter.getDate(alarm, hour, minute);
-                alarm.setTime(date);
-                alarm.setTimeOfDay(detailPresenter.getTimeOfDay(date));
-            }
-                    // Set Alarm time as default if it exists
-        }, detailPresenter.getHour(alarm), detailPresenter.getMinute(alarm), false);
+                new TimePickerDialog(this, (timePicker, hour, minute) -> {
+                    mEditTime.setText(detailPresenter.getTime(hour, minute));
+                    Log.d("timepicker", "hour: " + hour);
+                    alarm.setmWakeTime(mEditTime.getText().toString());
+                    Date date = detailPresenter.getDate(alarm, hour, minute);
+                    alarm.setTime(date);
+                    alarm.setTimeOfDay(detailPresenter.getTimeOfDay(date));
+                }, detailPresenter.getHour(alarm), detailPresenter.getMinute(alarm), false);
         timePickerDialog.show();
     }
 

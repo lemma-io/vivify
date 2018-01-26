@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "802143507564",
+    "firebase_url": "https://vivify-4a902.firebaseio.com",
+    "project_id": "vivify-4a902",
+    "storage_bucket": "vivify-4a902.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802143507564:android:98e0cbe4959a38f4",
+        "android_client_info": {
+          "package_name": "com.rva.mrb.vivify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "802143507564-qeuld5el8p56ikm5ho8b9j28eoukhvqi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rva.mrb.vivify",
+            "certificate_hash": "4f49b9f41b12e4b2c853c203ad1e8e2a3507932b"
+          }
+        },
+        {
+          "client_id": "802143507564-732u38u6agvpd067lh8huf8ffg48nsks.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-xyKp_E37HoHcvkT_YdP1YimCjph0SEQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802143507564-732u38u6agvpd067lh8huf8ffg48nsks.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
