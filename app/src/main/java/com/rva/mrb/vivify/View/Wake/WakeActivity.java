@@ -175,11 +175,13 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_ALARM);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        Log.d(TAG, "Pref Volume: " + sharedPref.getInt("max_volume_key", 100));
         handleRingVolume();
 
         //Set the seekbar that dissmisses/snoozes alarm
 //        setSeekBar();
         handleVibrator();
+
         mNotificationService = new NotificationService(mContext);
         mNotificationService.cancelNotification();
 
@@ -192,7 +194,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     }
 
     private void attachAdaptersToRecyclerview() {
-        nextMediaListener = () -> onNextSongClick();
+        nextMediaListener = this::onNextSongClick;
         wakeAdapterRecyclerViewAdapter = new WakeRecyclerViewAdapter(alarm, nextMediaListener);
         touchListener = new WakeTouchAdapter.WakeTouchListener() {
             @Override
@@ -238,8 +240,10 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     public void handleRingVolume() {
         int fadein = Integer.parseInt(sharedPref.getString("fadein_key", "30"));
+        double prefVolume = sharedPref.getInt("max_volume_key", 100);
+        double maxVolume = (prefVolume / 99) * 6;
         Log.d(TAG, "FadeIn: " + fadein);
-        Log.d("wake max volume: ", Integer.toString(am.getStreamMaxVolume(AudioManager.STREAM_ALARM)));
+        Log.d(TAG, "Pref Volume: " + prefVolume + "\n" + "Max Volume: " + maxVolume);
         double remainder = (fadein % 6)/6.0;
         int remain = ((int) (remainder*1000));
 
@@ -251,7 +255,9 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                     .subscribe(along -> {
                         am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
                         Log.d("current volume ", Integer.toString(am.getStreamVolume(AudioManager.STREAM_ALARM)));
-                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) == am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) {
+                        Log.d("max volume ", Double.toString(maxVolume));
+//                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) == am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) {
+                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) >= maxVolume) {
                             disposable.dispose();
                         }
                     });

@@ -27,6 +27,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         String ringtonePref = preferences.getString("default_ringtone_key",
                 "DEFAULT_RINGTONE_URI");
         Log.d("Settings", "Ringtone:" + ringtonePref);
+        Log.d("Settings", "Volume:" + preferences.getInt("max_volume_key", 100));
+        double prefVolume = preferences.getInt("max_volume_key", 100);
+        double maxVolume = (prefVolume / 99) * 6;
+        Log.d("VOLUME", "Pref Volume: " + prefVolume + "\n" + "Max Volume: " + maxVolume);
     }
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
