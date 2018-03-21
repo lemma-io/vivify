@@ -163,7 +163,6 @@ public class RealmService {
             editAlarm.setmWakeTime(updatedAlarm.getmWakeTime());
             editAlarm.setTime(updatedAlarm.getTime());
             editAlarm.setEnabled(updatedAlarm.isEnabled());
-            editAlarm.set24hr(updatedAlarm.is24hr());
             editAlarm.setDaysOfWeek(updatedAlarm.getDaysOfWeek());
             editAlarm.setTrackName(updatedAlarm.getTrackName());
             editAlarm.setArtist(updatedAlarm.getArtistName());
@@ -202,7 +201,6 @@ public class RealmService {
             alarm.setAlarmLabel(name);
             alarm.setEnabled(isSet);
             alarm.setDaysOfWeek(repeat);
-            alarm.setTimeOfDay(Calendar.getInstance().getTime());
             alarm.setTrackName(trackName);
             alarm.setArtist(artist);
             alarm.setTrackId(trackId);
@@ -222,7 +220,6 @@ public class RealmService {
                 alarm.setmWakeTime(newalarm.getmWakeTime());
                 alarm.setTime(newalarm.getTime());
                 alarm.setEnabled(newalarm.isEnabled());
-                alarm.set24hr(newalarm.is24hr());
                 alarm.setDaysOfWeek(newalarm.getDaysOfWeek());
                 alarm.setTrackName(newalarm.getTrackName());
                 alarm.setArtist(newalarm.getArtistName());

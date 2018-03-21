@@ -35,11 +35,9 @@ public class Alarm extends RealmObject {
     private String id;
     private String alarmLabel;
     private boolean enabled;
-    private boolean is24hr;
     private String mWakeTime;
     private String daysOfWeek;
     private Date time;
-    private Date timeOfDay;
     private String trackName;
     private String artist;
     private String trackId;
@@ -77,18 +75,6 @@ public class Alarm extends RealmObject {
         this.enabled = enabled;
     }
 
-    private void clearTime() {
-        setTime(new Date());
-    }
-
-    public boolean is24hr() {
-        return is24hr;
-    }
-
-    public void set24hr(boolean is24hr) {
-        this.is24hr = is24hr;
-    }
-
     public String getmWakeTime() {
         return mWakeTime;
     }
@@ -107,22 +93,7 @@ public class Alarm extends RealmObject {
 
     public void setTime(Date time) {
         this.time = time;
-        setTimeOfDay(time);
     }
-
-    public Date getTimeOfDay() {
-        return timeOfDay;
-    }
-
-    public void setTimeOfDay(Date timeOfDay) {
-        Calendar newTime = Calendar.getInstance();
-        newTime.setTime(timeOfDay);
-        newTime.set(Calendar.YEAR, 2000);
-        newTime.set(Calendar.MONTH, Calendar.JANUARY);
-        newTime.set(Calendar.DAY_OF_MONTH, 1);
-        this.timeOfDay = newTime.getTime();
-    }
-
 
     public Date getTime() {
         return time;
@@ -262,27 +233,6 @@ public class Alarm extends RealmObject {
         }
     }
 
-//    public int mapToCalendarDays(int alarmDay) {
-//        switch (alarmDay) {
-//            case 1:
-//                return Calendar.SUNDAY;
-//            case 2:
-//                return Calendar.MONDAY;
-//            case 4:
-//                return Calendar.TUESDAY;
-//            case 8:
-//                return Calendar.WEDNESDAY;
-//            case 16:
-//                return Calendar.THURSDAY;
-//            case 32:
-//                return Calendar.FRIDAY;
-//            case 64:
-//                return Calendar.SATURDAY;
-//            default:
-//                return 0;
-//        }
-//    }
-
     public int getDecDaysOfWeek() {
         return (daysOfWeek != null) ? Integer.parseInt(daysOfWeek, 2) : 0;
     }
@@ -317,14 +267,6 @@ public class Alarm extends RealmObject {
 
     public void setTrackImage(String trackImage) {
         this.trackImage = trackImage;
-    }
-
-    public int getHour() {
-        return getCal().get(Calendar.HOUR_OF_DAY);
-    }
-
-    public int getMinute() {
-        return getCal().get(Calendar.MINUTE);
     }
 
     public int getMediaType() {

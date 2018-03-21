@@ -327,7 +327,6 @@ public class DetailActivity extends BaseActivity implements DetailView {
                     alarm.setmWakeTime(mEditTime.getText().toString());
                     Date date = detailPresenter.getDate(alarm, hour, minute);
                     alarm.setTime(date);
-                    alarm.setTimeOfDay(detailPresenter.getTimeOfDay(date));
                 }, detailPresenter.getHour(alarm), detailPresenter.getMinute(alarm), false);
         timePickerDialog.show();
     }

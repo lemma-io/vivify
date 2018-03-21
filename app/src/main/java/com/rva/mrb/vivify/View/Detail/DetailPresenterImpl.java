@@ -199,7 +199,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 
     @Override
     public int getHour(Alarm alarm) {
-        return (alarm.getTime() != null) ? alarm.getHour() : getCurrentHour();
+        return (alarm.getTime() != null) ? alarm.getCal().get(Calendar.HOUR_OF_DAY) : getCurrentHour();
     }
 
 
@@ -211,7 +211,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 
     @Override
     public int getMinute(Alarm alarm) {
-        return (alarm.getTime() != null) ? alarm.getMinute() : getCurrentMinute();
+        return (alarm.getTime() != null) ? alarm.getCal().get(Calendar.MINUTE) : getCurrentMinute();
     }
 
     @Override
