@@ -116,7 +116,7 @@ public class Alarm extends RealmObject {
 
             // checks to find the next available day
             update.add(Calendar.DAY_OF_YEAR, getNextDayEnabled());
-            Log.d(TAG, "Alarm time: " + update.getTime());
+//            Log.d(TAG, "Alarm time: " + update.getTime());
             time = update.getTime();
         }
         return time;
@@ -136,14 +136,14 @@ public class Alarm extends RealmObject {
 
         // convert the Calendar day to a value we can use
         int todaysDay = mapToAlarmDays(next.get(Calendar.DAY_OF_WEEK));
-        Log.d("Day", "Binary day: " + todaysDay);
+//        Log.d("Day", "Binary day: " + todaysDay);
 
         // roll the calendar this many days forward
         int daysFromNow = 0;
 
-        Log.d("alarm.java", "repeat today: " + ((getDecDaysOfWeek() & todaysDay)==1));
-        Log.d("alarm.java", "getDecDaysOfWeek: " + getDecDaysOfWeek());
-        Log.d("alarm.java", "getDecDaysOfWeek & today: " + (getDecDaysOfWeek() & todaysDay));
+//        Log.d("alarm.java", "repeat today: " + ((getDecDaysOfWeek() & todaysDay)==1));
+//        Log.d("alarm.java", "getDecDaysOfWeek: " + getDecDaysOfWeek());
+//        Log.d("alarm.java", "getDecDaysOfWeek & today: " + (getDecDaysOfWeek() & todaysDay));
 
 
         // we are using bitwise operations to store multiple values in a
@@ -154,7 +154,7 @@ public class Alarm extends RealmObject {
         if (getDecDaysOfWeek() == 0) {
             Calendar cal = Calendar.getInstance();
             boolean before = time.before(cal.getTime());
-            Log.d("date", "before current date: " + before);
+//            Log.d("date", "before current date: " + before);
             if (time.before(cal.getTime())) {
                 daysFromNow = 1;
             } else {
@@ -164,13 +164,13 @@ public class Alarm extends RealmObject {
         }
         else if ((getDecDaysOfWeek() & todaysDay) == todaysDay) {
             Calendar calendar = Calendar.getInstance();
-            Log.d("alarm.java", "time: " + time);
-            Log.d("alarm.java", "current time: " + calendar.getTime());
-            Log.d("alarm.java", "before: " + !time.before(calendar.getTime()));
+//            Log.d("alarm.java", "time: " + time);
+//            Log.d("alarm.java", "current time: " + calendar.getTime());
+//            Log.d("alarm.java", "before: " + !time.before(calendar.getTime()));
 
 
             if (!time.before(calendar.getTime())) {
-                Log.d("alarm object", "before: " + !time.before(calendar.getTime()));
+//                Log.d("alarm object", "before: " + !time.before(calendar.getTime()));
                 daysFromNow = 0;
                 return daysFromNow;
             }
@@ -180,7 +180,7 @@ public class Alarm extends RealmObject {
             Calendar current = Calendar.getInstance();
             for (int days = 1; days <= 7; days++) {
                 todaysDay = mapToAlarmDays(next.get(Calendar.DAY_OF_WEEK));
-                Log.d(TAG, "Next days is " + todaysDay);
+//                Log.d(TAG, "Next days is " + todaysDay);
                 daysFromNow = days;
 
                 // In this case we are checking to see if today is contained
@@ -190,7 +190,7 @@ public class Alarm extends RealmObject {
                 // the binary value of today
                 if ((getDecDaysOfWeek() & todaysDay) == todaysDay) {
                     //if (!time.before(current.getTime())) {
-                    Log.d(TAG, "Fire when");
+//                    Log.d(TAG, "Fire when");
                     daysFromNow = days;
                     break;
                     //}
@@ -198,11 +198,11 @@ public class Alarm extends RealmObject {
                 }
                 // If today is not contained within the binary string then
                 // roll the date foreword one day
-                next.add(Calendar.DAY_OF_YEAR, 1);
+//                next.add(Calendar.DAY_OF_YEAR, 1);
             }
 
 
-        Log.d(TAG, "Next alarm occurence is in " + daysFromNow + " days");
+//        Log.d(TAG, "Next alarm occurence is in " + daysFromNow + " days");
         return daysFromNow;
     }
 

@@ -86,6 +86,7 @@ dependencies {
     // Might need to add some version of rxBindings
     // Stetho Realm Browser for linux/Windows
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.8.9'
     implementation 'com.spotify.sdk:spotify-android-auth-1.0.0@aar'
     implementation 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
     implementation 'com.bignerdranch.android:expandablerecyclerview:2.1.1'
