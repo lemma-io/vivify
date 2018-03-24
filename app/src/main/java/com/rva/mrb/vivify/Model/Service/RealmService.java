@@ -344,10 +344,6 @@ public class RealmService {
         updateAlarms();
     }
 
-    public String getMessage(){
-        return "From realmService!!";
-    }
-
     public void closeRealm() {
         mRealm.close();
     }

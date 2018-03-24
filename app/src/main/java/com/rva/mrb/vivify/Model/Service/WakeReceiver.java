@@ -22,7 +22,6 @@ public class WakeReceiver extends WakefulBroadcastReceiver {
         Log.d("Reciever", "Something happened?");
         Toast.makeText(context, "AlarmManager Worked!!", Toast.LENGTH_LONG).show();
 
-//        Log.d("Realm", realmService.getMessage());
         Bundle extras = intent.getExtras();
         String trackId = (String) extras.get("trackId");
         String trackImage = (String) extras.get("trackImage");

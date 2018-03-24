@@ -23,10 +23,6 @@ public class AlarmPresenterImpl implements AlarmsPresenter {
 
     public AlarmPresenterImpl(RealmService realmService){ mRealmService = realmService; }
 
-    public String getRSMessage(){
-        return mRealmService.getMessage();
-    }
-
     @Override
     public RealmResults<Alarm> getAllAlarms() {
         return mRealmService.getAllAlarms().sort("timeOfDay");

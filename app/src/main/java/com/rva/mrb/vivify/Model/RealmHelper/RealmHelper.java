@@ -20,8 +20,4 @@ public class RealmHelper{
         Log.d("RealmHelper", "AlarmTime: " + realmService.getNextPendingAlarm().getTime());
         return realmService.getNextPendingAlarm();
     }
-
-    public String message() {
-        return realmService.getMessage();
-    }
 }

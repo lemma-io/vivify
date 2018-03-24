@@ -18,8 +18,5 @@ public interface AlarmsPresenter extends BasePresenter<AlarmsView> {
     void disableMissedAlarm(Alarm alarm);
     String getTimeTillPendingAlarm(String notice);
     String prettyDateFormat(Date alarmTime);
-//    void onAlarmClick(int id);
-//    String getMessage();
-//    String getRSMessage();
 
 }

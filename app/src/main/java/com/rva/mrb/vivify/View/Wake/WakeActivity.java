@@ -478,7 +478,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //
 //                    @Override
 //                    public void onError(Throwable throwable) {
-//                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
 //                    }
 //                });
                 Spotify.getPlayer(builder, this, new SpotifyPlayer.InitializationObserver() {

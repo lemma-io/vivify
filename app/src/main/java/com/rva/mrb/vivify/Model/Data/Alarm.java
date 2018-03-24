@@ -1,7 +1,5 @@
 package com.rva.mrb.vivify.Model.Data;
 
-import android.util.Log;
-
 import org.parceler.Parcel;
 
 import java.util.Calendar;
@@ -99,18 +97,18 @@ public class Alarm extends RealmObject {
         return time;
     }
 
-    public Calendar getCal() {
+    public Calendar getCalendar() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);
         return cal;
     }
 
     public Date updateTime() {
-        if (getCal().before(Calendar.getInstance())) {
+        if (getCalendar().before(Calendar.getInstance())) {
             // holds new date
             Calendar update = Calendar.getInstance();
-            update.set(Calendar.HOUR_OF_DAY, getCal().get(Calendar.HOUR_OF_DAY));
-            update.set(Calendar.MINUTE, getCal().get(Calendar.MINUTE));
+            update.set(Calendar.HOUR_OF_DAY, getCalendar().get(Calendar.HOUR_OF_DAY));
+            update.set(Calendar.MINUTE, getCalendar().get(Calendar.MINUTE));
             //update.set(Calendar.AM_PM, getCal().get(Calendar.AM_PM));
             update.set(Calendar.SECOND, 0);
 
@@ -123,7 +121,7 @@ public class Alarm extends RealmObject {
     }
 
     public Long getTimeInMillis() {
-        return getCal().getTimeInMillis();
+        return getCalendar().getTimeInMillis();
     }
 
     public int getNextDayEnabled() {

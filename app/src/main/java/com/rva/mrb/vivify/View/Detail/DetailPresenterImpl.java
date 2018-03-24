@@ -103,7 +103,6 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 //                newestAlarmId = mRealmService.getNewestAlarmId();
 //                Log.d("New", "Alarm id is: " + newestAlarmId);
 //            } catch (Exception e) {
-//                Log.e(TAG, "Alarm not found, trying againg. " + e.getMessage());
 //                newestAlarmId = mRealmService.getNewestAlarmId();
 //            }
 //            if (newestAlarmId != null) {
@@ -199,7 +198,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 
     @Override
     public int getHour(Alarm alarm) {
-        return (alarm.getTime() != null) ? alarm.getCal().get(Calendar.HOUR_OF_DAY) : getCurrentHour();
+        return (alarm.getTime() != null) ? alarm.getCalendar().get(Calendar.HOUR_OF_DAY) : getCurrentHour();
     }
 
 
@@ -211,7 +210,7 @@ public class DetailPresenterImpl implements DetailPresenter, RealmService.OnTran
 
     @Override
     public int getMinute(Alarm alarm) {
-        return (alarm.getTime() != null) ? alarm.getCal().get(Calendar.MINUTE) : getCurrentMinute();
+        return (alarm.getTime() != null) ? alarm.getCalendar().get(Calendar.MINUTE) : getCurrentMinute();
     }
 
     @Override
