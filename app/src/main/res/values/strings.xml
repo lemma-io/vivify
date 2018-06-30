@@ -39,7 +39,6 @@
     <string name="key_snooze">snooze_key</string>
     <string name="title_snooze">Snooze</string>
     <string name="title_fade_in">Fade in Duration</string>
-    <string name="key_fade_in">fadein_key</string>
     <string name="key_notification">notification_key</string>
     <string name="title_alarm_notif">Allow Upcoming Alarm Notification</string>
     <string name="summary_logout">You are logged into Spotify</string>

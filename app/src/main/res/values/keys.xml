@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="max_volume">max_volume_key</string>
+    <string name="volume_fade_in">fadein_key</string>
+</resources>
