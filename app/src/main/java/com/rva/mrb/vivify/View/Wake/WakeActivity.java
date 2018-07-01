@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -43,6 +44,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -78,6 +80,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private static final int REQUEST_CODE = 5123;
     private static final String REDIRECT_URI = "vivify://callback";
     private Player mPlayer;
+    private Metadata metadata;
     private Config playerConfig;
     private ApplicationModule applicationModule = new ApplicationModule((AlarmApplication) getApplication());
     private String trackId;
@@ -156,12 +159,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
 
             //Use Glide to load image URL
-            trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
-            Glide.with(this)
-                    .load(trackImage)
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .centerCrop()
-                    .into(trackIV);
+            updateBackgroundImage(trackImage);
 
             Log.d("trackImage", "Traack Image Url: " + trackImage);
 
@@ -189,6 +187,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+    }
+
+    private void updateBackgroundImage(String imageUri) {
+        trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
+        Glide.with(this)
+                .load(imageUri)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .centerCrop()
+                .into(trackIV);
     }
 
     private void attachAdaptersToRecyclerview() {
@@ -644,7 +651,20 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     @Override
     public void onPlaybackEvent(PlayerEvent event) {
+        switch (event) {
+            case kSpPlaybackNotifyTrackChanged:
+                Log.d(TAG, "Track Changed");
+                metadata = mPlayer.getMetadata();
+                Log.d(TAG, "Current track: " + metadata.currentTrack.name);
+                updateView();
+                break;
+            default:
+                break;
+        }
+    }
 
+    private void updateView() {
+        updateBackgroundImage(mPlayer.getMetadata().currentTrack.albumCoverWebUrl);
     }
 
 
