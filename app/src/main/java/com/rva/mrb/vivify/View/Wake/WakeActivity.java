@@ -211,6 +211,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             public void onAlarmSnoozed() {
                 onSnooze();
             }
+
+
         };
         ItemTouchHelper.Callback callback = new WakeTouchAdapter(touchListener);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -656,6 +658,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
                 Log.d(TAG, "Track Changed");
                 metadata = mPlayer.getMetadata();
                 Log.d(TAG, "Current track: " + metadata.currentTrack.name);
+                Log.d(TAG, "Current artist: " + metadata.currentTrack.artistName);
+                wakeAdapterRecyclerViewAdapter.updateMediaInfo(metadata.currentTrack.name, metadata.currentTrack.artistName);
                 updateView();
                 break;
             default:

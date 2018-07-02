@@ -262,27 +262,6 @@ public class Alarm extends RealmObject {
         }
     }
 
-//    public int mapToCalendarDays(int alarmDay) {
-//        switch (alarmDay) {
-//            case 1:
-//                return Calendar.SUNDAY;
-//            case 2:
-//                return Calendar.MONDAY;
-//            case 4:
-//                return Calendar.TUESDAY;
-//            case 8:
-//                return Calendar.WEDNESDAY;
-//            case 16:
-//                return Calendar.THURSDAY;
-//            case 32:
-//                return Calendar.FRIDAY;
-//            case 64:
-//                return Calendar.SATURDAY;
-//            default:
-//                return 0;
-//        }
-//    }
-
     public int getDecDaysOfWeek() {
         return (daysOfWeek != null) ? Integer.parseInt(daysOfWeek, 2) : 0;
     }

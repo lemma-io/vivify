@@ -21,6 +21,8 @@ public class WakeRecyclerViewAdapter extends RecyclerView.Adapter<WakeRecyclerVi
     private static String TAG = WakeRecyclerViewAdapter.class.getSimpleName();
     private Alarm alarm;
     private NextMediaListener nextMediaListener;
+    private String trackName;
+    private String artistName;
 
     public WakeRecyclerViewAdapter(Alarm alarm, NextMediaListener nextMediaListener){
         this.alarm = alarm;
@@ -40,8 +42,17 @@ public class WakeRecyclerViewAdapter extends RecyclerView.Adapter<WakeRecyclerVi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.d(TAG, "BindViewHolder");
-        holder.mediaName.setText(alarm.getTrackName());
-        holder.mediaOwner.setText(alarm.getArtistName());
+        if (trackName != null) {
+            holder.mediaName.setText(trackName);
+        } else {
+            holder.mediaName.setText(alarm.getTrackName());
+        }
+
+        if (artistName != null) {
+            holder.mediaOwner.setText(artistName);
+        } else {
+            holder.mediaOwner.setText(alarm.getArtistName());
+        }
         holder.nextSong.setOnClickListener(view -> nextMediaListener.onNextSong());
     }
 
@@ -58,6 +69,12 @@ public class WakeRecyclerViewAdapter extends RecyclerView.Adapter<WakeRecyclerVi
     @Override
     public void onAlarmSnooze(int position) {
         notifyItemRemoved(position);
+    }
+
+    public void updateMediaInfo(String track, String artist) {
+        this.artistName = artist;
+        this.trackName = track;
+        this.notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
