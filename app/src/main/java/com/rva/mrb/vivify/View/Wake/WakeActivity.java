@@ -655,25 +655,21 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     public void onPlaybackEvent(PlayerEvent event) {
         switch (event) {
             case kSpPlaybackNotifyTrackChanged:
-                Log.d(TAG, "Track Changed");
-                metadata = mPlayer.getMetadata();
-                Log.d(TAG, "Current track: " + metadata.currentTrack.name);
-                Log.d(TAG, "Current artist: " + metadata.currentTrack.artistName);
-                wakeAdapterRecyclerViewAdapter.updateMediaInfo(metadata.currentTrack.name, metadata.currentTrack.artistName);
-                updateView();
+                updateView(mPlayer.getMetadata());
                 break;
             default:
                 break;
         }
     }
 
-    private void updateView() {
-        updateBackgroundImage(mPlayer.getMetadata().currentTrack.albumCoverWebUrl);
+    private void updateView(Metadata metadata) {
+        updateBackgroundImage(metadata.currentTrack.albumCoverWebUrl);
+        wakeAdapterRecyclerViewAdapter
+                .updateMediaInfo(metadata.currentTrack.name, metadata.currentTrack.artistName);
     }
-
 
     @Override
     public void onPlaybackError(com.spotify.sdk.android.player.Error error) {
-
+        Log.d(TAG, "Error: " + error);
     }
 }
