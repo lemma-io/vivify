@@ -30,7 +30,7 @@ public class ApplicationModule {
 
     private AlarmApplication mApp;
     final String SPOTIFY_URL = "https://api.spotify.com/v1/";
-    final String NODE_URL = "https://5wnjr97ivi.execute-api.us-east-1.amazonaws.com/prod";
+    final String NODE_URL = "https://5wnjr97ivi.execute-api.us-east-1.amazonaws.com/prod/";
     String accessToken;
     String refreshToken;
 
