@@ -2,12 +2,15 @@ language: android
 jdk: oraclejdk8
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-23.0.3
-    - android-23
-    - extra-android-support
-    - extra-android-m2repository
-    - extra-google-m2repository
+  - tools
+  - platform-tools
+  - build-tools-23.0.3
+  - android-23
+  - extra-android-support
+  - extra-android-m2repository
+  - extra-google-m2repository
 script:
-    - chmod +x ./gradlew
+- chmod +x ./gradlew
+before_install:
+- openssl aes-256-cbc -K $encrypted_b22f03beeb42_key -iv $encrypted_b22f03beeb42_iv
+  -in android.jks.enc -out android.jks -d
