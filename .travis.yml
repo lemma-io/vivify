@@ -10,7 +10,7 @@ android:
   - extra-android-m2repository
   - extra-google-m2repository
 script:
-- chmod +x ./gradlew assembleRelease
+- ./gradlew assembleRelease
 before_install:
 - openssl aes-256-cbc -K $encrypted_b22f03beeb42_key -iv $encrypted_b22f03beeb42_iv
   -in android.jks.enc -out android.jks -d
