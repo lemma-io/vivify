@@ -18,7 +18,8 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
+//        buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
 //        buildConfigField("String", "BUGFENDER_APP_KEY", BUGFENDER_APP_KEY)
 //        buildConfigField("String", "RELEASE_STORE_PASS", RELEASE_STORE_PASS)
 //        buildConfigField("String", "RELEASE_KEY_ALIAS", RELEASE_KEY_ALIAS)
