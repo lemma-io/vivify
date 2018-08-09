@@ -10,7 +10,17 @@ android:
   - extra-android-m2repository
   - extra-google-m2repository
 script:
-- chmod +x ./gradlew
+- chmod +x ./gradlew assembleRelease
 before_install:
 - openssl aes-256-cbc -K $encrypted_b22f03beeb42_key -iv $encrypted_b22f03beeb42_iv
   -in android.jks.enc -out android.jks -d
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure:
+  file: /home/travis/build/lemma-io/vivify/app/build/outputs/apk/release/*
+  on:
+    repo: lemma-io/vivify
+    tags: true
