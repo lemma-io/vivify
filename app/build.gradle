@@ -43,9 +43,9 @@ android {
         }
     }
     def isRunningOnTravis = System.getenv("CI") == "true"
-
     if (isRunningOnTravis) {
         signingConfigs.release.storeFile = file("../android.jks")
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
         signingConfigs.release.storePassword = System.getenv("release_store_pass")
         signingConfigs.release.keyPassword = System.getenv("release_key_pass")
         signingConfigs.release.keyAlias = System.getenv("release_key_alias")
