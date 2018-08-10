@@ -27,6 +27,10 @@ android {
     signingConfigs {
         release
     }
+    def spotify_client = (SPOTIFY_CLIENT_ID != null && !SPOTIFY_CLIENT_ID.isEmpty()) ? SPOTIFY_CLIENT_ID : System.getenv("spotify_client_id")
+//    println "Client ID: [${spotify_client}]"
+//    println "Has Property? " + (SPOTIFY_CLIENT_ID != null && !SPOTIFY_CLIENT_ID.isEmpty())
+//    buildConfigField("String", "SPOTIFY_CLIENT_ID", spotify_client.toString())
     buildTypes {
         release {
             minifyEnabled false
@@ -35,17 +39,17 @@ android {
         }
         debug {
             debuggable true
-            buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
-            buildConfigField("String", "RELEASE_STORE_PASS", RELEASE_STORE_PASS)
-            buildConfigField("String", "RELEASE_KEY_ALIAS", RELEASE_KEY_ALIAS)
-            buildConfigField("String", "RELEASE_KEY_PASS", RELEASE_KEY_PASS)
-            buildConfigField("String", "PATH_TO_CERT_FILE", PATH_TO_CERT_FILE)
         }
+    }
+    defaultConfig {
+        println "Client ID: [${spotify_client}]"
+
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", spotify_client.toString())
     }
     def isRunningOnTravis = System.getenv("CI") == "true"
     if (isRunningOnTravis) {
         signingConfigs.release.storeFile = file("../android.jks")
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
+
         signingConfigs.release.storePassword = System.getenv("release_store_pass")
         signingConfigs.release.keyPassword = System.getenv("release_key_pass")
         signingConfigs.release.keyAlias = System.getenv("release_key_alias")
