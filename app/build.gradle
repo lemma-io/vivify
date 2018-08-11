@@ -14,6 +14,7 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -27,10 +28,6 @@ android {
     signingConfigs {
         release
     }
-    def spotify_client = (SPOTIFY_CLIENT_ID != null && !SPOTIFY_CLIENT_ID.isEmpty()) ? SPOTIFY_CLIENT_ID : System.getenv("spotify_client_id")
-//    println "Client ID: [${spotify_client}]"
-//    println "Has Property? " + (SPOTIFY_CLIENT_ID != null && !SPOTIFY_CLIENT_ID.isEmpty())
-//    buildConfigField("String", "SPOTIFY_CLIENT_ID", spotify_client.toString())
     buildTypes {
         release {
             minifyEnabled false
@@ -41,15 +38,9 @@ android {
             debuggable true
         }
     }
-    defaultConfig {
-        println "Client ID: [${spotify_client}]"
-
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", spotify_client.toString())
-    }
     def isRunningOnTravis = System.getenv("CI") == "true"
     if (isRunningOnTravis) {
         signingConfigs.release.storeFile = file("../android.jks")
-
         signingConfigs.release.storePassword = System.getenv("release_store_pass")
         signingConfigs.release.keyPassword = System.getenv("release_key_pass")
         signingConfigs.release.keyAlias = System.getenv("release_key_alias")
