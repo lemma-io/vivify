@@ -14,7 +14,8 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
+        resValue("string", "spotify_client_id", SPOTIFY_CLIENT_ID)
+//        buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -33,9 +34,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+//            buildConfigField("String", "SPOTIFY_CLIENT_ID", System.getenv("spotify_client_id"))
+//            resValue("string", "spotify_client_id", System.getenv("spotify_client_id"))
         }
         debug {
             debuggable true
+//            buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
         }
     }
     def isRunningOnTravis = System.getenv("CI") == "true"

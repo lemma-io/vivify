@@ -43,7 +43,7 @@ public class LoginActivity extends BaseActivity {
     SpotifyService spotifyService;
     @BindView(R.id.login_button)
     Button loginButton;
-    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
+//    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     private static final String REDIRECT_URI = "vivify://callback";
     private static final int REQUEST_CODE = 5123;
     private ApplicationModule applicationModule = new ApplicationModule((AlarmApplication) getApplication());
@@ -68,7 +68,7 @@ public class LoginActivity extends BaseActivity {
      */
     @OnClick(R.id.login_button)
     public void onLoginButtonClick() {
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(getString(R.string.spotify_client_id),
                 AuthenticationResponse.Type.CODE, REDIRECT_URI);
 
         builder.setScopes(new String[]{"streaming"});

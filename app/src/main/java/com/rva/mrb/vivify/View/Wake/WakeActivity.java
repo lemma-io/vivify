@@ -74,7 +74,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     @Inject SpotifyService spotifyService;
 
     // Spotify
-    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
+    private static final String CLIENT_ID = "000";
     private static final int REQUEST_CODE = 5123;
     private static final String REDIRECT_URI = "vivify://callback";
     private Player mPlayer;
@@ -458,7 +458,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //            @Override
 //            public void subscribe(CompletableEmitter e) throws Exception {
                 Log.d("Player", "Init custom player");
-                playerConfig = new Config(mContext, applicationModule.getAccessToken(), CLIENT_ID);
+                playerConfig = new Config(mContext, applicationModule.getAccessToken(), getString(R.string.spotify_client_id));
                 SpotifyPlayer.Builder builder = new SpotifyPlayer.Builder(playerConfig)
                         .setAudioController(audioTrackController);
 //        builder.build(new SpotifyPlayer.InitializationObserver() {
