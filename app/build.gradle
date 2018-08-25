@@ -34,17 +34,20 @@ android {
         }
     }
     signingConfigs {
-        local {
-            storeFile file(PATH_TO_CERT_FILE)
-            storePassword RELEASE_STORE_PASS
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASS
-        }
-        travis {
-            storeFile file("../android.jks")
-            storePassword System.getenv("release_store_pass")
-            keyAlias System.getenv("release_key_pass")
-            keyPassword System.getenv("release_key_alias")
+        if (isRunningOnTravis) {
+            travis {
+                storeFile file("../android.jks")
+                storePassword System.getenv("release_store_pass")
+                keyAlias System.getenv("release_key_pass")
+                keyPassword System.getenv("release_key_alias")
+            }
+        } else {
+            local {
+                storeFile file(PATH_TO_CERT_FILE)
+                storePassword RELEASE_STORE_PASS
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASS
+            }
         }
     }
     buildTypes {
