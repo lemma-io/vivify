@@ -23,7 +23,7 @@ deploy:
   overwrite: true
   api_key:
     secure: 3xX/Y6mdxtZzOzsIGW0ytfdAXTVv0lnv81ra32/cN/q5QLHf/rehnORXllWeTJn/vORkGLSkTUAcDC0+ASu6KpyNQwtlUZaiR6OXbu/2GCsTNpaL6dxgaH2y08JZwYXnxfMqB9SHd9AQJw4zoRsDETJzyRdlCo0peVuTq78VPbI+fAOthTstbF5fFA5XkVAXqaVn9hU+9jzIySCORneicvouBjdgZKO/18ik5NhJb0wqIF4XkH9Iaav4pRxomfkDh+GlEvoxPz9dsulJn6uOgbnXdKixQImwixR/2i0rjnkXi5IVdbgH1pWg2Hp8eAf224WnOVGpALfxrd8C9vmFJIkNsU39NGczgRXovECbooPwsmJz/dPstLy7d1ZNrmqft2Y/6e27Xq/MyGBETDw7XPy3zNdcq6U0r13eNKBkZPdZp5N2GYQPbzVuAYlUfPcMXi1QZHdRdeuwXmmBjHpUN7rBQ+ZR9OgUquMFNDXitU0cUn8zgk9EgqAjkVbzsMGtwZmegwAam0rqRTVQUNriFSmdYaMZOLX6uW24Lfy8UhVLMKToxyk/rhXCTo4x/Qa14yGXPAV2Ey638tqrJLcXWghl/86nPIsOmtGskBlN4hoYLgEbDj5fRXDWi+enCD8INLrH+BVqKn5mQEl8WvpGbbnQKRbKsWcB7HIEhmvclAg=
-  file: "vivify/app/build/outputs/apk/release/app-release.apk"
+  file: "app/build/outputs/apk/release/app-release.apk"
   on:
     repo: lemma-io/vivify
     tags: true
