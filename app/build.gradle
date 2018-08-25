@@ -1,14 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
-//apply plugin: 'android-apt'
-//apply plugin: 'com.neenbedankt.android-apt'
-//apply plugin: 'me.tatarka.retrolambda'
-
 
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
+
+    def isRunningOnTravis = System.getenv("CI") == "true"
     defaultConfig {
         applicationId "com.rva.mrb.vivify"
         minSdkVersion 21
@@ -18,12 +16,13 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", SPOTIFY_CLIENT_ID)
-//        buildConfigField("String", "BUGFENDER_APP_KEY", BUGFENDER_APP_KEY)
-//        buildConfigField("String", "RELEASE_STORE_PASS", RELEASE_STORE_PASS)
-//        buildConfigField("String", "RELEASE_KEY_ALIAS", RELEASE_KEY_ALIAS)
-//        buildConfigField("String", "RELEASE_KEY_PASS", RELEASE_KEY_PASS)
-//        buildConfigField("String", "PATH_TO_CERT_FILE", PATH_TO_CERT_FILE)
+        def spotifyClientId
+        if (isRunningOnTravis) {
+            spotifyClientId = System.getenv("spotify_client_id")
+        } else {
+            spotifyClientId = SPOTIFY_CLIENT_ID
+        }
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", spotifyClientId)
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -35,18 +34,28 @@ android {
         }
     }
     signingConfigs {
-        release {
-//            storeFile file(PATH_TO_CERT_FILE)
-//            storePassword RELEASE_STORE_PASS
-//            keyAlias RELEASE_KEY_ALIAS
-//            keyPassword RELEASE_KEY_PASS
+        local {
+            storeFile file(PATH_TO_CERT_FILE)
+            storePassword RELEASE_STORE_PASS
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASS
+        }
+        travis {
+            storeFile file("../android.jks")
+            storePassword System.getenv("release_store_pass")
+            keyAlias System.getenv("release_key_pass")
+            keyPassword System.getenv("release_key_alias")
         }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if (isRunningOnTravis) {
+                signingConfig signingConfigs.travis
+            } else {
+                signingConfig signingConfigs.local
+            }
         }
         debug {
             debuggable true
@@ -55,8 +64,6 @@ android {
     lintOptions {
         abortOnError false
     }
-    productFlavors {
-    }
 }
 
 repositories {
@@ -64,34 +71,22 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-//    maven {
-//        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
-//    }         TEMP STETHO FIX UNTIL OFFICIAL REPO IS UPDATED
+    // todo remove stetho
     maven { url 'https://github.com/WickeDev/stetho-realm/raw/master/maven-repo' }
     maven { url "https://jitpack.io" }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    // This library handles authentication and authorization
-    // This library handles music playback
-    // Handles expanding the recylerview
-    // Handles wrapping Java around a restful API service
-    // Annotate fields to view ids
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.1.0'
-    // Dependency injection
     annotationProcessor 'com.google.dagger:dagger-compiler:2.0.2'
     compileOnly 'javax.annotation:jsr250-api:1.0'
-    // Reactive functional support - still not to sure
-    // Might need to add some version of rxBindings
-    // Stetho Realm Browser for linux/Windows
     testImplementation 'junit:junit:4.12'
     implementation 'com.spotify.sdk:spotify-android-auth-1.0.0@aar'
     implementation 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
     implementation 'com.bignerdranch.android:expandablerecyclerview:2.1.1'
     implementation 'com.android.support:recyclerview-v7:25.2.0'
     implementation 'com.android.support:design:25.2.0'
-    //    implementation 'com.github.thorbenprimke:realm-recyclerview:0.9.20'
     implementation 'io.realm:android-adapters:2.1.1'
     implementation 'com.android.support:cardview-v7:25.2.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -109,7 +104,6 @@ dependencies {
     implementation 'org.parceler:parceler-api:1.1.5'
     annotationProcessor 'org.parceler:parceler:1.1.5'
     implementation 'com.android.support:palette-v7:25.2.0'
-//    implementation 'com.bugfender.sdk:android:0.+'
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }

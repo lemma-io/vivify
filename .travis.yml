@@ -2,12 +2,28 @@ language: android
 jdk: oraclejdk8
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-23.0.3
-    - android-23
-    - extra-android-support
-    - extra-android-m2repository
-    - extra-google-m2repository
+  - tools
+  - platform-tools
+  - build-tools-23.0.3
+  - android-23
+  - extra-android-support
+  - extra-android-m2repository
+  - extra-google-m2repository
+  licenses:
+  - 'android-sdk-license-.+'
 script:
-    - chmod +x ./gradlew
+- ./gradlew assembleRelease
+before_install:
+- openssl aes-256-cbc -K $encrypted_b22f03beeb42_key -iv $encrypted_b22f03beeb42_iv
+  -in android.jks.enc -out android.jks -d
+- yes | sdkmanager "platforms;android-26"
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: 3xX/Y6mdxtZzOzsIGW0ytfdAXTVv0lnv81ra32/cN/q5QLHf/rehnORXllWeTJn/vORkGLSkTUAcDC0+ASu6KpyNQwtlUZaiR6OXbu/2GCsTNpaL6dxgaH2y08JZwYXnxfMqB9SHd9AQJw4zoRsDETJzyRdlCo0peVuTq78VPbI+fAOthTstbF5fFA5XkVAXqaVn9hU+9jzIySCORneicvouBjdgZKO/18ik5NhJb0wqIF4XkH9Iaav4pRxomfkDh+GlEvoxPz9dsulJn6uOgbnXdKixQImwixR/2i0rjnkXi5IVdbgH1pWg2Hp8eAf224WnOVGpALfxrd8C9vmFJIkNsU39NGczgRXovECbooPwsmJz/dPstLy7d1ZNrmqft2Y/6e27Xq/MyGBETDw7XPy3zNdcq6U0r13eNKBkZPdZp5N2GYQPbzVuAYlUfPcMXi1QZHdRdeuwXmmBjHpUN7rBQ+ZR9OgUquMFNDXitU0cUn8zgk9EgqAjkVbzsMGtwZmegwAam0rqRTVQUNriFSmdYaMZOLX6uW24Lfy8UhVLMKToxyk/rhXCTo4x/Qa14yGXPAV2Ey638tqrJLcXWghl/86nPIsOmtGskBlN4hoYLgEbDj5fRXDWi+enCD8INLrH+BVqKn5mQEl8WvpGbbnQKRbKsWcB7HIEhmvclAg=
+  file: "vivify/app/build/outputs/apk/release/app-release.apk"
+  on:
+    repo: lemma-io/vivify
+    tags: true
