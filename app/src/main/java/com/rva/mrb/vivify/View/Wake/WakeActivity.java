@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -43,6 +44,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -76,6 +78,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     private static final int REQUEST_CODE = 5123;
     private static final String REDIRECT_URI = "vivify://callback";
     private Player mPlayer;
+    private Metadata metadata;
     private Config playerConfig;
     private ApplicationModule applicationModule = new ApplicationModule((AlarmApplication) getApplication());
     private String trackId;
@@ -154,12 +157,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 //            mediaInfo.setText(alarm.getArtistName()+": " + alarm.getTrackName());
 
             //Use Glide to load image URL
-            trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
-            Glide.with(this)
-                    .load(trackImage)
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .centerCrop()
-                    .into(trackIV);
+            updateBackgroundImage(trackImage);
 
             Log.d("trackImage", "Traack Image Url: " + trackImage);
 
@@ -187,6 +185,15 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     }
 
+    private void updateBackgroundImage(String imageUri) {
+        trackIV.setScaleType(ImageView.ScaleType.FIT_XY);
+        Glide.with(this)
+                .load(imageUri)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .centerCrop()
+                .into(trackIV);
+    }
+
     private void attachAdaptersToRecyclerview() {
         nextMediaListener = this::onNextSongClick;
         wakeAdapterRecyclerViewAdapter = new WakeRecyclerViewAdapter(alarm, nextMediaListener);
@@ -200,6 +207,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
             public void onAlarmSnoozed() {
                 onSnooze();
             }
+
+
         };
         ItemTouchHelper.Callback callback = new WakeTouchAdapter(touchListener);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -605,12 +614,23 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
     @Override
     public void onPlaybackEvent(PlayerEvent event) {
-
+        switch (event) {
+            case kSpPlaybackNotifyTrackChanged:
+                updateView(mPlayer.getMetadata());
+                break;
+            default:
+                break;
+        }
     }
 
+    private void updateView(Metadata metadata) {
+        updateBackgroundImage(metadata.currentTrack.albumCoverWebUrl);
+        wakeAdapterRecyclerViewAdapter
+                .updateMediaInfo(metadata.currentTrack.name, metadata.currentTrack.artistName);
+    }
 
     @Override
     public void onPlaybackError(com.spotify.sdk.android.player.Error error) {
-
+        Log.d(TAG, "Error: " + error);
     }
 }
