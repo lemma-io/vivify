@@ -61,12 +61,10 @@ import retrofit2.Response;
 public class WakeActivity extends BaseActivity implements ConnectionStateCallback, SpotifyPlayer.NotificationCallback, WakeView {
 
     private static final String TAG = WakeActivity.class.getSimpleName();
-//    @BindView(R.id.dismiss_tv) TextView dismissTv;
-//    @BindView(R.id.snooze_tv) TextView snoozeTv;
-//    @BindView(R.id.myseek) SeekBar seekBar;
+    public static final int DEFAULT_VOLUME = 100;
+    public static final String DEFAULT_FADE_IN = "30";
+
     @BindView(R.id.trackImageView) ImageView trackIV;
-//    @BindView(R.id.next_song) ImageView fastForward;
-//    @BindView(R.id.wake_media_info) TextView mediaInfo;
     @BindView(R.id.wake_time) TextView clock;
     @BindView(R.id.wake_recyclerview) RecyclerView recyclerView;
     @Inject WakePresenter wakePresenter;
@@ -176,10 +174,8 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         setVolumeControlStream(AudioManager.STREAM_ALARM);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         handleRingVolume();
-
-        //Set the seekbar that dissmisses/snoozes alarm
-//        setSeekBar();
         handleVibrator();
+
         mNotificationService = new NotificationService(mContext);
         mNotificationService.cancelNotification();
 
@@ -192,7 +188,7 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     }
 
     private void attachAdaptersToRecyclerview() {
-        nextMediaListener = () -> onNextSongClick();
+        nextMediaListener = this::onNextSongClick;
         wakeAdapterRecyclerViewAdapter = new WakeRecyclerViewAdapter(alarm, nextMediaListener);
         touchListener = new WakeTouchAdapter.WakeTouchListener() {
             @Override
@@ -237,21 +233,14 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
     }
 
     public void handleRingVolume() {
-        int fadein = Integer.parseInt(sharedPref.getString("fadein_key", "30"));
-        Log.d(TAG, "FadeIn: " + fadein);
-        Log.d("wake max volume: ", Integer.toString(am.getStreamMaxVolume(AudioManager.STREAM_ALARM)));
-        double remainder = (fadein % 6)/6.0;
-        int remain = ((int) (remainder*1000));
-
-        Log.d("remain: ", Integer.toString(remain));
+        int fadein = Integer.parseInt(sharedPref.getString(getString(R.string.volume_fade_in), DEFAULT_FADE_IN));
         if(fadein != 0) {
             am.setStreamVolume(AudioManager.STREAM_ALARM, 1, 0);
-            disposable = Flowable.interval((fadein / 6) * 1000 + (remain), TimeUnit.MILLISECONDS)
+            disposable = Flowable.interval(getVolumeFadeInterval(fadein), TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(along -> {
                         am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
-                        Log.d("current volume ", Integer.toString(am.getStreamVolume(AudioManager.STREAM_ALARM)));
-                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) == am.getStreamMaxVolume(AudioManager.STREAM_ALARM)) {
+                        if (am.getStreamVolume(AudioManager.STREAM_ALARM) >= getMaxVolume()) {
                             disposable.dispose();
                         }
                     });
@@ -259,7 +248,18 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
         else {
             am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
         }
+    }
 
+//  Todo Change hardcoded values to readable constants. Not clear what they represent
+    public long getVolumeFadeInterval(int fadeInSeconds) {
+        double remainder = (fadeInSeconds % 6)/6.0;
+        return Double.valueOf((fadeInSeconds / 6) * 1000 + (remainder*1000)).longValue();
+    }
+
+//  Todo Should be able to handle Alarm/Music streams
+    public double getMaxVolume() {
+        int volume = sharedPref.getInt(getString(R.string.max_volume), DEFAULT_VOLUME);
+        return (volume / DEFAULT_VOLUME) * am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
     }
 
     @Override
@@ -332,45 +332,6 @@ public class WakeActivity extends BaseActivity implements ConnectionStateCallbac
 
         finish();
     }
-
-    /*
-    This method sets the seekbar touchListener and allows user to snooze or dismiss the alarm.
-     */
-//    public void setSeekBar() {
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                if (seekBar.getProgress() > 85) {
-//                    dismissTv.setTextSize(30);
-//                    dismissTv.setTypeface(null, Typeface.BOLD);
-//                    dismissRingtone();
-//                } else if (seekBar.getProgress() < 15) {
-//                    snoozeTv.setTextSize(30);
-//                    snoozeTv.setTypeface(null, Typeface.BOLD);
-//                    dismissRingtone();
-//                } else {
-//                    dismissTv.setTextSize(20);
-//                    snoozeTv.setTextSize(20);
-//                }
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if (seekBar.getProgress() > 85) {
-//                    onDismiss();
-//                } else if (seekBar.getProgress() < 15) {
-//                    onSnooze();
-//                } else {
-//                    seekBar.setProgress(50);
-//                }
-//            }
-//        });
-//    }
 
     private void dismissRingtone() {
         if (r != null && r.isPlaying())

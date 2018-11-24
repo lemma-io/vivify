@@ -19,7 +19,7 @@
         android:defaultValue="5"/>
 
     <ListPreference
-        android:key="@string/key_fade_in"
+        android:key="@string/volume_fade_in"
         android:title="@string/title_fade_in"
         android:summary="@string/summary_fade"
         android:entries="@array/fadeinIntervals"
@@ -40,12 +40,11 @@
         <!--android:defaultValue="false"/>-->
 
 
-    <!--<com.rva.mrb.vivify.View.Settings.SeekBarPreference-->
-        <!--android:key="max_volume_key"-->
-        <!--android:summary="Max Alarm Volume"-->
-        <!--android:title=""-->
-        <!--android:icon="@drawable/alarm_clock"-->
-        <!--android:defaultValue="100"/>-->
+    <com.rva.mrb.vivify.View.Settings.SeekBarPreference
+        android:key="max_volume_key"
+        android:summary="Max Alarm Volume"
+        android:title=""
+        android:defaultValue="100"/>
 
     <PreferenceCategory android:title="@string/pref_header_about"/>
 
